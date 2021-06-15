@@ -55,7 +55,7 @@ class DaccadBioneatMut(Evolution):
         self.f2 = f2
         self.mut_pb = 0.8
         self.init_drift = init_drift
-        print("init drift", init_drift)
+        
 
         super().__init__(container, budget, select_or_initialise=self._select_or_initialise, vary=self._vary, base_ind_gen=gen_daccad_individuals(self.ind_domain), **kwargs)
 
@@ -85,7 +85,7 @@ class DaccadBioneatMut(Evolution):
             except Exception as e:
                 print(f"EXCEPTION ! {e}")
                 traceback.print_exc()
-            print("Res to vary:",res)
+            
             return res
 
 
