@@ -1,0 +1,6 @@
+daccad_path: '../daccad'
+daccad_settings:
+    numberOfPoints: 100
+method:
+    name: 'AE'
+    parameter: [10]

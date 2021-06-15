@@ -149,8 +149,8 @@ def submitPENSystem(array, nNodes = 5, executablePath = '../../daccad', launchSc
         #we are using the default file name
         jsonFileName = os.path.join(os.getcwd(),jsonFileName)
     exect = os.path.join(executablePath,launchScript)
-    config = os.path.join(executablePath,configFile)
-    command = [exect, launchClass, config , jsonFileName]
+    #config = os.path.join(executablePath,configFile)
+    command = [exect, launchClass, configFile , jsonFileName]
     try:
         result = check_output(command)
     except CalledProcessError as e:
@@ -163,8 +163,8 @@ def submitPENJson(json, executablePath = '../../daccad', launchScript = 'cli.sh'
         launchClass = 'cli.CLIEvaluator', configFile = 'config/configEvaluation.config', baseDir = "."):
     jsonFileName = 'generatedGraph0_0_0.json'
     exect = os.path.join(executablePath,launchScript)
-    config = os.path.join(executablePath,configFile)
-    command = [exect, launchClass, config , jsonFileName]
+    #config = os.path.join(executablePath,configFile)
+    command = [exect, launchClass, configFile , jsonFileName]
     try:
         result = check_output(command, stderr=subprocess.STDOUT)
     except CalledProcessError as e:

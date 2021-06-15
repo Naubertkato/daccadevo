@@ -19,22 +19,23 @@ class DaccadBioneatMut(Evolution):
 
     def __init__(self, container: Container, budget: int,
             ind_domain: DomainLike,
-            nb_nodes_domain: Sequence[int] = [3, 7],
+            nb_nodes_domain: Sequence[int] = [1, 7],
             min_init_budget: int = 1,
             min_ind_found_in_init: int = 1,
             init_pb: float = 0.0,
             sel_pb: float = 1.0,
-            prob_parameter_mut: float = 0.96,
-            prob_template_add: float = 0.01,
-            prob_template_del: float = 0.01,
-            prob_signal_species_add: float = 0.01,
-            prob_inhibition_species_add: float = 0.01,
+            prob_parameter_mut: float = 0.4,
+            prob_template_add: float = 0.2,
+            prob_template_del: float = 0.2,
+            prob_signal_species_add: float = 0.1,
+            prob_inhibition_species_add: float = 0.1,
             nbConnActivationsDomain: Sequence[int] = [1, 7],
             nbConnInhibitionsDomain: Sequence[int] = [0, 6],
             nbConnDomain: Sequence[int] = [1, 13],
             f1: float = 0.2,
             f2: float = 2.0,
             mut_pb: float = 0.8,
+            init_drift: int = 1, #number of mutations applied on initial individuals
             **kwargs):
         self.ind_domain = ind_domain
         self.nb_nodes_domain = nb_nodes_domain
@@ -53,6 +54,8 @@ class DaccadBioneatMut(Evolution):
         self.f1 = f1
         self.f2 = f2
         self.mut_pb = 0.8
+        self.init_drift = init_drift
+        print("init drift", init_drift)
 
         super().__init__(container, budget, select_or_initialise=self._select_or_initialise, vary=self._vary, base_ind_gen=gen_daccad_individuals(self.ind_domain), **kwargs)
 
@@ -65,10 +68,14 @@ class DaccadBioneatMut(Evolution):
 
         if initialise: # Initialisation
             # Create a base individual
+            
             standard_init_ind(base_ind)
+            for _ in range(self.init_drift):
+                base_ind = self._vary(base_ind)
             return base_ind, False
 
         else: # Selection
+            print("Doing selection")
             try:
                 choice = np.random.choice(2)
                 if choice == 0:
@@ -78,10 +85,12 @@ class DaccadBioneatMut(Evolution):
             except Exception as e:
                 print(f"EXCEPTION ! {e}")
                 traceback.print_exc()
+            print("Res to vary:",res)
             return res
 
 
     def _vary(self, individual):
+        
         for _ in range(500): # Max number of retries to find a valid individual
             ind = copy.deepcopy(individual)
             ind.name = str(id(ind))
