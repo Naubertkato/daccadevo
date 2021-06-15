@@ -1,29 +1,14 @@
-# README #
+# DACCAD EVO #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Python wrapper to combine DACCAD with QDPY
 
-### What is this repository for? ###
+## Usage
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+$ python3 scripts/DACCADRun.py -c config_file
 
-### How do I get set up? ###
+The DACCADRun.py script is the main script to start an optimization.
+If no fitness function is specified, the system will default to using the oscillator fitness function
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## Example
 
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+$ python3 scripts/DACCADRun.py -c configs/test.yaml
