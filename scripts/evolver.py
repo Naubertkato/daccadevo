@@ -75,7 +75,6 @@ class DaccadBioneatMut(Evolution):
             return base_ind, False
 
         else: # Selection
-            print("Doing selection")
             try:
                 choice = np.random.choice(2)
                 if choice == 0:
