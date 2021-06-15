@@ -24,13 +24,13 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
     peaks, properties = signal.find_peaks(y/maxVal, prominence=0.01)
     res = 0
     feature2 = 0.0
-    print("peaks",peaks)
+    
     if len(peaks) > npeaks:
         res = 1- np.diff(y[peaks]).mean()/maxVal
         res *= min(len(peaks) / 10, 1)
         res *= properties["prominences"].mean()
         feature2 = y[peaks[-1]]/maxVal
-    return [res], [len(peaks)/10.0, feature2]
+    return [res], [min(len(peaks)/25.0,1.0), feature2]
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
