@@ -18,7 +18,8 @@ main_algorithm_name: algoDACCAD
 daccad:
     path: "../daccad"
     env_name: "memory_capacity"
-    config_file: "reservoir.conf"
+    config_file: "daccadConf.conf"
+    confif_file_input: "config.json"
 
 # The list of all container.
 containers:

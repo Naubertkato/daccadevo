@@ -37,8 +37,8 @@ class Reservoir:
             array=self.ind, 
             nNodes=self.nNodes, 
             executablePath = '../daccad', 
-            configFile = '../VAE/daccadConf.conf', 
-            configFile_input = '../VAE/config.json'
+            configFile = '../daccadevo/daccadConf.conf', 
+            configFile_input = '../daccadevo/config.json'
             )
 
     def get_data_for_mc(self):
