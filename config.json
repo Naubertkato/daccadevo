@@ -1,0 +1,15 @@
+{
+    "simulation_time": 3000,
+    "inputs": [{
+        "id": "random1",
+        "type": "random",
+        "start": 200,
+        "end": 3000,
+        "interval": 50,
+        "min" : 0.0,
+        "max" : 0.25,
+        "vertex_id" : 1,
+        "input_id" : "random1"
+    }],
+    "task": {"id":"B50", "type": "B", "interval": 50, "input":"random1"}
+}
