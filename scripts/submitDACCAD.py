@@ -172,7 +172,28 @@ def submitPENJson(json, executablePath = '../../daccad', launchScript = 'cli.sh'
         result = None
     return result
 
+def submitPENSystem_input(array, nNodes = 5, executablePath = '../../daccad', launchScript = 'cli.sh',
+        launchClass = 'cli.CLIEvaluatorwithInput', configFile = '../daccadConf.conf', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json',
+        configFile_input = '../config.json'):
 
+    json = generateFullJson(array, nNodes)
+    with open(jsonFileName,'w') as f:
+        f.write(json)
+        f.flush()
+    #in case of the default jsonFileName
+    if not os.sep in jsonFileName:
+        #we are using the default file name
+        jsonFileName = os.path.join(os.getcwd(),jsonFileName)
+    exect = os.path.join(executablePath,launchScript)
+    config = os.path.join(executablePath,configFile)
+    config_input = os.path.join(executablePath, configFile_input)
+    command = [exect, launchClass, config, jsonFileName, config_input]
+    try:
+        result = check_output(command)
+    except CalledProcessError as e:
+        warnings.warn("ERROR during DACCAD execution with command: %s" % str(command), RuntimeWarning)
+        result = None
+    return result
 # MODELINE	"{{{1
 # vim:expandtab:softtabstop=4:shiftwidth=4:fileencoding=utf-8
 # vim:foldmethod=marker

@@ -4,8 +4,10 @@ from qdpy.experiment import QDExperiment
 import submitDACCAD
 import evolver
 from scipy import signal
+import numpy as np
 from datetime import datetime
 import os
+from ReservoirRun import Reservoir
 
 
 
@@ -32,12 +34,41 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
         feature2 = y[peaks[-1]]/maxVal
     return [res], [min(len(peaks)/25.0,1.0), feature2]
 
+
+def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    nNodes = daccadIndiv.nb_nodes
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+
+    # memory capacity
+    Reservoir_ = Reservoir(ind=myarray, nNodes=nNodes, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200)
+    data = Reservoir_.get_data_for_mc()
+    X, Y = Reservoir_.run(data)
+    mc_k = Reservoir_.get_MCk(data, Y)
+
+    # kernel rank
+    data_for_kr = Reservoir_.get_data_for_kr()
+    data_for_kr = (np.repeat(data_for_kr, 50)+1) * 50
+    X_kr, Y_kr = Reservoir_.run(data_for_kr)
+    kernel_rank = Reservoir_.get_KR_or_GR(X_kr)
+    
+    # generalization rank
+    data_for_gr = Reservoir_.get_data_for_gr()
+    data_for_gr = (np.repeat(data_for_gr, 50)+1) * 50
+    X_gr, Y_gr = Reservoir_.run(data_for_gr)
+    gene_rank = Reservoir_.get_KR_or_GR(X_gr)
+
+    return [mc_k], [kernel_rank, gene_rank]
+
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
         super().__init__(config_filename, **kwargs)
         if 'eval' in self.config:
-            factory = Factory()
-            self._eval_fn = factory[self.config["eval"]]
+            if self.config["eval"] == "reservoir":
+                self._eval_fn = reservoir_eval_fn
+            else:
+                factory = Factory()
+                self._eval_fn = factory[self.config["eval"]]
         else:
             self._eval_fn = oscill_eval_fn
         
