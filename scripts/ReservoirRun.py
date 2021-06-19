@@ -36,7 +36,7 @@ class Reservoir:
         self.result = submitDACCAD.submitPENSystem_input(
             array=self.ind, 
             nNodes=self.nNodes, 
-            executablePath = '../daccad', 
+            executablePath = os.path.abspath(os.getcwd()) + '/../daccad', 
             configFile = os.path.abspath(os.getcwd()) + '/daccadConf.conf', 
             configFile_input = os.path.abspath(os.getcwd()) +'/config.json'
             )
