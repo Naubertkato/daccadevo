@@ -41,7 +41,13 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
     # memory capacity
-    Reservoir_ = Reservoir(ind=myarray, nNodes=nNodes, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200)
+    jikeiretu = submitDACCAD.submitPENSystem(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['config_file_input']
+                                             ).decode('ascii')
+
+    Reservoir_ = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200)
     data = Reservoir_.get_data_for_mc()
     X, Y = Reservoir_.run(data)
     mc_k = Reservoir_.get_MCk(data, Y)

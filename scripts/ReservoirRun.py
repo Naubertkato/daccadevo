@@ -10,7 +10,7 @@ import scipy.linalg
 from numpy.linalg import svd, matrix_rank
 
 class Reservoir:
-    def __init__(self, ind, nNodes, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200) -> None:
+    def __init__(self, ind, nNodes, result, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200) -> None:
         """
         Load the data.
         Args:
@@ -26,20 +26,13 @@ class Reservoir:
         """
         self.ind = ind
         self.nNodes = nNodes
+        self.result=result
         self.inSize = inSize
         self.outSize = outSize
         self.delay = delay
         self.trainLen = trainLen
         self.testLen = testLen
         self.initLen = initLen
-
-        self.result = submitDACCAD.submitPENSystem_input(
-            array=self.ind, 
-            nNodes=self.nNodes, 
-            executablePath = os.path.abspath(os.getcwd()) + '/../daccad', 
-            configFile = os.path.abspath(os.getcwd()) + '/daccadConf.conf', 
-            configFile_input = os.path.abspath(os.getcwd()) +'/config.json'
-            )
 
     def get_data_for_mc(self):
         """
@@ -48,7 +41,7 @@ class Reservoir:
             data: numpy.array
                 input data for calculating memory capacity (= target data)
         """
-        input_arr = [float(line) for line in self.result.decode('ascii').split('\n')[2:3002]]
+        input_arr = [float(line) for line in self.result.split('\n')[2:3002]]
         input_f = pd.DataFrame(input_arr, columns=['target'])
         data = input_f['target'].values
         
@@ -105,7 +98,7 @@ class Reservoir:
                 input data (= target data)
                 
         """
-        arr = [[float(a) for a in line.split(',')] for line in self.result.decode('ascii').split('\n')[3003:-1]]
+        arr = [[float(a) for a in line.split(',')] for line in self.result.split('\n')[3003:-1]]
         f = pd.DataFrame(arr)
 
         # Non-negative constraint

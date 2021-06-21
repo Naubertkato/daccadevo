@@ -6,7 +6,7 @@ eval: "reservoir"
 keepTemporaryFiles: True
 
 features_list: ['kernal_rank','generalization_rank']
-fitness_type: "memory_cpapcity"
+fitness_type: "memory_capacity"
 
 kernal_rankDomain: [0.0, 10.0]
 generalization_rankDomain: [0.0, 10.0]
@@ -17,7 +17,7 @@ main_algorithm_name: algoDACCAD
 
 daccad:
     path: "../daccad"
-    env_name: "memory_capacity"
+    env_name: "reservoir"
     config_file: "daccadConf.conf"
     confif_file_input: "config.json"
 
