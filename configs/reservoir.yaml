@@ -10,7 +10,7 @@ fitness_type: "memory_capacity"
 
 kernal_rankDomain: [0.0, 10.0]
 generalization_rankDomain: [0.0, 10.0]
-memory_cpapcityDomain: [0.0, 1.0]
+memory_capacityDomain: [0.0, 1.0]
 
 # The name of the main algorithm (see below the description of 'algoTotal')
 main_algorithm_name: algoDACCAD
