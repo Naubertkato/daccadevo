@@ -19,7 +19,7 @@ daccad:
     path: "../daccad"
     env_name: "reservoir"
     config_file: "daccadConf.conf"
-    confif_file_input: "config.json"
+    config_file_input: "config.json"
 
 # The list of all container.
 containers:
