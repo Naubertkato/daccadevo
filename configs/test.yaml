@@ -1,7 +1,7 @@
 # The random seed
 seed: 42
 
-keepTemporaryFiles: True
+keepTemporaryFiles: False
 
 features_list: ['peaksNumber','peaksLastValue']
 fitness_type: "oscillation"

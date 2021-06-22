@@ -7,16 +7,14 @@ from scipy import signal
 from datetime import datetime
 import os
 
-
-
 ## Base oscillator test function
 def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
-
+    tmpfilepath = os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json"
     jikeiretu = submitDACCAD.submitPENSystem(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json").decode('ascii')
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], jsonFileName=tmpfilepath).decode('ascii')
     dataResult = [[float(j) for j in i.split(',')[:-1]] for i in jikeiretu.split('\n')[1:-1]]
     y = np.array(dataResult)[:,0]
     
@@ -30,6 +28,9 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
         res *= min(len(peaks) / 10, 1)
         res *= properties["prominences"].mean()
         feature2 = y[peaks[-1]]/maxVal
+    if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
+        os.remove(tmpfilepath)
+        
     return [res], [min(len(peaks)/25.0,1.0), feature2]
 
 class DACCADExperiment(QDExperiment):
@@ -50,8 +51,6 @@ class DACCADExperiment(QDExperiment):
         return self._eval_fn(ind, config = self.config)
 
 
-
-
 def parse_args():
     import argparse
     parser = argparse.ArgumentParser()
@@ -70,7 +69,7 @@ def create_base_config(args):
 
 def create_experiment(args, base_config):
     exp = DACCADExperiment(args.configFilename, parallelism_type =args.parallelismType, seed=args.seed, base_config=base_config)
-    print("Using configuration file '%s'. Instance name: '%s'" % (args.configFilename, exp.instance_name))
+    print("INFO: Using configuration file '%s'. Instance name: '%s'" % (args.configFilename, exp.instance_name))
     return exp
 
 if __name__ == "__main__":
