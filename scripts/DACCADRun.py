@@ -40,31 +40,51 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
+    k_max = 2 # the maximum delay length
+
     # memory capacity
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
                                              configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
                                              jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_mc']
+                                             ).decode('ascii')
+
+    ### TODO: calculate standard error of multiple runs
+    mc = 0
+    for k in range(1, k_max + 1):
+        Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+        data = Reservoir_mc.get_data_for_mc()
+        X, Y = Reservoir_mc.run(data)
+        mc_k = Reservoir_mc.get_MCk(data, Y)
+        mc += mc_k
+
+    # kernel rank
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file_kr'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
                                              configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input']
                                              ).decode('ascii')
 
-    Reservoir_ = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200)
-    data = Reservoir_.get_data_for_mc()
-    X, Y = Reservoir_.run(data)
-    mc_k = Reservoir_.get_MCk(data, Y)
-
-    # kernel rank
-    data_for_kr = Reservoir_.get_data_for_kr()
-    data_for_kr = (np.repeat(data_for_kr, 50)+1) * 50
-    X_kr, Y_kr = Reservoir_.run(data_for_kr)
-    kernel_rank = Reservoir_.get_KR_or_GR(X_kr)
+    Reservoir_kr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+    data_for_kr = Reservoir_kr.get_data_for_kr()
+    data_for_kr = (np.repeat(data_for_kr, 50)+1) / 5
+    X_kr, Y_kr = Reservoir_kr.run(data_for_kr)
+    kernel_rank = Reservoir_kr.get_KR_or_GR(X_kr, "kernel")
     
     # generalization rank
-    data_for_gr = Reservoir_.get_data_for_gr()
-    data_for_gr = (np.repeat(data_for_gr, 50)+1) * 50
-    X_gr, Y_gr = Reservoir_.run(data_for_gr)
-    gene_rank = Reservoir_.get_KR_or_GR(X_gr)
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file_gr'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input']
+                                             ).decode('ascii')
 
-    return [mc_k], [kernel_rank, gene_rank]
+    Reservoir_gr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+    data_for_gr = Reservoir_gr.get_data_for_gr()
+    data_for_gr = (np.repeat(data_for_gr, 50)+1) / 5
+    X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
+    gene_rank = Reservoir_gr.get_KR_or_GR(X_gr, "gene")
+
+    return [mc], [kernel_rank, gene_rank]
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):

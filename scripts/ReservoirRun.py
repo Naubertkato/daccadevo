@@ -104,7 +104,7 @@ class Reservoir:
         # Non-negative constraint
         # A: X(t) b: Y~(t) target function
         # x : W out
-        s = f.iloc[:, 0:2]
+        s = f.iloc[:, 0:self.nNodes]
         X = s.values.T
         #print("X: ", X[0], X[1])
 
@@ -143,7 +143,7 @@ class Reservoir:
 
         return mc_k
     
-    def get_KR_or_GR(self, X):
+    def get_KR_or_GR(self, X, rank):
         """
         Calculate kernel rank and generalization rank.
         Args:
@@ -163,5 +163,7 @@ class Reservoir:
                 tmp_rank_sum += s[e_rank]
                 e_rank += 1
         KGrank = e_rank - 1
-        # print("KGrank = ", KGrank)
+        print("==> ", rank)
+        print(X.shape)
+        print("s = ", s)
         return KGrank

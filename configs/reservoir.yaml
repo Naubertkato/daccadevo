@@ -10,7 +10,7 @@ fitness_type: "memory_capacity"
 
 kernal_rankDomain: [0.0, 10.0]
 generalization_rankDomain: [0.0, 10.0]
-memory_capacityDomain: [0.0, 1.0]
+memory_capacityDomain: [0.0, 100.0]
 
 # The name of the main algorithm (see below the description of 'algoTotal')
 main_algorithm_name: algoDACCAD
@@ -19,7 +19,9 @@ daccad:
     path: "../daccad"
     env_name: "reservoir"
     config_file: "daccadConf.conf"
-    config_file_input: "config.json"
+    config_file_input_for_mc: "config_mc.json"
+    config_file_input_for_kr: "config_kr.json"
+    config_file_input_for_gr: "config_gr.json"
 
 # The list of all container.
 containers:
@@ -28,7 +30,7 @@ containers:
         name: cont0                              # The name of the container. Optional. Default to the parent key (here also 'cont0')
         shape: [25, 25]                          # The number of bins for each feature
         max_items_per_bin: 1                     # The number of items in each bin of the grid
-        fitness_domain: [[0., 1.]]               # The domain of each fitness objective (here we only have one objective)
+        fitness_domain: [[0., 100.]]               # The domain of each fitness objective (here we only have one objective)
         features_domain: [[0., 10.], [0., 10.]]    # The domain of each feature
 
 
@@ -43,8 +45,8 @@ algorithms:
     # Then, we use an evolutionary algorithm that perform random search and polynomial mutations. This algorithm makes a trade-off between quality (finding good performing solutions) and diversity (find solutions corresponding to each bin of the grid)
     algoDACCAD:
         type: DaccadBioneatMut
-        budget: 5000       # The total number of allowed evaluations for this algorithm
-        batch_size: 400     # The number of evaluations in each subsequent batch 
+        budget: 500       # The total number of allowed evaluations for this algorithm
+        batch_size: 40     # The number of evaluations in each subsequent batch 
         sel_pb: 0.9         # The probability of performing selection+variation instead of initialising a new genome
         init_pb: 0.1        # The probability of initiating a new genome instead of performing selection
         mut_pb: 0.4         # The probability of mutating each value of the genome of a selected individual
