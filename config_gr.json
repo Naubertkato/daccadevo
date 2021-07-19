@@ -2,7 +2,7 @@
     "simulation_time": 3000,
     "inputs": [{
         "id": "random1",
-        "type": "random",
+        "type": "generalization",
         "start": 200,
         "end": 3000,
         "interval": 50,

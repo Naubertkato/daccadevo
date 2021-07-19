@@ -46,7 +46,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
                                              configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
                                              jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_mc']
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
                                              ).decode('ascii')
 
     ### TODO: calculate standard error of multiple runs
@@ -60,9 +60,9 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
 
     # kernel rank
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file_kr'], 
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
                                              jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input']
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
                                              ).decode('ascii')
 
     Reservoir_kr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
@@ -73,9 +73,9 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     
     # generalization rank
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file_gr'], 
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
                                              jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input']
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_gr']
                                              ).decode('ascii')
 
     Reservoir_gr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
