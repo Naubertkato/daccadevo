@@ -40,7 +40,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
-    k_max = 2 # the maximum delay length
+    k_max = 100 # the maximum delay length
 
     # memory capacity
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
