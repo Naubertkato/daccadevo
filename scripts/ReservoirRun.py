@@ -60,17 +60,11 @@ class Reservoir:
             ui: numpy.array
                 input data for calculating kernel rank (= target data)
         """
-        bestDist = 0
-        for i in range(1000):
-            ui = (20 * np.random.rand(self.trainLen + self.testLen + self.initLen) - 10) / 10
-            dist = np.std(ui)
-            if dist > bestDist:
-                bestDist = dist
-                bestUi = ui
-        ui = bestUi
-
-        #print("ui_kr: ", ui)
-        return ui
+        input_arr = [float(line) for line in self.result.split('\n')[2:3002]]
+        input_f = pd.DataFrame(input_arr, columns=['target'])
+        data = input_f['target'].values
+        
+        return data
     
     def get_data_for_gr(self):
         """
@@ -84,11 +78,11 @@ class Reservoir:
                 input data for calculating generalization rank (= target data)
         """
 
-        ui_1 = (10*np.random.rand())/10
-        ui = np.tile(ui_1,(self.trainLen + self.testLen + self.initLen,))+(1*np.random.rand(self.trainLen+self.testLen+self.initLen)-0.5)/10
-        ui[0] = ui_1
-        #print("ui_gr: ", ui)
-        return ui
+        input_arr = [float(line) for line in self.result.split('\n')[2:3002]]
+        input_f = pd.DataFrame(input_arr, columns=['target'])
+        data = input_f['target'].values
+        
+        return data
 
     def run(self, data):
         """
@@ -163,7 +157,4 @@ class Reservoir:
                 tmp_rank_sum += s[e_rank]
                 e_rank += 1
         KGrank = e_rank - 1
-        print("==> ", rank)
-        print(X.shape)
-        print("s = ", s)
         return KGrank

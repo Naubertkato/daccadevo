@@ -84,6 +84,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
     gene_rank = Reservoir_gr.get_KR_or_GR(X_gr, "gene")
 
+    print(mc, kernel_rank, gene_rank)
     return [mc], [kernel_rank, gene_rank]
 
 class DACCADExperiment(QDExperiment):
