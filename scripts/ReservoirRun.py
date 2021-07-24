@@ -34,50 +34,31 @@ class Reservoir:
         self.testLen = testLen
         self.initLen = initLen
 
-    def get_data_for_mc(self):
+    def get_data(self):
         """
-        Prepare the input data for memory capacity.
-        Return:
-            data: numpy.array
-                input data for calculating memory capacity (= target data)
-        """
-        input_arr = [float(line) for line in self.result.split('\n')[2:3002]]
-        input_f = pd.DataFrame(input_arr, columns=['target'])
-        data = input_f['target'].values
-        
-        return data
-    
-    def get_data_for_kr(self):
-        """
+        Prepare the input data.
+
+        --- memory capacity ---
+        random data
+
+        --- kernel rank ---
         Generate the input data for kernel rank.
         For the kernel rank, one chooses input streams that differ
         strongly with respect to the target function (e.g., streams that belong to
         different target classes).
         Intuitively, this rank measures how well the reservoir represents
         different input streams.
-        Args:
-        Return:
-            ui: numpy.array
-                input data for calculating kernel rank (= target data)
-        """
-        input_arr = [float(line) for line in self.result.split('\n')[2:3002]]
-        input_f = pd.DataFrame(input_arr, columns=['target'])
-        data = input_f['target'].values
-        
-        return data
-    
-    def get_data_for_gr(self):
-        """
+
+        --- generalization rank ---
         Generate the input data for generalization rank.
         For the generalization rank, one chooses similar input streams.
         Intuitively, the generalization rank measures how strongly the
         reservoir state at time t is sensitive to inputs old time steps.
-        Args:
-        Return:
-            ui: numpy.array
-                input data for calculating generalization rank (= target data)
-        """
 
+        Return:
+            data: numpy.array
+                input data for calculating mc, kr, or gr (= target data)
+        """
         input_arr = [float(line) for line in self.result.split('\n')[2:3002]]
         input_f = pd.DataFrame(input_arr, columns=['target'])
         data = input_f['target'].values

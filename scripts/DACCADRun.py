@@ -53,7 +53,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     mc = 0
     for k in range(1, k_max + 1):
         Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
-        data = Reservoir_mc.get_data_for_mc()
+        data = Reservoir_mc.get_data()
         X, Y = Reservoir_mc.run(data)
         mc_k = Reservoir_mc.get_MCk(data, Y)
         mc += mc_k
@@ -66,8 +66,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
                                              ).decode('ascii')
 
     Reservoir_kr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
-    data_for_kr = Reservoir_kr.get_data_for_kr()
-    data_for_kr = (np.repeat(data_for_kr, 50)+1) / 5
+    data_for_kr = Reservoir_kr.get_data()
     X_kr, Y_kr = Reservoir_kr.run(data_for_kr)
     kernel_rank = Reservoir_kr.get_KR_or_GR(X_kr, "kernel")
     
@@ -79,12 +78,11 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
                                              ).decode('ascii')
 
     Reservoir_gr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
-    data_for_gr = Reservoir_gr.get_data_for_gr()
-    data_for_gr = (np.repeat(data_for_gr, 50)+1) / 5
+    data_for_gr = Reservoir_gr.get_data()
     X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
     gene_rank = Reservoir_gr.get_KR_or_GR(X_gr, "gene")
 
-    print(mc, kernel_rank, gene_rank)
+    print("[ {}: mc, {}: kr, {}: gr ]".format(mc, kernel_rank, gene_rank))
     return [mc], [kernel_rank, gene_rank]
 
 class DACCADExperiment(QDExperiment):
