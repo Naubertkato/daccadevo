@@ -75,7 +75,6 @@ class Reservoir:
         """
         arr = [[float(a) for a in line.split(',')] for line in self.result.split('\n')[3003:-1]]
         f = pd.DataFrame(arr)
-
         # Non-negative constraint
         # A: X(t) b: Y~(t) target function
         # x : W out

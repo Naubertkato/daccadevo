@@ -21,7 +21,6 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
                                              configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json").decode('ascii')
     dataResult = [[float(j) for j in i.split(',')[:-1]] for i in jikeiretu.split('\n')[1:-1]]
     y = np.array(dataResult)[:,0]
-    
     maxVal = np.max(y)
     peaks, properties = signal.find_peaks(y/maxVal, prominence=0.01)
     res = 0
@@ -36,6 +35,56 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
 
 
 def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    nNodes = daccadIndiv.nb_nodes
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+    print("myarray", myarray)
+    k_max = 1 # the maximum delay length
+
+    # memory capacity
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
+                                             ).decode('ascii')
+    
+    ### TODO: calculate standard error of multiple runs
+    mc = 0
+    for k in range(1, k_max + 1):
+        Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+        data = Reservoir_mc.get_data()
+        X, Y = Reservoir_mc.run(data)
+        mc_k = Reservoir_mc.get_MCk(data, Y)
+        mc += mc_k
+
+    # kernel rank
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
+                                             ).decode('ascii')
+
+    Reservoir_kr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+    data_for_kr = Reservoir_kr.get_data()
+    X_kr, Y_kr = Reservoir_kr.run(data_for_kr)
+    kernel_rank = Reservoir_kr.get_KR_or_GR(X_kr, "kernel")
+    
+    # generalization rank
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_gr']
+                                             ).decode('ascii')
+
+    Reservoir_gr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+    data_for_gr = Reservoir_gr.get_data()
+    X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
+    gene_rank = Reservoir_gr.get_KR_or_GR(X_gr, "gene")
+
+    print("[ {}:size, {}: mc, {}: kr, {}: gr ]".format(nNodes, mc, kernel_rank, gene_rank))
+    return [mc], [kernel_rank, gene_rank]
+
+def reservoir_array_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
