@@ -1,15 +1,16 @@
 import numpy as np
 
 def get_jacobian(myarray, jikeiretu_arr):
-    jacobian = np.zeros([7, 7])
+    jacobian = np.zeros([len(jikeiretu_arr[0]), len(jikeiretu_arr[0])])
 
     a = jikeiretu_arr[0]
     b = jikeiretu_arr[1]
-    a_b_alone = jikeiretu_arr[2]
-    a_b_in = jikeiretu_arr[3]
-    a_b_out = jikeiretu_arr[4]
-    a_b_both = jikeiretu_arr[5]
-    a_b_ext = jikeiretu_arr[6]
+    for i in range((len(jikeiretu_arr[0]) - 2) // 5):
+        temp_alone = jikeiretu_arr[i+2]
+        temp_in = jikeiretu_arr[i+3]
+        temp_out = jikeiretu_arr[i+4]
+        temp_both = jikeiretu_arr[i+5]
+        temp_ext = jikeiretu_arr[i+6]
 
     # constants
     polVm = 1050
@@ -57,50 +58,52 @@ def get_jacobian(myarray, jikeiretu_arr):
     jacobian[1, 5] = kdup * stack + pol_displ
     jacobian[1, 6] = 0
 
-    # ~ / d[a_b_alone]
-    jacobian[2, 0] = -kdup * a_b_alone
-    jacobian[2, 1] = -kdup * a_b_alone
-    jacobian[2, 2] = -kdup * (a * b)
-    jacobian[2, 3] = kdup * Ka
-    jacobian[2, 4] = kdup * Kb
-    jacobian[2, 5] = 0
-    jacobian[2, 6] = 0
+    for i in range((len(jikeiretu_arr[0]) - 2) // 5):
 
-    # ~ / d[a_b_in]
-    jacobian[3, 0] = kdup * a_b_alone
-    jacobian[3, 1] = -kdup * a_b_in
-    jacobian[3, 2] = kdup * a
-    jacobian[3, 3] = -kdup * (b + Ka) - pol
-    jacobian[3, 4] = 0
-    jacobian[3, 5] = kdup * Kb * stack
-    jacobian[3, 6] = 0
+        # ~ / d[temp_alone]
+        jacobian[i+2, 0] = -kdup * temp_alone
+        jacobian[i+2, 1] = -kdup * temp_alone
+        jacobian[i+2, 2] = -kdup * (a * b)
+        jacobian[i+2, 3] = kdup * Ka
+        jacobian[i+2, 4] = kdup * Kb
+        jacobian[i+2, 5] = 0
+        jacobian[i+2, 6] = 0
 
-    # ~ / d[a_b_out]
-    jacobian[4, 0] = -kdup * a_b_out
-    jacobian[4, 1] = kdup * a_b_alone
-    jacobian[4, 2] = kdup * b
-    jacobian[4, 3] = 0
-    jacobian[4, 4] = -kdup * (a + Kb)
-    jacobian[4, 5] = kdup * Ka * stack
-    jacobian[4, 6] = 0
+        # ~ / d[temp_in]
+        jacobian[i+3, 0] = kdup * temp_alone
+        jacobian[i+3, 1] = -kdup * temp_in
+        jacobian[i+3, 2] = kdup * a
+        jacobian[i+3, 3] = -kdup * (b + Ka) - pol
+        jacobian[i+3, 4] = 0
+        jacobian[i+3, 5] = kdup * Kb * stack
+        jacobian[i+3, 6] = 0
 
-    # ~ / d[a_b_both]
-    jacobian[5, 0] = kdup * a_b_out
-    jacobian[5, 1] = kdup * a_b_out
-    jacobian[5, 2] = 0
-    jacobian[5, 3] = 0
-    jacobian[5, 4] = kdup * (a + b)
-    jacobian[5, 5] = -kdup * stack * (Ka + Kb)
-    jacobian[5, 6] = 0
+        # ~ / d[temp_out]
+        jacobian[i+4, 0] = -kdup * temp_out
+        jacobian[i+4, 1] = kdup * temp_alone
+        jacobian[i+4, 2] = kdup * b
+        jacobian[i+4, 3] = 0
+        jacobian[i+4, 4] = -kdup * (a + Kb)
+        jacobian[i+4, 5] = kdup * Ka * stack
+        jacobian[i+4, 6] = 0
 
-    # ~ / d[a_b_ext]
-    jacobian[6, 0] = 0
-    jacobian[6, 1] = 0
-    jacobian[6, 2] = 0
-    jacobian[6, 3] = pol
-    jacobian[6, 4] = pol_both
-    jacobian[6, 5] = 0
-    jacobian[6, 6] = nick
+        # ~ / d[temp_both]
+        jacobian[i+5, 0] = kdup * temp_out
+        jacobian[i+5, 1] = kdup * temp_out
+        jacobian[i+5, 2] = 0
+        jacobian[i+5, 3] = 0
+        jacobian[i+5, 4] = kdup * (a + b)
+        jacobian[i+5, 5] = -kdup * stack * (Ka + Kb)
+        jacobian[i+5, 6] = 0
+
+        # ~ / d[temp_ext]
+        jacobian[i+6, 0] = 0
+        jacobian[i+6, 1] = 0
+        jacobian[i+6, 2] = 0
+        jacobian[i+6, 3] = pol
+        jacobian[i+6, 4] = pol_both
+        jacobian[i+6, 5] = 0
+        jacobian[i+6, 6] = nick
 
     return jacobian
 
