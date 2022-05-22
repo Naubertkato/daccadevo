@@ -91,7 +91,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
-    k_max = 1 # the maximum delay length # 100
+    k_max = 100 # the maximum delay length # 100
 
     # memory capacity
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
@@ -115,8 +115,8 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     w, v = LA.eig(j_matrix)
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])
 
-    print("data : {}, {}, {}, {}, {}".format(nNodes, mc*10, nb_templates, stability, eigenvalue))
-    return [mc*10], [nb_templates, stability]
+    print("data : {}, {}, {}, {}, {}".format(nNodes, mc, nb_templates, stability, eigenvalue))
+    return [mc], [nb_templates, stability]
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
