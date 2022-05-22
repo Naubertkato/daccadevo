@@ -5,9 +5,12 @@ import submitDACCAD
 import evolver
 from scipy import signal
 import numpy as np
+from numpy import linalg as LA
 from datetime import datetime
 import os
+from statistics import mean
 from ReservoirRun import Reservoir
+from jacobian import get_jacobian
 
 
 
@@ -38,7 +41,6 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
-    print("myarray", myarray)
     k_max = 1 # the maximum delay length
 
     # memory capacity
@@ -84,12 +86,12 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     print("[ {}:size, {}: mc, {}: kr, {}: gr ]".format(nNodes, mc, kernel_rank, gene_rank))
     return [mc], [kernel_rank, gene_rank]
 
-def reservoir_array_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
-    k_max = 100 # the maximum delay length
+    k_max = 1 # the maximum delay length # 100
 
     # memory capacity
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
@@ -107,32 +109,14 @@ def reservoir_array_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../dacc
         mc_k = Reservoir_mc.get_MCk(data, Y)
         mc += mc_k
 
-    # kernel rank
-    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
-                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
-                                             ).decode('ascii')
+    nb_templates = len([i for i in myarray[2:6] if i != 0 ])
+    stability = mean(daccadIndiv.stabilities)
+    j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
+    w, v = LA.eig(j_matrix)
+    eigenvalue = np.mean([np.linalg.norm(val) for val in w])
 
-    Reservoir_kr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
-    data_for_kr = Reservoir_kr.get_data()
-    X_kr, Y_kr = Reservoir_kr.run(data_for_kr)
-    kernel_rank = Reservoir_kr.get_KR_or_GR(X_kr, "kernel")
-    
-    # generalization rank
-    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
-                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_gr']
-                                             ).decode('ascii')
-
-    Reservoir_gr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
-    data_for_gr = Reservoir_gr.get_data()
-    X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
-    gene_rank = Reservoir_gr.get_KR_or_GR(X_gr, "gene")
-
-    print("[ {}:size, {}: mc, {}: kr, {}: gr ]".format(nNodes, mc, kernel_rank, gene_rank))
-    return [mc], [kernel_rank, gene_rank]
+    print("data : {}, {}, {}, {}, {}".format(nNodes, mc*10, nb_templates, stability, eigenvalue))
+    return [mc*10], [nb_templates, stability]
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
@@ -140,6 +124,8 @@ class DACCADExperiment(QDExperiment):
         if 'eval' in self.config:
             if self.config["eval"] == "reservoir":
                 self._eval_fn = reservoir_eval_fn
+            elif self.config["eval"] == "reservoir_jacobian":
+                self._eval_fn = reservoir_jacobian_eval_fn
             else:
                 factory = Factory()
                 self._eval_fn = factory[self.config["eval"]]
