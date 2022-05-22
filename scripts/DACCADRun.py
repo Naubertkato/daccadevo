@@ -115,7 +115,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     w, v = LA.eig(j_matrix)
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])
 
-    print("data : {}, {}, {}, {}, {}".format(nNodes, mc, nb_templates, stability, eigenvalue))
+    print("data : {}, {}, {}, {}, {}, {}".format(nNodes, mc, nb_templates, stability, eigenvalue, myarray))
     return [mc], [nb_templates, stability]
 
 class DACCADExperiment(QDExperiment):
