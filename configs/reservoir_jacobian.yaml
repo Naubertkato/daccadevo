@@ -9,7 +9,7 @@ features_list: ['nb_templates','ave_stability']
 fitness_type: "memory_capacity"
 
 nb_templatesDomain: [1, 4]
-ave_stabilityDomain: [0.1, 1000]
+ave_stabilityDomain: [0, 1]
 memory_capacityDomain: [0.0, 100.0]
 
 # The name of the main algorithm (see below the description of 'algoTotal')

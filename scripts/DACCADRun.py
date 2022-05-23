@@ -110,7 +110,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
         mc += mc_k
 
     nb_templates = len([i for i in myarray[2:6] if i != 0 ])
-    stability = mean(daccadIndiv.stabilities)
+    stability = mean(daccadIndiv.stabilities) 
     j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
     w, v = LA.eig(j_matrix)
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])

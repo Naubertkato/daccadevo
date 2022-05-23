@@ -9,7 +9,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     jacobian = np.zeros([len(last_jikeiretu_arr), len(last_jikeiretu_arr)])
 
     nNodes = daccadIndiv.nb_nodes
-    nTempletes = (len(last_jikeiretu_arr) - nNodes) // 5 # todo : inhibitor を考慮
+    nTemplates = (len(last_jikeiretu_arr) - nNodes) // 5 # todo : inhibitor を考慮
     nInhibitors = 0  # todo : inhibitor を考慮
     
     myarray_activation = myarray[nNodes: nNodes + nNodes * nNodes].reshape([nNodes, nNodes])
@@ -27,7 +27,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     temp_out = []
     temp_both = []
     temp_ext = []
-    for i in range(nTempletes):
+    for i in range(nTemplates):
         temp_alone.append(last_jikeiretu_arr[i+nNodes])
         temp_in.append(last_jikeiretu_arr[i+nNodes+1])
         temp_out.append(last_jikeiretu_arr[i+nNodes+2])
@@ -58,11 +58,11 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     ds_dt = [0] *nNodes
 
     ### d[template] / dt
-    dtemplate_alone_dt = [0] *nTempletes
-    dtemplate_in_dt = [0] *nTempletes
-    dtemplate_out_dt = [0] *nTempletes
-    dtemplate_both_dt = [0] *nTempletes
-    dtemplate_ext_dt = [0] *nTempletes
+    dtemplate_alone_dt = [0] *nTemplates
+    dtemplate_in_dt = [0] *nTemplates
+    dtemplate_out_dt = [0] *nTemplates
+    dtemplate_both_dt = [0] *nTemplates
+    dtemplate_ext_dt = [0] *nTemplates
 
     ## set sympols
     species_sympol = []
@@ -75,7 +75,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     for i in range(nNodes):
         species_sympol.append(sympy.Symbol('species_' + str(i)))
 
-    for i in range(nTempletes):
+    for i in range(nTemplates):
         temp_alone_sympol.append(sympy.Symbol('temp_alone_' + str(i)))
         temp_in_sympol.append(sympy.Symbol('temp_in_' + str(i)))
         temp_out_sympol.append(sympy.Symbol('temp_out_' + str(i)))
@@ -115,7 +115,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     x = []
     for i in range(nNodes):
         x.append(ds_dt[i])
-    for i in range(nTempletes):
+    for i in range(nTemplates):
         x.append(dtemplate_alone_dt[i])
         x.append(dtemplate_in_dt[i])
         x.append(dtemplate_out_dt[i])
@@ -126,7 +126,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     y = []
     for i in range(nNodes):
         y.append(species_sympol[i])
-    for i in range(nTempletes):
+    for i in range(nTemplates):
         y.append(temp_alone_sympol[i])
         y.append(temp_in_sympol[i])
         y.append(temp_out_sympol[i])
@@ -139,7 +139,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     ### substrate each value
     for i in range(nNodes):
         jacobian = jacobian.subs(species_sympol[i], species[i])
-    for i in range(nTempletes):
+    for i in range(nTemplates):
         jacobian = jacobian.subs(temp_alone_sympol[i], temp_alone[i])
         jacobian = jacobian.subs(temp_in_sympol[i], temp_in[i])
         jacobian = jacobian.subs(temp_out_sympol[i], temp_out[i])
@@ -166,7 +166,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     jacobian[1, 5] = kdup * stack + pol_displ
     jacobian[1, 6] = 0
 
-    for i in range(nTempletes):
+    for i in range(nTemplates):
 
         # ~ / d[temp_alone]
         jacobian[i+2, 0] = -kdup * temp_alone
