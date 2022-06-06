@@ -114,7 +114,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
         temp_ext_symbol.append(sympy.Symbol('temp_ext_' + str(i)))
 
     for i in range(nInhibitors):
-        temp_inhib_symbol.append(sympy.symbol('temp_inhib_' + str(i)))
+        temp_inhib_symbol.append(sympy.Symbol('temp_inhib_' + str(i)))
     
     ### set exprs
     count_temp = 0
@@ -151,7 +151,6 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
                     pol = polVm / (polKm * (1 + temp_in_symbol[count_temp] / polKm + temp_both_symbol[count_temp] / polKmBoth))
                     pol_both = polVm / (polKmBoth * (1 + temp_in_symbol[count_temp] / polKm + temp_both_symbol[count_temp] / polKmBoth))
                     pol_displ = pol_both * displ
-                    exo = exoVm / (exoKmSimple * (1 + species[i] / exoKmSimple))
                     nick = nickVm / (nickKm + temp_ext_symbol[count_temp])
 
                     #in
@@ -161,22 +160,24 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
                     di_dt[count_inhib] += kdup*(K_species[k]*(temp_out_symbol[count_temp]+stack*temp_both_symbol[count_temp])-(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp])*species_symbol[k]+(inhibitors_symbol[count_inhib]*temp_out_symbol[count_temp]-lambda_out*species_symbol[k]*temp_inhib_symbol[count_inhib]))+pol_displ*temp_both_symbol[count_temp]
                     
                     #inhib
-                    di_dt[count_inhib] += alpha*kdup*temp_inhib_symbol[count_inhib]-kdup*inhibitors_symbol[count_inhib]*(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp]+temp_out_symbol[count_temp])+kdup*temp_inhib_symbol[count_inhib]*(labmda_in*species_symbol[i]+lambda_out*species_symbol[k])
+                    di_dt[count_inhib] += alpha*kdup*K_species[j]*temp_inhib_symbol[count_inhib]-kdup*inhibitors_symbol[count_inhib]*(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp]+temp_out_symbol[count_temp])+kdup*temp_inhib_symbol[count_inhib]*(labmda_in*species_symbol[i]+lambda_out*species_symbol[k])
 
-                    dtemplate_alone_dt[count_temp] = kdup*(K_species[i]*temp_in_symbol[count_temp]+K_species[k]*temp_out_symbol[count_temp]-(species_symbol[i]+species_symbol[j])*temp_alone_symbol[count_temp]+K_inhibitors[count_inhib]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_alone_symbol[count_temp])
-                    dtemplate_in_dt[count_temp] = kdup*(species_symbol[i]*temp_alone_symbol[count_temp]+K_species[k]*stack*temp_both_symbol[count_temp]-temp_in_symbol[count_temp]*(species_symbol[k]+K_species[i])+labmda_in*species_symbol[k]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_in_symbol[count_temp])-pol*temp_in_symbol[count_temp]
-                    dtemplate_out_dt[count_temp] = kdup*(species_symbol[k]*temp_alone_symbol[count_temp]+K_species[i]*stack*temp_both_symbol[count_temp]-temp_out_symbol[count_temp]*(species_symbol[i]+K_species[j])+lambda_out*species_symbol[k]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_out_symbol[count_temp])
-                    dtemplate_both_dt[count_temp] = kdup*(species_symbol[i]*temp_out_symbol[count_temp]+species_symbol[k]*temp_out_symbol[count_temp]-stack*temp_both_symbol[count_temp]*(K_species[i]+K_species[k]))+nick*temp_ext_symbol[count_temp]-pol_both*temp_both_symbol[count_temp]
+                    dtemplate_alone_dt[count_temp] = kdup*(K_species[j]*temp_in_symbol[count_temp]+K_species[k]*temp_out_symbol[count_temp]-(species_symbol[j]+species_symbol[k])*temp_alone_symbol[count_temp]+K_inhibitors[count_inhib]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_alone_symbol[count_temp])
+                    dtemplate_in_dt[count_temp] = kdup*(species_symbol[j]*temp_alone_symbol[count_temp]+K_species[k]*stack*temp_both_symbol[count_temp]-temp_in_symbol[count_temp]*(species_symbol[k]+K_species[j])+labmda_in*species_symbol[k]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_in_symbol[count_temp])-pol*temp_in_symbol[count_temp]
+                    dtemplate_out_dt[count_temp] = kdup*(species_symbol[k]*temp_alone_symbol[count_temp]+K_species[j]*stack*temp_both_symbol[count_temp]-temp_out_symbol[count_temp]*(species_symbol[j]+K_species[k])+lambda_out*species_symbol[k]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_out_symbol[count_temp])
+                    dtemplate_both_dt[count_temp] = kdup*(species_symbol[j]*temp_out_symbol[count_temp]+species_symbol[k]*temp_out_symbol[count_temp]-stack*temp_both_symbol[count_temp]*(K_species[j]+K_species[k]))+nick*temp_ext_symbol[count_temp]-pol_both*temp_both_symbol[count_temp]
                     dtemplate_ext_dt[count_temp] = pol*temp_in_symbol[count_temp]+pol_both*temp_out_symbol[count_temp]+nick*temp_ext_symbol[count_temp]
-                    dtemplate_inhib_dt[count_temp] = kdup*inhibitors_symbol[count_inhib]*(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp]+temp_out_symbol[count_temp])-kdup*temp_inhib_symbol[count_inhib]*(K_inhibitors[count_inhib]+labmda_in*species_symbol[i]+lambda_out*species_symbol[k])
+                    dtemplate_inhib_dt[count_temp] = kdup*inhibitors_symbol[count_inhib]*(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp]+temp_out_symbol[count_temp])-kdup*temp_inhib_symbol[count_inhib]*(K_inhibitors[count_inhib]+labmda_in*species_symbol[j]+lambda_out*species_symbol[k])
 
                     count_temp += 1
                     count_inhib += 1
     
     for i in range(nNodes):
+        exo = exoVm / (exoKmSimple * (1 + species_symbol[i] / exoKmSimple))
         ds_dt[i] -= exo * species_symbol[i]
 
     for i in range(nInhibitors):
+        exo = exoVm / (exoKmSimple * (1 + inhibitors_symbol[i] / exoKmSimple))
         di_dt[i] -= exo * inhibitors_symbol[i]
     
     ### calculate jacobian matrix
@@ -205,7 +206,7 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     for i in range(nNodes):
         y.append(species_symbol[i])
     for i in range(nInhibitors):
-        x.append(inhibitors_symbol[i])
+        y.append(inhibitors_symbol[i])
     for i in range(nTemplates):
         y.append(temp_alone_symbol[i])
         y.append(temp_in_symbol[i])
