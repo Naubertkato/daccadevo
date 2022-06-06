@@ -42,7 +42,7 @@ algorithms:
 
     # Then, we use an evolutionary algorithm that perform random search and polynomial mutations. This algorithm makes a trade-off between quality (finding good performing solutions) and diversity (find solutions corresponding to each bin of the grid)
     algoDACCAD:
-        type: DaccadBioneatMut_smaller
+        type: DaccadBioneatMut
         budget: 10000       # The total number of allowed evaluations for this algorithm # 10000
         batch_size: 400     # The number of evaluations in each subsequent batch # 400
         nb_nodes_domain: [2, 2]

@@ -1,5 +1,6 @@
 import numpy as np
 import sympy
+import math
 from sympy import Matrix
 from individual import *
 
@@ -9,17 +10,25 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     jacobian = np.zeros([len(last_jikeiretu_arr), len(last_jikeiretu_arr)])
 
     nNodes = daccadIndiv.nb_nodes
-    nTemplates = (len(last_jikeiretu_arr) - nNodes) // 5 # todo : inhibitor を考慮
-    nInhibitors = 0  # todo : inhibitor を考慮
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
+    nInhibitors = len([a for a in myarray[nNodes + nNodes*nNodes:] if a != 0])
     
     myarray_activation = myarray[nNodes: nNodes + nNodes * nNodes].reshape([nNodes, nNodes])
     myarray_inhibition = myarray[nNodes + nNodes*nNodes:].reshape([nNodes, nNodes, nNodes])
 
     ### concentration of a, b, ...
     species = last_jikeiretu_arr[0: nNodes]
+    
+    ### concentration of inhibitors
+    inhibitors = last_jikeiretu_arr[nNodes: nNodes+nInhibitors]
 
-    ### Ka, Kb, ...
+    ### Ka, Kb, Ki...
     K_species = myarray[0: nNodes]
+    for i in range(nInhibitors):
+        for j in range(nInhibitors):
+            for k in range(nInhibitors):
+                if myarray_inhibition[i, j, k] != 0: # nInhibitors 回該当する
+                    K_inhibitors = 1 / 100 * math.exp((math.log(K_species[i]) + math.log(K_species[k])) / 2)
 
     ### concentration of templates
     temp_alone = []
@@ -27,12 +36,22 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     temp_out = []
     temp_both = []
     temp_ext = []
+    temp_inhib = []
     for i in range(nTemplates):
-        temp_alone.append(last_jikeiretu_arr[i+nNodes])
-        temp_in.append(last_jikeiretu_arr[i+nNodes+1])
-        temp_out.append(last_jikeiretu_arr[i+nNodes+2])
-        temp_both.append(last_jikeiretu_arr[i+nNodes+3])
-        temp_ext.append(last_jikeiretu_arr[i+nNodes+4])
+        temp_alone.append(last_jikeiretu_arr[i*5 + (nNodes+nInhibitors)])
+        temp_in.append(last_jikeiretu_arr[i*5 + 1 + (nNodes+nInhibitors)])
+        temp_out.append(last_jikeiretu_arr[i*5 + 2 +(nNodes+nInhibitors)])
+        temp_both.append(last_jikeiretu_arr[i*5 + 3 + (nNodes+nInhibitors)])
+        temp_ext.append(last_jikeiretu_arr[i*5 + 4 + (nNodes+nInhibitors)])
+
+    for i in range(nInhibitors):
+        temp_alone.append(last_jikeiretu_arr[i*6 + nTemplates*5 + nNodes+nInhibitors])
+        temp_in.append(last_jikeiretu_arr[i*6 + + nTemplates*5 +nNodes+nInhibitors+1])
+        temp_out.append(last_jikeiretu_arr[i*6  + nTemplates*5 +nNodes+nInhibitors+2])
+        temp_both.append(last_jikeiretu_arr[i*6  + nTemplates*5 +nNodes+nInhibitors+3])
+        temp_ext.append(last_jikeiretu_arr[i*6  + nTemplates*5 +nNodes+nInhibitors+4])
+        temp_inhib.append(last_jikeiretu_arr[i*6  + nTemplates*5 +nNodes+nInhibitors+4])
+
 
     ### constants
     polVm = 1050
@@ -52,99 +71,177 @@ def get_jacobian(daccadIndiv, myarray, jikeiretu):
     displ = 0.2
     
     stack = 0.2 # dimensionless
+
+    alpha = 3
+    labmda_in = 0.002
+    lambda_out = 0.01
     
     ### d[s] / dt
-    count_temp = 0
-    ds_dt = [0] *nNodes
+    ds_dt = [0] * nNodes
+
+    ### d[i] / dt
+    di_dt = [0] * nInhibitors
 
     ### d[template] / dt
-    dtemplate_alone_dt = [0] *nTemplates
-    dtemplate_in_dt = [0] *nTemplates
-    dtemplate_out_dt = [0] *nTemplates
-    dtemplate_both_dt = [0] *nTemplates
-    dtemplate_ext_dt = [0] *nTemplates
+    dtemplate_alone_dt = [0] *(nTemplates + nInhibitors)
+    dtemplate_in_dt = [0] *(nTemplates + nInhibitors)
+    dtemplate_out_dt = [0] *(nTemplates + nInhibitors)
+    dtemplate_both_dt = [0] *(nTemplates + nInhibitors)
+    dtemplate_ext_dt = [0] *(nTemplates + nInhibitors)
+    dtemplate_inhib_dt = [0] *nInhibitors
 
-    ## set sympols
-    species_sympol = []
-    temp_alone_sympol = []
-    temp_in_sympol = []
-    temp_out_sympol = []
-    temp_both_sympol = []
-    temp_ext_sympol = []
+    ## set symbols
+    species_symbol = []
+    inhibitors_symbol = []
+    temp_alone_symbol = []
+    temp_in_symbol = []
+    temp_out_symbol = []
+    temp_both_symbol = []
+    temp_ext_symbol = []
+    temp_inhib_symbol = []
 
     for i in range(nNodes):
-        species_sympol.append(sympy.Symbol('species_' + str(i)))
+        species_symbol.append(sympy.Symbol('species_' + str(i)))
 
-    for i in range(nTemplates):
-        temp_alone_sympol.append(sympy.Symbol('temp_alone_' + str(i)))
-        temp_in_sympol.append(sympy.Symbol('temp_in_' + str(i)))
-        temp_out_sympol.append(sympy.Symbol('temp_out_' + str(i)))
-        temp_both_sympol.append(sympy.Symbol('temp_both_' + str(i)))
-        temp_ext_sympol.append(sympy.Symbol('temp_ext_' + str(i)))
+    for i in range(nInhibitors):
+        inhibitors_symbol.append(sympy.Symbol('inhibitors_' + str(i)))
 
+    for i in range(nTemplates+nInhibitors):
+        temp_alone_symbol.append(sympy.Symbol('temp_alone_' + str(i)))
+        temp_in_symbol.append(sympy.Symbol('temp_in_' + str(i)))
+        temp_out_symbol.append(sympy.Symbol('temp_out_' + str(i)))
+        temp_both_symbol.append(sympy.Symbol('temp_both_' + str(i)))
+        temp_ext_symbol.append(sympy.Symbol('temp_ext_' + str(i)))
+
+    for i in range(nInhibitors):
+        temp_inhib_symbol.append(sympy.symbol('temp_inhib_' + str(i)))
+    
     ### set exprs
+    count_temp = 0
     for i in range(nNodes): # in
         for j in range(nNodes): # out
             if myarray_activation[i, j] != 0: # nTemplates 回該当する
 
-                pol = polVm / (polKm * (1 + temp_in_sympol[count_temp] / polKm + temp_both_sympol[count_temp] / polKmBoth))
-                pol_both = polVm / (polKmBoth * (1 + temp_in_sympol[count_temp] / polKm + temp_both_sympol[count_temp] / polKmBoth))
+                pol = polVm / (polKm * (1 + temp_in_symbol[count_temp] / polKm + temp_both_symbol[count_temp] / polKmBoth))
+                pol_both = polVm / (polKmBoth * (1 + temp_in_symbol[count_temp] / polKm + temp_both_symbol[count_temp] / polKmBoth))
                 pol_displ = pol_both * displ
                 exo = exoVm / (exoKmSimple * (1 + species[i] / exoKmSimple))
-                nick = nickVm / (nickKm + temp_ext_sympol[count_temp])
+                nick = nickVm / (nickKm + temp_ext_symbol[count_temp])
 
                 # activation : i -> j
                 # pht_in
-                ds_dt[i] += kdup*(K_species[i]*(temp_in_sympol[count_temp]+stack*temp_both_sympol[count_temp])-(temp_alone_sympol[count_temp]+temp_out_sympol[count_temp])*species_sympol[i])
+                ds_dt[i] += kdup*(K_species[i]*(temp_in_symbol[count_temp]+stack*temp_both_symbol[count_temp])-(temp_alone_symbol[count_temp]+temp_out_symbol[count_temp])*species_symbol[i])
                 # phi_out
-                ds_dt[j] += kdup*(K_species[j]*(temp_out_sympol[count_temp]+stack*temp_both_sympol[count_temp])-(temp_alone_sympol[count_temp]+temp_in_sympol[count_temp])*species_sympol[j])
+                ds_dt[j] += kdup*(K_species[j]*(temp_out_symbol[count_temp]+stack*temp_both_symbol[count_temp])-(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp])*species_symbol[j])+pol_displ*temp_both_symbol[count_temp]
 
-                dtemplate_alone_dt[count_temp] = kdup*(K_species[i]*temp_in_sympol[count_temp]+K_species[j]*temp_out_sympol[count_temp]-(species_sympol[i]+species_sympol[j])*temp_alone_sympol[count_temp])
-                dtemplate_in_dt[count_temp] = kdup*(species_sympol[i]*temp_alone_sympol[count_temp]+K_species[j]*stack*temp_both_sympol[count_temp]-temp_in_sympol[count_temp]*(species_sympol[j]+K_species[i]))-pol*temp_in_sympol[count_temp]
-                dtemplate_out_dt[count_temp] = kdup*(species_sympol[j]*temp_alone_sympol[count_temp]+K_species[i]*stack*temp_both_sympol[count_temp]-temp_out_sympol[count_temp]*(species_sympol[i]+K_species[j]))
-                dtemplate_both_dt[count_temp] = kdup*(species_sympol[i]*temp_out_sympol[count_temp]+species_sympol[j]*temp_out_sympol[count_temp]-stack*temp_both_sympol[count_temp]*(K_species[i]+K_species[j]))
-                dtemplate_ext_dt[count_temp] = pol*temp_in_sympol[count_temp]+pol_both*temp_out_sympol[count_temp]+nick*temp_ext_sympol[count_temp]
+                dtemplate_alone_dt[count_temp] = kdup*(K_species[i]*temp_in_symbol[count_temp]+K_species[j]*temp_out_symbol[count_temp]-(species_symbol[i]+species_symbol[j])*temp_alone_symbol[count_temp])
+                dtemplate_in_dt[count_temp] = kdup*(species_symbol[i]*temp_alone_symbol[count_temp]+K_species[j]*stack*temp_both_symbol[count_temp]-temp_in_symbol[count_temp]*(species_symbol[j]+K_species[i]))-pol*temp_in_symbol[count_temp]
+                dtemplate_out_dt[count_temp] = kdup*(species_symbol[j]*temp_alone_symbol[count_temp]+K_species[i]*stack*temp_both_symbol[count_temp]-temp_out_symbol[count_temp]*(species_symbol[i]+K_species[j]))
+                dtemplate_both_dt[count_temp] = kdup*(species_symbol[i]*temp_out_symbol[count_temp]+species_symbol[j]*temp_out_symbol[count_temp]-stack*temp_both_symbol[count_temp]*(K_species[i]+K_species[j]))
+                dtemplate_ext_dt[count_temp] = pol*temp_in_symbol[count_temp]+pol_both*temp_out_symbol[count_temp]+nick*temp_ext_symbol[count_temp]
                 
                 count_temp += 1
+    
+    count_inhib = 0
+    for i in range(nInhibitors):
+        for j in range(nInhibitors):
+            for k in range(nInhibitors):
+                if myarray_inhibition[i, j, k] != 0: # nInhibitors 回該当する
 
+                    pol = polVm / (polKm * (1 + temp_in_symbol[count_temp] / polKm + temp_both_symbol[count_temp] / polKmBoth))
+                    pol_both = polVm / (polKmBoth * (1 + temp_in_symbol[count_temp] / polKm + temp_both_symbol[count_temp] / polKmBoth))
+                    pol_displ = pol_both * displ
+                    exo = exoVm / (exoKmSimple * (1 + species[i] / exoKmSimple))
+                    nick = nickVm / (nickKm + temp_ext_symbol[count_temp])
+
+                    #in
+                    ds_dt[i] += kdup*(K_species[i]*(temp_in_symbol[count_temp]+stack*temp_both_symbol[count_temp])-(temp_alone_symbol[count_temp]+temp_out_symbol[count_temp])*species_symbol[i]+(inhibitors_symbol[count_inhib]*temp_in_symbol[count_temp]-labmda_in*species_symbol[i]*temp_inhib_symbol[count_inhib]))
+                    
+                    #out
+                    di_dt[count_inhib] += kdup*(K_species[k]*(temp_out_symbol[count_temp]+stack*temp_both_symbol[count_temp])-(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp])*species_symbol[k]+(inhibitors_symbol[count_inhib]*temp_out_symbol[count_temp]-lambda_out*species_symbol[k]*temp_inhib_symbol[count_inhib]))+pol_displ*temp_both_symbol[count_temp]
+                    
+                    #inhib
+                    di_dt[count_inhib] += alpha*kdup*temp_inhib_symbol[count_inhib]-kdup*inhibitors_symbol[count_inhib]*(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp]+temp_out_symbol[count_temp])+kdup*temp_inhib_symbol[count_inhib]*(labmda_in*species_symbol[i]+lambda_out*species_symbol[k])
+
+                    dtemplate_alone_dt[count_temp] = kdup*(K_species[i]*temp_in_symbol[count_temp]+K_species[k]*temp_out_symbol[count_temp]-(species_symbol[i]+species_symbol[j])*temp_alone_symbol[count_temp]+K_inhibitors[count_inhib]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_alone_symbol[count_temp])
+                    dtemplate_in_dt[count_temp] = kdup*(species_symbol[i]*temp_alone_symbol[count_temp]+K_species[k]*stack*temp_both_symbol[count_temp]-temp_in_symbol[count_temp]*(species_symbol[k]+K_species[i])+labmda_in*species_symbol[k]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_in_symbol[count_temp])-pol*temp_in_symbol[count_temp]
+                    dtemplate_out_dt[count_temp] = kdup*(species_symbol[k]*temp_alone_symbol[count_temp]+K_species[i]*stack*temp_both_symbol[count_temp]-temp_out_symbol[count_temp]*(species_symbol[i]+K_species[j])+lambda_out*species_symbol[k]*temp_inhib_symbol[count_inhib]-inhibitors_symbol[count_inhib]*temp_out_symbol[count_temp])
+                    dtemplate_both_dt[count_temp] = kdup*(species_symbol[i]*temp_out_symbol[count_temp]+species_symbol[k]*temp_out_symbol[count_temp]-stack*temp_both_symbol[count_temp]*(K_species[i]+K_species[k]))+nick*temp_ext_symbol[count_temp]-pol_both*temp_both_symbol[count_temp]
+                    dtemplate_ext_dt[count_temp] = pol*temp_in_symbol[count_temp]+pol_both*temp_out_symbol[count_temp]+nick*temp_ext_symbol[count_temp]
+                    dtemplate_inhib_dt[count_temp] = kdup*inhibitors_symbol[count_inhib]*(temp_alone_symbol[count_temp]+temp_in_symbol[count_temp]+temp_out_symbol[count_temp])-kdup*temp_inhib_symbol[count_inhib]*(K_inhibitors[count_inhib]+labmda_in*species_symbol[i]+lambda_out*species_symbol[k])
+
+                    count_temp += 1
+                    count_inhib += 1
+    
     for i in range(nNodes):
-        ds_dt[i] -= exo * species_sympol[i]
+        ds_dt[i] -= exo * species_symbol[i]
+
+    for i in range(nInhibitors):
+        di_dt[i] -= exo * inhibitors_symbol[i]
     
     ### calculate jacobian matrix
     # https://docs.sympy.org/latest/modules/matrices/matrices.html#sympy.matrices.matrices.MatrixCalculus.jacobian
     x = []
     for i in range(nNodes):
         x.append(ds_dt[i])
+    for i in range(nInhibitors):
+        x.append(di_dt[i])
     for i in range(nTemplates):
         x.append(dtemplate_alone_dt[i])
         x.append(dtemplate_in_dt[i])
         x.append(dtemplate_out_dt[i])
         x.append(dtemplate_both_dt[i])
         x.append(dtemplate_ext_dt[i])
+    for i in range(nInhibitors):
+        x.append(dtemplate_alone_dt[nTemplates+i])
+        x.append(dtemplate_in_dt[nTemplates+i])
+        x.append(dtemplate_out_dt[nTemplates+i])
+        x.append(dtemplate_both_dt[nTemplates+i])
+        x.append(dtemplate_ext_dt[nTemplates+i])
+        x.append(dtemplate_inhib_dt[i])
     X = Matrix(x)
     
     y = []
     for i in range(nNodes):
-        y.append(species_sympol[i])
+        y.append(species_symbol[i])
+    for i in range(nInhibitors):
+        x.append(inhibitors_symbol[i])
     for i in range(nTemplates):
-        y.append(temp_alone_sympol[i])
-        y.append(temp_in_sympol[i])
-        y.append(temp_out_sympol[i])
-        y.append(temp_both_sympol[i])
-        y.append(temp_ext_sympol[i])
+        y.append(temp_alone_symbol[i])
+        y.append(temp_in_symbol[i])
+        y.append(temp_out_symbol[i])
+        y.append(temp_both_symbol[i])
+        y.append(temp_ext_symbol[i])
+    for i in range(nInhibitors):
+        y.append(temp_alone_symbol[nTemplates+i])
+        y.append(temp_in_symbol[nTemplates+i])
+        y.append(temp_out_symbol[nTemplates+i])
+        y.append(temp_both_symbol[nTemplates+i])
+        y.append(temp_ext_symbol[nTemplates+i])
+        y.append(temp_inhib_symbol[i])
+
     Y = Matrix(y)
     
     jacobian = X.jacobian(Y)
 
     ### substrate each value
     for i in range(nNodes):
-        jacobian = jacobian.subs(species_sympol[i], species[i])
+        jacobian = jacobian.subs(species_symbol[i], species[i])
+    for i in range(nInhibitors):
+        jacobian = jacobian.subs(inhibitors_symbol[i], inhibitors[i])
     for i in range(nTemplates):
-        jacobian = jacobian.subs(temp_alone_sympol[i], temp_alone[i])
-        jacobian = jacobian.subs(temp_in_sympol[i], temp_in[i])
-        jacobian = jacobian.subs(temp_out_sympol[i], temp_out[i])
-        jacobian = jacobian.subs(temp_both_sympol[i], temp_both[i])
-        jacobian = jacobian.subs(temp_ext_sympol[i], temp_ext[i])
+        jacobian = jacobian.subs(temp_alone_symbol[i], temp_alone[i])
+        jacobian = jacobian.subs(temp_in_symbol[i], temp_in[i])
+        jacobian = jacobian.subs(temp_out_symbol[i], temp_out[i])
+        jacobian = jacobian.subs(temp_both_symbol[i], temp_both[i])
+        jacobian = jacobian.subs(temp_ext_symbol[i], temp_ext[i])
+    for i in range(nInhibitors):
+        jacobian = jacobian.subs(temp_alone_symbol[nTemplates+i], temp_alone[nTemplates+i])
+        jacobian = jacobian.subs(temp_in_symbol[nTemplates+i], temp_in[nTemplates+i])
+        jacobian = jacobian.subs(temp_out_symbol[nTemplates+i], temp_out[nTemplates+i])
+        jacobian = jacobian.subs(temp_both_symbol[nTemplates+i], temp_both[nTemplates+i])
+        jacobian = jacobian.subs(temp_ext_symbol[nTemplates+i], temp_ext[nTemplates+i])
+        jacobian = jacobian.subs(temp_inhib_symbol[i], temp_inhib[i])
     jacobian = np.array(jacobian)
     jacobian = np.array(jacobian, dtype=float)
     
