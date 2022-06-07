@@ -5,7 +5,7 @@ eval: "reservoir_jacobian"
 
 keepTemporaryFiles: True
 
-features_list: ['nb_templates','ave_stability']
+features_list: ['nNodes','ave_stability']
 fitness_type: "memory_capacity"
 
 nNodesDomain: [1, 10]
