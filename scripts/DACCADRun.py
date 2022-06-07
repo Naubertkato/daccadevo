@@ -109,14 +109,14 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
         mc_k = Reservoir_mc.get_MCk(data, Y)
         mc += mc_k
 
-    nb_templates = len([i for i in myarray[2:6] if i != 0 ])
+    # nb_templates = len([i for i in myarray[2:6] if i != 0 ])
     stability = mean(daccadIndiv.stabilities) 
     j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
     w, v = LA.eig(j_matrix)
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])
 
-    print("data : {}, {}, {}, {}, {}, {}".format(nNodes, mc, nb_templates, stability, eigenvalue, myarray))
-    return [mc], [nb_templates, stability]
+    print("data : {}, {}, {}, {}, {}".format(nNodes, mc, stability, eigenvalue, myarray))
+    return [mc], [nNodes, stability]
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):

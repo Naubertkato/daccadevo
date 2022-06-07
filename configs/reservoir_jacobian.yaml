@@ -8,7 +8,7 @@ keepTemporaryFiles: True
 features_list: ['nb_templates','ave_stability']
 fitness_type: "memory_capacity"
 
-nb_templatesDomain: [1, 4]
+nNodesDomain: [1, 10]
 ave_stabilityDomain: [0, 1]
 memory_capacityDomain: [0.0, 100.0]
 
@@ -29,7 +29,7 @@ containers:
         shape: [25, 25]                          # The number of bins for each feature
         max_items_per_bin: 1                     # The number of items in each bin of the grid
         fitness_domain: [[0., 100.]]               # The domain of each fitness objective (here we only have one objective)
-        features_domain: [[1, 4], [0.1, 1000]]    # The domain of each feature
+        features_domain: [[1, 10], [0, 1]]    # The domain of each feature
 
 
 # The list of all algorithms
@@ -45,7 +45,7 @@ algorithms:
         type: DaccadBioneatMut
         budget: 10000       # The total number of allowed evaluations for this algorithm # 10000
         batch_size: 400     # The number of evaluations in each subsequent batch # 400
-        nb_nodes_domain: [2, 2]
+        nb_nodes_domain: [1, 10]
         sel_pb: 0.9         # The probability of performing selection+variation instead of initialising a new genome
         init_pb: 0.1        # The probability of initiating a new genome instead of performing selection
         mut_pb: 0.4         # The probability of mutating each value of the genome of a selected individual
