@@ -121,6 +121,17 @@ def standard_init_ind0(ind):
     ind.assemble()
     return ind
 
+
+def standard_init_ind2(ind):
+    """Create a base individual, with 2 nodes and a "0->1" connection"""
+    ind.resize(2)
+    ind.stabilities = np.array([random_log_scale_1000() for _ in range(2)])
+    ind.stabilities = [10./1000., 10./1000.]
+    ind.activations[0,1] = 0.025 #random_log_scale() #np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    ind.assemble()
+    return ind
+
+
 def standard_init_ind2(ind):
     """Create a base individual, with 2 nodes and a "0->1" connection"""
     ind.resize(2)
