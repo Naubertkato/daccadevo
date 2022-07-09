@@ -120,7 +120,6 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
 
 def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     nNodes = daccadIndiv.nb_nodes
-    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
@@ -138,6 +137,8 @@ def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path
     j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
     w, v = LA.eig(j_matrix)
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])
+    
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
     
     # get the prediction of memory capacity
     mc_prediction = get_predict_mc_eigenvalue(myarray, eigenvalue)
