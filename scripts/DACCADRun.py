@@ -11,7 +11,7 @@ import os
 from statistics import mean
 from ReservoirRun import Reservoir
 from jacobian import get_jacobian
-
+from predict_mc import get_predict_mc, get_predict_mc_eigenvalue
 
 
 ## Base oscillator test function
@@ -117,6 +117,33 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
 
     print("data : {}, {}, {}, {}, {}".format(nNodes, mc, stability, eigenvalue, myarray))
     return [mc], [nNodes, stability]
+
+def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    nNodes = daccadIndiv.nb_nodes
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+
+    k_max = 100 # the maximum delay length # 100
+
+    # memory capacity
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
+                                             ).decode('ascii')
+
+
+    stability = mean(daccadIndiv.stabilities) 
+    j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
+    w, v = LA.eig(j_matrix)
+    eigenvalue = np.mean([np.linalg.norm(val) for val in w])
+    
+    # get the prediction of memory capacity
+    mc_prediction = get_predict_mc_eigenvalue(myarray, eigenvalue)
+
+    print("data : {}, {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, eigenvalue, myarray))
+    return [mc_prediction], [nTemplates, stability]
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
