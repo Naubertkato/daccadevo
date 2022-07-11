@@ -10,6 +10,7 @@ def get_predict_mc(myarray):
     new_model = tf.keras.models.load_model(os.path.abspath(os.getcwd()) + '/scripts/notebook/saved_model/my_model')
     myarray = myarray.reshape([1, 155])
     mc_prediction = new_model.predict(myarray)
+    mc_prediction = mc_prediction[0][0]
 
     return mc_prediction
 
@@ -19,5 +20,6 @@ def get_predict_mc_eigenvalue(myarray, eigenvalue):
     nw_eigenvalue_data = np.append(myarray, eigenvalue)
     nw_eigenvalue_data = nw_eigenvalue_data.reshape([1, 156])
     mc_prediction = new_model.predict(nw_eigenvalue_data)
+    mc_prediction = mc_prediction[0][0]
 
     return mc_prediction
