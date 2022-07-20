@@ -102,12 +102,14 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
 
     ### TODO: calculate standard error of multiple runs
     mc = 0
-    for k in range(1, k_max + 1):
-        Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
-        data = Reservoir_mc.get_data()
-        X, Y = Reservoir_mc.run(data)
-        mc_k = Reservoir_mc.get_MCk(data, Y)
-        mc += mc_k
+    for _ in range(10):
+        for k in range(1, k_max + 1):
+            Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+            data = Reservoir_mc.get_data()
+            X, Y = Reservoir_mc.run(data)
+            mc_k = Reservoir_mc.get_MCk(data, Y)
+            mc += mc_k
+    mc = mc / 10 # average of mc
 
     # nb_templates = len([i for i in myarray[2:6] if i != 0 ])
     stability = mean(daccadIndiv.stabilities) 
