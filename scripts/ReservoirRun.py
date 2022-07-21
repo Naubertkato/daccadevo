@@ -112,7 +112,7 @@ class Reservoir:
             mc_k: float
                 memory capacity with delay = k
         """
-        mc_k = np.corrcoef(data[self.trainLen-self.delay:self.trainLen+mcLen-self.delay], Y[0, :mcLen])[0][1] ** 2
+        mc_k = np.nan_to_num(np.corrcoef(data[self.trainLen-self.delay:self.trainLen+mcLen-self.delay], Y[0, :mcLen]))[0][1] ** 2
         # print("mc_k = ", mc_k)
 
         return mc_k
