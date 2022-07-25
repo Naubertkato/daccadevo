@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import itertools
-import seaborn as sns; sns.set()
 import re
 import statistics
 import pickle
@@ -51,6 +50,7 @@ for daccadIndiv in data["container"]:
         mc_sum += mc
 
     ave_mc = mc_sum / 10
-    mc_lst.append(mc)
+    print()
+    mc_lst.append(ave_mc)
 
     print(mc_lst)
