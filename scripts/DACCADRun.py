@@ -92,6 +92,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
     k_max = 100 # the maximum delay length # 100
+    ave_mc = 0
     for _ in range(10):
         # memory capacity
         jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
@@ -109,7 +110,8 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
             X, Y = Reservoir_mc.run(data)
             mc_k = Reservoir_mc.get_MCk(data, Y)
             mc += mc_k
-    mc = mc / 10 # average of mc
+        ave_mc += mc
+    ave_mc = ave_mc / 10 # average of mc
 
     # nb_templates = len([i for i in myarray[2:6] if i != 0 ])
     stability = mean(daccadIndiv.stabilities) 
@@ -117,7 +119,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     w, v = LA.eig(j_matrix)
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])
 
-    print("data : {}, {}, {}, {}, {}".format(nNodes, mc, stability, eigenvalue, myarray))
+    print("data : {}, {}, {}, {}, {}".format(nNodes, ave_mc, stability, eigenvalue, myarray))
     return [mc], [nNodes, stability]
 
 def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
