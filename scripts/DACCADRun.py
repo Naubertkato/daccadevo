@@ -92,17 +92,17 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
     k_max = 100 # the maximum delay length # 100
-
-    # memory capacity
-    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
-                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
-                                             ).decode('ascii')
-
-    ### TODO: calculate standard error of multiple runs
-    mc = 0
     for _ in range(10):
+        # memory capacity
+        jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                                configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                                jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                                configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
+                                                ).decode('ascii')
+
+        ### TODO: calculate standard error of multiple runs
+        mc = 0
+    
         for k in range(1, k_max + 1):
             Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
             data = Reservoir_mc.get_data()
