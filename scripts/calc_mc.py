@@ -16,7 +16,7 @@ from ReservoirRun import Reservoir
 import submitDACCAD
 
 
-with open("../results/reservoir_jacobian_surrogate/final_20220713021225.p", "rb") as f:
+with open("../results/reservoir_jacobian_surrogate/final_20220721035053.p", "rb") as f:
         data = pickle.load(f)
 
 mc_lst = []
@@ -50,6 +50,7 @@ for daccadIndiv in data["container"]:
         mc_sum += mc
 
     ave_mc = mc_sum / 10
+    mc_sum = 0
     print()
     mc_lst.append(ave_mc)
 
