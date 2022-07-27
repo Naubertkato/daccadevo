@@ -24,8 +24,10 @@ config = {'daccad': {'path':'../../daccad'}}
 scales = [1000.0,200.0]
 npeaks = 1
 ave_mc = 0
+len_ind = len(data["container"])
 
-for daccadIndiv in data["container"]:
+for i, daccadIndiv in enumerate(data["container"]):
+    print("***** " + str(i) + "/" + str(len_ind) + " *****")
     print(daccadIndiv)
     for _ in range(10):
         nNodes = daccadIndiv.nb_nodes
@@ -52,7 +54,6 @@ for daccadIndiv in data["container"]:
     ave_mc = ave_mc / 10
     mc_lst.append(ave_mc)
 
-    print(mc_lst)
-    print("***** " + len(mc_lst)/len(data["container"]) + "% *****")
+    print("ave_mc : ", ave_mc)
     print()
     ave_mc = 0
