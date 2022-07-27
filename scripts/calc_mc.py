@@ -50,8 +50,8 @@ for daccadIndiv in data["container"]:
         ave_mc += mc
 
     ave_mc = ave_mc / 10
-    ave_mc = 0
     print()
     mc_lst.append(ave_mc)
 
     print(mc_lst)
+    ave_mc = 0
