@@ -16,14 +16,14 @@ from ReservoirRun import Reservoir
 import submitDACCAD
 
 
-with open("../results/reservoir_jacobian_surrogate/final_20220725030012.p", "rb") as f:
+with open("../results/reservoir_jacobian_surrogate/final_20220727130516.p", "rb") as f:
         data = pickle.load(f)
 
 mc_lst = []
 config = {'daccad': {'path':'../../daccad'}}
 scales = [1000.0,200.0]
 npeaks = 1
-mc_sum = 0
+ave_mc = 0
 
 for daccadIndiv in data["container"]:
     print(daccadIndiv)
@@ -40,17 +40,17 @@ for daccadIndiv in data["container"]:
                                                          ).decode('ascii')
 
         mc = 0
-        k_max = 200 # the maximum delay length # 100
+        k_max = 100 # the maximum delay length # 100
         for k in range(1, k_max + 1):
             Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
             data = Reservoir_mc.get_data()
             X, Y = Reservoir_mc.run(data)
             mc_k = Reservoir_mc.get_MCk(data, Y)
             mc += mc_k
-        mc_sum += mc
+        ave_mc += mc
 
-    ave_mc = mc_sum / 10
-    mc_sum = 0
+    ave_mc = ave_mc / 10
+    ave_mc = 0
     print()
     mc_lst.append(ave_mc)
 
