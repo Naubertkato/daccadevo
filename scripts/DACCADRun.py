@@ -195,7 +195,7 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_eval_fn
             elif self.config["eval"] == "reservoir_jacobian":
                 self._eval_fn = reservoir_jacobian_eval_fn
-            elif self.config["evel"] == "reservoir_jacobian_5":
+            elif self.config["eval"] == "reservoir_jacobian_5":
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_jacobian_surrogate":
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
