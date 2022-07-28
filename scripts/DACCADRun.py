@@ -122,6 +122,43 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     print("data : {}, {}, {}, {}, {}".format(nNodes, ave_mc, stability, eigenvalue, myarray))
     return [mc], [nNodes, stability]
 
+def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    nNodes = daccadIndiv.nb_nodes
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+
+    k_max = 100 # the maximum delay length # 100
+    ave_mc = 0
+    for _ in range(10):
+        # memory capacity
+        jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                                configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                                jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                                configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
+                                                ).decode('ascii')
+
+        ### TODO: calculate standard error of multiple runs
+        mc = 0
+    
+        for k in range(1, k_max + 1):
+            Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+            data = Reservoir_mc.get_data()
+            X, Y = Reservoir_mc.run(data)
+            mc_k = Reservoir_mc.get_MCk(data, Y)
+            mc += mc_k
+        ave_mc += mc
+    ave_mc = ave_mc / 10 # average of mc
+
+    stability = mean(daccadIndiv.stabilities) 
+    j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
+    w, v = LA.eig(j_matrix)
+    eigenvalue = np.mean([np.linalg.norm(val) for val in w])
+
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
+
+    print("data : {}, {}, {}, {}, {}".format(nTemplates, ave_mc, stability, eigenvalue, myarray))
+    return [mc], [nTemplates, stability]
+
 def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
@@ -158,6 +195,8 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_eval_fn
             elif self.config["eval"] == "reservoir_jacobian":
                 self._eval_fn = reservoir_jacobian_eval_fn
+            elif self.config["evel"] == "reservoir_jacobian_5":
+                self.eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_jacobian_surrogate":
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
             else:
