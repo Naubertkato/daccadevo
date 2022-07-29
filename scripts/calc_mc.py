@@ -16,7 +16,7 @@ from ReservoirRun import Reservoir
 import submitDACCAD
 
 
-with open("../results/reservoir_jacobian_surrogate/final_20220728011411.p", "rb") as f:
+with open("../results/reservoir_jacobian_surrogate/final_20220729022424.p", "rb") as f:
         data = pickle.load(f)
 
 mc_lst = []
@@ -32,7 +32,7 @@ for i, daccadIndiv in enumerate(data["container"]):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
-    
+
     for _ in range(10):
         # memory capacity
         jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
