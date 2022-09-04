@@ -87,6 +87,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     return [mc], [kernel_rank, gene_rank]
 
 def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    # produce several sizes of reservoir
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
@@ -123,6 +124,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     return [mc], [nNodes, stability]
 
 def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    # only produce size 5 of reservoir
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
@@ -199,6 +201,8 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_jacobian_surrogate":
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
+            elif self.config["eval"] == "reservoir_jacobian_2step":
+                self._eval_fn = reservoir_jacobian_eval_5_fn
             else:
                 factory = Factory()
                 self._eval_fn = factory[self.config["eval"]]
