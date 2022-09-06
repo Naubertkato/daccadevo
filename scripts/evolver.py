@@ -461,11 +461,13 @@ class DaccadBioneatMut_2step(Evolution):
                 base_ind = self.data["container"][self.count]
             else:
                 standard_init_ind(base_ind)
+
+            print("before base_ind", base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
             self.count += 1
 
-            print("base_ind : ", base_ind)
+            print("after base_ind : ", base_ind)
             return base_ind, False
 
         else: # Selection
