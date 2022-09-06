@@ -407,11 +407,11 @@ class DaccadBioneatMut_2step(Evolution):
             min_ind_found_in_init: int = 1,
             init_pb: float = 0.0,
             sel_pb: float = 1.0,
-            prob_parameter_mut: float = 0.4,
-            prob_template_add: float = 0.2,
-            prob_template_del: float = 0.2,
-            prob_signal_species_add: float = 0.1,
-            prob_inhibition_species_add: float = 0.1,
+            prob_parameter_mut: float = 0.5,
+            prob_template_add: float = 0.25,
+            prob_template_del: float = 0.25,
+            prob_signal_species_add: float = 0,
+            prob_inhibition_species_add: float = 0,
             nbConnActivationsDomain: Sequence[int] = [1, 7],
             nbConnInhibitionsDomain: Sequence[int] = [0, 6],
             nbConnDomain: Sequence[int] = [1, 13],
@@ -457,6 +457,7 @@ class DaccadBioneatMut_2step(Evolution):
             
             # standard_init_ind(base_ind)
             if self.count < len(self.data["container"]):
+                print("initialize")
                 base_ind = self.data["container"][self.count]
             else:
                 standard_init_ind(base_ind)

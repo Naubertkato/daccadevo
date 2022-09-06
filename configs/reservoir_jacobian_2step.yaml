@@ -45,7 +45,7 @@ algorithms:
         type: DaccadBioneatMut_2step
         budget: 10000       # The total number of allowed evaluations for this algorithm # 10000
         batch_size: 400     # The number of evaluations in each subsequent batch # 400
-        nb_nodes_domain: [1, 10]
+        nb_nodes_domain: [5, 5]
         sel_pb: 0.9         # The probability of performing selection+variation instead of initialising a new genome
         init_pb: 0.1        # The probability of initiating a new genome instead of performing selection
         mut_pb: 0.4         # The probability of mutating each value of the genome of a selected individual
