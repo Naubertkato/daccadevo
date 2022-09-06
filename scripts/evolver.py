@@ -439,7 +439,7 @@ class DaccadBioneatMut_2step(Evolution):
         self.mut_pb = 0.8
         self.init_drift = init_drift
         self.count = 0
-        with open("./results/reservoir_jacobian_surrogate/final_" + "20220728011411" + ".p", "rb") as f:
+        with open("./results/reservoir_jacobian_surrogate/final_" + "20220729022424" + ".p", "rb") as f:
             self.data = pickle.load(f)
         
 
@@ -455,14 +455,11 @@ class DaccadBioneatMut_2step(Evolution):
         if initialise: # Initialisation
             # Create a base individual
             
-            # standard_init_ind(base_ind)
+            # use myarray that I got by using surrogate model as initial ind (2step DA-QD)
             if self.count < len(self.data["container"]):
-                print("initialize")
                 base_ind = self.data["container"][self.count]
             else:
                 standard_init_ind(base_ind)
-
-            print("before base_ind", base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
             self.count += 1
