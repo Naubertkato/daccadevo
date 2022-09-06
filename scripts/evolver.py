@@ -464,6 +464,8 @@ class DaccadBioneatMut_2step(Evolution):
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
             self.count += 1
+
+            print("base_ind : ", base_ind)
             return base_ind, False
 
         else: # Selection
