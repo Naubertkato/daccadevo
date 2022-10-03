@@ -16,7 +16,7 @@ from ReservoirRun import Reservoir
 import submitDACCAD
 
 
-with open("../results/reservoir_jacobian_surrogate/final_20221003074016.p", "rb") as f:
+with open("./results/reservoir_jacobian_surrogate/final_20221003091708.p", "rb") as f:
         data = pickle.load(f)
 
 mc_lst = []
@@ -27,7 +27,7 @@ ave_mc = 0
 len_ind = len(data["container"])
 
 for i, daccadIndiv in enumerate(data["container"]):
-    print("***** " + str(i) + "/" + str(len_ind) + " *****")
+    print("***** " + str(i+1) + "/" + str(len_ind) + " *****")
     print(daccadIndiv)
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
