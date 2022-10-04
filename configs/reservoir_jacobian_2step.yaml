@@ -3,8 +3,6 @@ seed: 42
 
 eval: "reservoir_jacobian_2step"
 
-initial_ind: "20220729022424"
-
 keepTemporaryFiles: True
 
 features_list: ['nTemplates','ave_stability']

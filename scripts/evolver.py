@@ -439,9 +439,8 @@ class DaccadBioneatMut_2step(Evolution):
         self.mut_pb = 0.8
         self.init_drift = init_drift
         self.count = 0
-        if 'initial_ind' in self.config:
-            with open("./results/reservoir_jacobian_surrogate/final_" + self.config["initial_ind"] + ".p", "rb") as f:
-                self.data = pickle.load(f)
+        with open("./results/reservoir_jacobian_surrogate/final_20220729022424.p", "rb") as f:
+            self.data = pickle.load(f)
         
 
         super().__init__(container, budget, select_or_initialise=self._select_or_initialise, vary=self._vary, base_ind_gen=gen_daccad_individuals(self.ind_domain), **kwargs)
