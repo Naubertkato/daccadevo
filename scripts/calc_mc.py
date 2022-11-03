@@ -54,8 +54,8 @@ for i, daccadIndiv in enumerate(data["container"]):
             mc += mc_k
         mc_lst[i] = mc
 
-    ave_mc = mean(mc_lst)
-    std_mc = std(mc_lst)
+    ave_mc = np.mean(mc_lst)
+    std_mc = np.std(mc_lst)
 
     print("ave_mc : ", ave_mc)
     print("std_mc : ", std_mc)
