@@ -46,7 +46,7 @@ for i, daccadIndiv in enumerate(data["container"]):
         mc = 0
         k_max = 100 # the maximum delay length # 100
         for k in range(1, k_max + 1):
-            Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+            Reservoir_mc = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
             data = Reservoir_mc.get_data()
             X, Y = Reservoir_mc.run(data)
             mc_k = Reservoir_mc.get_MCk(data, Y)
