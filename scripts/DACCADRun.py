@@ -11,7 +11,7 @@ import os
 from statistics import mean
 from ReservoirRun import Reservoir
 from jacobian import get_jacobian
-from predict_mc import get_predict_mc, get_predict_mc_eigenvalue
+from predict_mc import get_predict_mc, get_predict_mc_daccadIndiv, get_predict_mc_eigenvalue
 
 
 ## Base oscillator test function
