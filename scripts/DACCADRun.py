@@ -176,17 +176,17 @@ def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path
                                              configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_mc']
                                              ).decode('ascii')
 
-
+    '''
     stability = mean(daccadIndiv.stabilities) 
-    j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
-    w, v = LA.eig(j_matrix)
-    eigenvalue = np.mean([np.linalg.norm(val) for val in w])
+    # j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
+    # w, v = LA.eig(j_matrix)
+    # eigenvalue = np.mean([np.linalg.norm(val) for val in w])
     
     nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
     
     # get the prediction of memory capacity
-    mc_prediction = get_predict_mc_eigenvalue(myarray, eigenvalue)
-    '''
+    # mc_prediction = get_predict_mc_eigenvalue(myarray, eigenvalue)
+
     mc_prediction = get_predict_mc_daccadIndiv(daccadIndiv)
 
     print("data : {}, {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, eigenvalue, myarray))
