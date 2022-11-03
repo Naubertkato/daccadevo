@@ -189,7 +189,8 @@ def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path
 
     mc_prediction = get_predict_mc_daccadIndiv(daccadIndiv)
 
-    print("data : {}, {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, eigenvalue, myarray))
+    # print("data : {}, {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, eigenvalue, myarray))
+    print("data : {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, myarray))
     return [mc_prediction], [nTemplates, stability]
 
 class DACCADExperiment(QDExperiment):
