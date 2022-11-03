@@ -34,8 +34,9 @@ for i, daccadIndiv in enumerate(data["container"]):
     myarray = np.array(scaling)*np.array(daccadIndiv)
     nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
     print("nTemplates : ", nTemplates)
-    
-    for _ in range(10):
+    mc_lst = np.zeros(10)
+
+    for i in range(10):
         # memory capacity
         jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
                                                          configFile = os.path.abspath(os.getcwd())+"/" + '../daccadConf.conf', 
@@ -51,11 +52,11 @@ for i, daccadIndiv in enumerate(data["container"]):
             X, Y = Reservoir_mc.run(data)
             mc_k = Reservoir_mc.get_MCk(data, Y)
             mc += mc_k
-        ave_mc += mc
+        mc_lst[i] = mc
 
-    ave_mc = ave_mc / 10
-    mc_lst.append(ave_mc)
+    ave_mc = mean(mc_lst)
+    std_mc = std(mc_lst)
 
     print("ave_mc : ", ave_mc)
+    print("std_mc : ", std_mc)
     print()
-    ave_mc = 0
