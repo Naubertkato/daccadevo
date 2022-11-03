@@ -4,7 +4,7 @@ from tensorflow.keras import Model
 from tensorflow.keras import layers
 
 import numpy as np
-import osmyarray
+import os
 
 # myarray -> daccadIndiv
 def get_predict_mc(myarray):
