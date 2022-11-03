@@ -53,7 +53,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
     ### TODO: calculate standard error of multiple runs
     mc = 0
     for k in range(1, k_max + 1):
-        Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+        Reservoir_mc = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
         data = Reservoir_mc.get_data()
         X, Y = Reservoir_mc.run(data)
         mc_k = Reservoir_mc.get_MCk(data, Y)
@@ -66,7 +66,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
                                              configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
                                              ).decode('ascii')
 
-    Reservoir_kr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+    Reservoir_kr = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
     data_for_kr = Reservoir_kr.get_data()
     X_kr, Y_kr = Reservoir_kr.run(data_for_kr)
     kernel_rank = Reservoir_kr.get_KR_or_GR(X_kr, "kernel")
@@ -78,7 +78,7 @@ def reservoir_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}},
                                              configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_gr']
                                              ).decode('ascii')
 
-    Reservoir_gr = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+    Reservoir_gr = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
     data_for_gr = Reservoir_gr.get_data()
     X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
     gene_rank = Reservoir_gr.get_KR_or_GR(X_gr, "gene")
@@ -106,7 +106,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
         mc = 0
     
         for k in range(1, k_max + 1):
-            Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+            Reservoir_mc = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
             data = Reservoir_mc.get_data()
             X, Y = Reservoir_mc.run(data)
             mc_k = Reservoir_mc.get_MCk(data, Y)
@@ -143,7 +143,7 @@ def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../..
         mc = 0
     
         for k in range(1, k_max + 1):
-            Reservoir_mc = Reservoir(ind=myarray, nNodes=nNodes, result=jikeiretu, delay=k)
+            Reservoir_mc = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
             data = Reservoir_mc.get_data()
             X, Y = Reservoir_mc.run(data)
             mc_k = Reservoir_mc.get_MCk(data, Y)
@@ -169,6 +169,7 @@ def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path
     k_max = 100 # the maximum delay length # 100
 
     # memory capacity
+    '''
     jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
                                              configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
                                              jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
@@ -185,6 +186,8 @@ def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path
     
     # get the prediction of memory capacity
     mc_prediction = get_predict_mc_eigenvalue(myarray, eigenvalue)
+    '''
+    mc_prediction = get_predict_mc_daccadIndiv(daccadIndiv)
 
     print("data : {}, {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, eigenvalue, myarray))
     return [mc_prediction], [nTemplates, stability]

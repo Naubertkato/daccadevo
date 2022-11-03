@@ -10,7 +10,7 @@ import scipy.linalg
 from numpy.linalg import svd, matrix_rank
 
 class Reservoir:
-    def __init__(self, ind, nNodes, result, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200) -> None:
+    def __init__(self, nNodes, result, inSize=1, outSize=1, delay=1, trainLen=1000, testLen=2000, initLen=200) -> None:
         """
         Load the data.
         Args:
@@ -24,7 +24,6 @@ class Reservoir:
                 output size
             delay: integer
         """
-        self.ind = ind
         self.nNodes = nNodes
         self.result=result
         self.inSize = inSize
