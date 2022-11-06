@@ -18,6 +18,7 @@ def get_predict_mc(myarray):
 def get_predict_mc_daccadIndiv(daccadIndiv):
     new_model = tf.keras.models.load_model(os.path.abspath(os.getcwd()) + '/scripts/notebook/saved_model/my_model')
     daccadIndiv = np.array(daccadIndiv[0:30]).reshape([1, 30])
+    daccadIndiv = np.concatenate([daccadIndiv, np.mean(daccadIndiv[:, :5], axis=1).reshape((len(daccadIndiv), 1))], axis = 1)
     mc_prediction = new_model.predict(daccadIndiv)
     mc_prediction = mc_prediction[0][0]
 
