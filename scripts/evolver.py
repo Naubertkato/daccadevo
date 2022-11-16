@@ -439,7 +439,7 @@ class DaccadBioneatMut_2step(Evolution):
         self.mut_pb = 0.8
         self.init_drift = init_drift
         self.count = 0
-        with open("./results/reservoir_jacobian_surrogate/final_20221115054543.p", "rb") as f:
+        with open("./results/reservoir_jacobian_surrogate/final_20221115071831.p", "rb") as f:
             self.data = pickle.load(f)
         
 
@@ -459,7 +459,7 @@ class DaccadBioneatMut_2step(Evolution):
             if self.count < len(self.data["container"]):
                 base_ind = self.data["container"][self.count]
             else:
-                standard_init_ind(base_ind)
+                standard_init_ind_grad4(base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
             self.count += 1
