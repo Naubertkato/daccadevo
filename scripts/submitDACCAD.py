@@ -177,6 +177,7 @@ def submitPENSystem_input(array, nNodes = 5, executablePath = '../../daccad', la
         configFile_input = '../config.json'):
 
     json = generateFullJson(array, nNodes)
+    """
     with open(jsonFileName,'w') as f:
         f.write(json)
         f.flush()
@@ -184,10 +185,12 @@ def submitPENSystem_input(array, nNodes = 5, executablePath = '../../daccad', la
     if not os.sep in jsonFileName:
         #we are using the default file name
         jsonFileName = os.path.join(os.getcwd(),jsonFileName)
+    """
     exect = os.path.join(executablePath,launchScript)
     config = os.path.join(executablePath,configFile)
     config_input = os.path.join(executablePath, configFile_input)
-    command = [exect, launchClass, config, jsonFileName, config_input]
+    #command = [exect, launchClass, config, jsonFileName, config_input]
+    command = [exect, launchClass, config, config_input]
     try:
         result = check_output(command)
     except CalledProcessError as e:
