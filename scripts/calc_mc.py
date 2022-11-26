@@ -19,7 +19,7 @@ def get_mc(file_name, num):
     with open("../results/reservoir_jacobian_surrogate/final_" + str(file_name) + ".p", "rb") as f:
             data = pickle.load(f)
 
-    mc_lst = []
+    ave_mc_lst = []
     config = {'daccad': {'path':'../../daccad'}}
     scales = [1000.0,200.0]
     npeaks = 1
@@ -56,15 +56,15 @@ def get_mc(file_name, num):
 
         ave_mc = np.mean(mc_lst)
         std_mc = np.std(mc_lst)
-
+        ave_mc_lst.append(ave_mc)
         print("ave_mc : ", ave_mc)
         print("std_mc : ", std_mc)
         print()
 
-        mc_file_name = "mc_" + str(num) + "_" + str(file_name) + ".txt"
-        mc_lst_str = [str(n) for n in mc_lst]
-        with open(mc_file_name, mode='w') as f:
-            f.write('\n'.join(mc_lst_str))
+    mc_file_name = "mc_" + str(num) + "_" + str(file_name) + ".txt"
+    ave_mc_lst_str = [str(n) for n in ave_mc_lst]
+    with open(mc_file_name, mode='w') as f:
+        f.write('\n'.join(ave_mc_lst_str))
 
 if __name__ == "__main__":
     file_name_lst = [20221123071403, 20221124082523, 20221124082754, 20221124083018, 20221124083336, 
