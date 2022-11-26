@@ -281,10 +281,10 @@ class DaccadBioneatMut_5(Evolution):
             init_pb: float = 0.0,
             sel_pb: float = 1.0,
             prob_parameter_mut: float = 0.5,
-            prob_template_add: float = 0.2,
-            prob_template_del: float = 0.2,
+            prob_template_add: float = 0.25, #0.2,
+            prob_template_del: float = 0.25, #0.2,
             prob_signal_species_add: float = 0,
-            prob_inhibition_species_add: float = 0.1,
+            prob_inhibition_species_add: float = 0, #0.1,
             nbConnActivationsDomain: Sequence[int] = [1, 7],
             nbConnInhibitionsDomain: Sequence[int] = [0, 6],
             nbConnDomain: Sequence[int] = [1, 13],
@@ -439,7 +439,7 @@ class DaccadBioneatMut_2step(Evolution):
         self.mut_pb = 0.8
         self.init_drift = init_drift
         self.count = 0
-        with open("./results/reservoir_jacobian_surrogate/final_20221115030228.p", "rb") as f:
+        with open("./results/reservoir_jacobian_surrogate/final_20221115073421.p", "rb") as f:
             self.data = pickle.load(f)
         
 
