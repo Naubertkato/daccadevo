@@ -62,8 +62,9 @@ def get_mc(file_name, num):
         print()
 
         mc_file_name = "mc_" + str(num) + "_" + str(file_name) + ".txt"
+        mc_lst_str = [str(n) for n in mc_lst]
         with open(mc_file_name, mode='w') as f:
-            f.write('\n'.join(mc_lst))
+            f.write('\n'.join(mc_lst_str))
 
 if __name__ == "__main__":
     file_name_lst = [20221123071403, 20221124082523, 20221124082754, 20221124083018, 20221124083336, 
