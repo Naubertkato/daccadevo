@@ -131,7 +131,7 @@ def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../..
 
     k_max = 100 # the maximum delay length # 100
     ave_mc = 0
-    for _ in range(10):
+    for _ in range(5):
         # memory capacity
         jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
                                                 configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
