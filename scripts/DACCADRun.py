@@ -149,7 +149,7 @@ def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../..
             mc_k = Reservoir_mc.get_MCk(data, Y)
             mc += mc_k
         ave_mc += mc
-    ave_mc = ave_mc / 10 # average of mc
+    ave_mc = ave_mc / 5 # average of mc
 
     stability = mean(daccadIndiv.stabilities) 
     j_matrix = get_jacobian(daccadIndiv, myarray, jikeiretu)
