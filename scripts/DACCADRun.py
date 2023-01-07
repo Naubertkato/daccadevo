@@ -123,6 +123,33 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     print("data : {}, {}, {}, {}, {}".format(nNodes, ave_mc, stability, eigenvalue, myarray))
     return [mc], [nNodes, stability]
 
+def reservoir_eval_5_kernel_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    # only produce size 5 of reservoir
+    nNodes = daccadIndiv.nb_nodes
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+
+    k = 1
+
+    # kernel rank
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
+                                             ).decode('ascii')
+
+    Reservoir_kr = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
+    data_for_kr = Reservoir_kr.get_data()
+    X_kr, Y_kr = Reservoir_kr.run(data_for_kr)
+    kernel_rank = Reservoir_kr.get_KR_or_GR(X_kr, "kernel")
+
+    stability = mean(daccadIndiv.stabilities)
+
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
+
+    print("data : {}, {}, {}, {}".format(nTemplates, kernel_rank, stability, myarray))
+    return [kernel_rank], [nTemplates, stability]
+
 def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     # only produce size 5 of reservoir
     nNodes = daccadIndiv.nb_nodes
@@ -203,6 +230,8 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_jacobian_eval_fn
             elif self.config["eval"] == "reservoir_jacobian_5":
                 self._eval_fn = reservoir_jacobian_eval_5_fn
+            elif self.config["eval"] == "reservoir_5_kernel":
+                self._eval_fn = reservoir_eval_5_kernel_fn
             elif self.config["eval"] == "reservoir_jacobian_surrogate":
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
             elif self.config["eval"] == "reservoir_jacobian_2step":
