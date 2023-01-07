@@ -6,7 +6,7 @@ eval: "reservoir_jacobian_5"
 keepTemporaryFiles: False
 
 features_list: ['nTemplates','ave_stability']
-fitness_type: "kernek_rank"
+fitness_type: "kernel_rank"
 
 nTemplatesDomain: [1, 25]
 ave_stabilityDomain: [0, 1]
