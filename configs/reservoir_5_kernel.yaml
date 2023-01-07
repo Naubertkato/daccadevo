@@ -3,7 +3,7 @@ seed: 42
 
 eval: "reservoir_jacobian_5"
 
-keepTemporaryFiles: True
+keepTemporaryFiles: False
 
 features_list: ['nTemplates','ave_stability']
 fitness_type: "kernek_rank"
