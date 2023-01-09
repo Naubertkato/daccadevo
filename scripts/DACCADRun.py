@@ -186,7 +186,7 @@ def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../..
     nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
 
     print("data : {}, {}, {}, {}, {}".format(nTemplates, ave_mc, stability, eigenvalue, myarray))
-    return [mc], [nTemplates, stability]
+    return [ave_mc], [nTemplates, stability]
 
 def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     nNodes = daccadIndiv.nb_nodes
@@ -229,6 +229,8 @@ class DACCADExperiment(QDExperiment):
             elif self.config["eval"] == "reservoir_jacobian":
                 self._eval_fn = reservoir_jacobian_eval_fn
             elif self.config["eval"] == "reservoir_jacobian_5":
+                self._eval_fn = reservoir_jacobian_eval_5_fn
+            elif self.config["eval"] == "reservoir_jacobian_5_with_inhib":
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_5_kernel":
                 self._eval_fn = reservoir_eval_5_kernel_fn
