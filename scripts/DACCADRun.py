@@ -12,6 +12,7 @@ from statistics import mean
 from ReservoirRun import Reservoir
 from jacobian import get_jacobian
 from predict_mc import get_predict_mc, get_predict_mc_daccadIndiv, get_predict_mc_eigenvalue
+from predict_kr import get_predict_kr_daccadIndiv
 
 
 ## Base oscillator test function
@@ -220,6 +221,24 @@ def reservoir_jacobian_surrogate_eval_fn(daccadIndiv, config = {'daccad': {'path
     print("data : {}, {}, {}, {}".format(nTemplates, mc_prediction, stability, myarray))
     return [mc_prediction], [nTemplates, stability]
 
+def reservoir_surrogate_kernel_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    nNodes = daccadIndiv.nb_nodes
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+
+    k_max = 100 # the maximum delay length # 100
+
+    # kernel rank
+    
+    stability = mean(daccadIndiv.stabilities) 
+    
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
+
+    kr_prediction = get_predict_kr_daccadIndiv(daccadIndiv)
+
+    print("data : {}, {}, {}, {}".format(nTemplates, kr_prediction, stability, myarray))
+    return [kr_prediction], [nTemplates, stability]
+
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
         super().__init__(config_filename, **kwargs)
@@ -236,6 +255,8 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_eval_5_kernel_fn
             elif self.config["eval"] == "reservoir_jacobian_surrogate":
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
+            elif self.config["eval"] == "reservoir_surrogate_kernel":
+                self._eval_fn = reservoir_surrogate_kernel_eval_fn
             elif self.config["eval"] == "reservoir_jacobian_2step":
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             else:
