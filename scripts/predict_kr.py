@@ -12,6 +12,6 @@ def get_predict_kr_daccadIndiv(daccadIndiv):
     daccadIndiv = np.array(daccadIndiv[0:30]).reshape([1, 30])
     daccadIndiv = np.concatenate([daccadIndiv, np.mean(daccadIndiv[:, :5], axis=1).reshape((len(daccadIndiv), 1))], axis = 1)
     kr_prediction = new_model.predict(daccadIndiv)
-    kr_prediction = kr_prediction[0][0]
+    kr_prediction = np.argmax(kr_prediction[0])
 
     return kr_prediction
