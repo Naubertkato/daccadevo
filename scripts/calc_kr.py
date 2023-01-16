@@ -15,7 +15,7 @@ from individual import DaccadIndividual
 from ReservoirRun import Reservoir
 import submitDACCAD
 
-def get_mc(file_name, num):
+def get_kr(file_name, num):
     with open("../results/reservoir_surrogate_kernel/final_" + str(file_name) + ".p", "rb") as f:
             data = pickle.load(f)
 
@@ -39,7 +39,7 @@ def get_mc(file_name, num):
 
         # kernel rank
         jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                                configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                                configFile = os.path.abspath(os.getcwd())+"/" + '../daccadConf.conf', 
                                                 jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
                                                 configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
                                                 ).decode('ascii')
