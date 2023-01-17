@@ -40,8 +40,8 @@ def get_kr(file_name, num):
         # kernel rank
         jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
                                                 configFile = os.path.abspath(os.getcwd())+"/" + '../daccadConf.conf', 
-                                                jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
-                                                configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_kr']
+                                                jsonFileName=os.path.abspath(os.getcwd())+"/"+"."+"/"+datetime.now().isoformat(timespec='microseconds')+".json",
+                                                configFile_input = os.path.abspath(os.getcwd())+"/" + "../config_kr.json"
                                                 ).decode('ascii')
 
         Reservoir_kr = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
