@@ -62,5 +62,5 @@ if __name__ == "__main__":
     file_name_lst = [20230115155110, 20230115155957, 20230115174650]
     num = 0
     for file_name in file_name_lst:
-        get_mc(file_name, num)
+        get_kr(file_name, num)
         num += 1
