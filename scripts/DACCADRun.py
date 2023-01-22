@@ -260,7 +260,7 @@ class DACCADExperiment(QDExperiment):
             elif self.config["eval"] == "reservoir_jacobian_2step":
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_2step_kernel":
-                self._eval_fn = reservoir_jacobian_eval_5_fn
+                self._eval_fn = reservoir_eval_5_kernel_fn
             else:
                 factory = Factory()
                 self._eval_fn = factory[self.config["eval"]]
