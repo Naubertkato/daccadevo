@@ -19,7 +19,7 @@ daccad:
     path: "../daccad"
     env_name: "reservoir_2step_kernel"
     config_file: "daccadConf.conf"
-    config_file_input_for_mc: "config_kr.json"
+    config_file_input_for_kr: "config_kr.json"
 
 # The list of all container.
 containers:
