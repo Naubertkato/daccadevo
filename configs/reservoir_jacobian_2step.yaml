@@ -43,7 +43,7 @@ algorithms:
     # Then, we use an evolutionary algorithm that perform random search and polynomial mutations. This algorithm makes a trade-off between quality (finding good performing solutions) and diversity (find solutions corresponding to each bin of the grid)
     algoDACCAD:
         type: DaccadBioneatMut_2step
-        budget: 8000       # The total number of allowed evaluations for this algorithm # 10000
+        budget: 5000       # The total number of allowed evaluations for this algorithm # 10000
         batch_size: 400     # The number of evaluations in each subsequent batch # 400
         nb_nodes_domain: [5, 5]
         sel_pb: 0.9         # The probability of performing selection+variation instead of initialising a new genome

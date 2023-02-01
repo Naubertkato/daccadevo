@@ -247,19 +247,19 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_eval_fn
             elif self.config["eval"] == "reservoir_jacobian":
                 self._eval_fn = reservoir_jacobian_eval_fn
-            elif self.config["eval"] == "reservoir_jacobian_5":
+            elif self.config["eval"] == "reservoir_jacobian_5": # full simulation for MC
                 self._eval_fn = reservoir_jacobian_eval_5_fn
-            elif self.config["eval"] == "reservoir_jacobian_5_with_inhib":
+            elif self.config["eval"] == "reservoir_jacobian_5_with_inhib": # full simulation for MC (with inhib)
                 self._eval_fn = reservoir_jacobian_eval_5_fn
-            elif self.config["eval"] == "reservoir_5_kernel":
+            elif self.config["eval"] == "reservoir_5_kernel": # full simulation for KR
                 self._eval_fn = reservoir_eval_5_kernel_fn
-            elif self.config["eval"] == "reservoir_jacobian_surrogate":
+            elif self.config["eval"] == "reservoir_jacobian_surrogate": # simulation by surrogate model for MC
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
-            elif self.config["eval"] == "reservoir_surrogate_kernel":
+            elif self.config["eval"] == "reservoir_surrogate_kernel": # simulation by surrogate model for KR
                 self._eval_fn = reservoir_surrogate_kernel_eval_fn
-            elif self.config["eval"] == "reservoir_jacobian_2step":
+            elif self.config["eval"] == "reservoir_jacobian_2step": # full simulation after surrogate simulation for MC
                 self._eval_fn = reservoir_jacobian_eval_5_fn
-            elif self.config["eval"] == "reservoir_2step_kernel":
+            elif self.config["eval"] == "reservoir_2step_kernel": # full simulation after surrogate simulation for KR
                 self._eval_fn = reservoir_eval_5_kernel_fn
             else:
                 factory = Factory()
