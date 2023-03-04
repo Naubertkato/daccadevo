@@ -151,6 +151,35 @@ def reservoir_eval_5_kernel_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     print("data : {}, {}, {}, {}".format(nTemplates, kernel_rank, stability, myarray))
     return [kernel_rank], [nTemplates, stability]
 
+
+def reservoir_eval_5_gene_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    # only produce size 5 of reservoir
+    nNodes = daccadIndiv.nb_nodes
+    scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
+    myarray = np.array(scaling)*np.array(daccadIndiv)
+
+    k = 1
+
+    # generalization rank
+    jikeiretu = submitDACCAD.submitPENSystem_input(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
+                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], 
+                                             jsonFileName=os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json",
+                                             configFile_input = os.path.abspath(os.getcwd()) +"/"+config['daccad']['config_file_input_for_gr']
+                                             ).decode('ascii')
+
+    Reservoir_gr = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
+    data_for_gr = Reservoir_gr.get_data()
+    X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
+    generalization_rank = Reservoir_gr.get_KR_or_GR(X_gr, "generalization")
+
+    stability = mean(daccadIndiv.stabilities)
+
+    nTemplates = len([a for a in myarray[nNodes: nNodes + nNodes * nNodes] if a != 0])
+
+    print("data : {}, {}, {}, {}".format(nTemplates, generalization_rank, stability, myarray))
+    return [generalization_rank], [nTemplates, stability]
+
+
 def reservoir_jacobian_eval_5_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     # only produce size 5 of reservoir
     nNodes = daccadIndiv.nb_nodes
@@ -253,14 +282,23 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_5_kernel": # full simulation for KR
                 self._eval_fn = reservoir_eval_5_kernel_fn
+            elif self.config["eval"] == "reservoir_5_gene": # full simulation for GR
+                self._eval_fn = reservoir_eval_5_gene_fn
+            
             elif self.config["eval"] == "reservoir_jacobian_surrogate": # simulation by surrogate model for MC
                 self._eval_fn = reservoir_jacobian_surrogate_eval_fn
             elif self.config["eval"] == "reservoir_surrogate_kernel": # simulation by surrogate model for KR
                 self._eval_fn = reservoir_surrogate_kernel_eval_fn
+            #elif self.config["eval"] == "reservoir_surrogate_gene": # simulation by surrogate model for GR
+            #    self._eval_fn = reservoir_surrogate_gene_eval_fn
+            
             elif self.config["eval"] == "reservoir_jacobian_2step": # full simulation after surrogate simulation for MC
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_2step_kernel": # full simulation after surrogate simulation for KR
                 self._eval_fn = reservoir_eval_5_kernel_fn
+            #elif self.config["eval"] == "reservoir_2step_gene": # full simulation after surrogate simulation for GR
+            #    self._eval_fn = reservoir_eval_5_gene_fn
+            
             else:
                 factory = Factory()
                 self._eval_fn = factory[self.config["eval"]]
