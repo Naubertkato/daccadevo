@@ -19,7 +19,7 @@ daccad:
     path: "../daccad"
     env_name: "reservoir_5_gene"
     config_file: "daccadConf.conf"
-    config_file_input_for_kr: "config_gr.json"
+    config_file_input_for_gr: "config_gr.json"
 
 # The list of all container.
 containers:
