@@ -47,7 +47,7 @@ def get_gr(file_name, num):
         Reservoir_gr = Reservoir(nNodes=nNodes, result=jikeiretu, delay=k)
         data_for_gr = Reservoir_gr.get_data()
         X_gr, Y_gr = Reservoir_gr.run(data_for_gr)
-        generalization_rank = Reservoir_gr.get_gr_or_GR(X_gr, "generalization")
+        generalization_rank = Reservoir_gr.get_KR_or_GR(X_gr, "generalization")
         gr_lst.append(generalization_rank)
 
         print("generalization rank : ", generalization_rank)
