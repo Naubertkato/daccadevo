@@ -256,8 +256,6 @@ def reservoir_surrogate_kernel_eval_fn(daccadIndiv, config = {'daccad': {'path':
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
 
-    k_max = 100 # the maximum delay length # 100
-
     # kernel rank
     
     stability = mean(daccadIndiv.stabilities) 
@@ -273,8 +271,6 @@ def reservoir_surrogate_gene_eval_fn(daccadIndiv, config = {'daccad': {'path':'.
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
-
-    k_max = 100 # the maximum delay length # 100
 
     # generalization rank
     
@@ -315,8 +311,8 @@ class DACCADExperiment(QDExperiment):
                 self._eval_fn = reservoir_jacobian_eval_5_fn
             elif self.config["eval"] == "reservoir_2step_kernel": # full simulation after surrogate simulation for KR
                 self._eval_fn = reservoir_eval_5_kernel_fn
-            #elif self.config["eval"] == "reservoir_2step_gene": # full simulation after surrogate simulation for GR
-            #    self._eval_fn = reservoir_eval_5_gene_fn
+            elif self.config["eval"] == "reservoir_2step_gene": # full simulation after surrogate simulation for GR
+                self._eval_fn = reservoir_eval_5_gene_fn
             
             else:
                 factory = Factory()
