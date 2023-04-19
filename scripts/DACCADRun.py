@@ -1,5 +1,6 @@
 import qdpy
 from qdpy.base import *
+from qdpy.phenotype import *
 from qdpy.experiment import QDExperiment
 import submitDACCAD
 import evolver
@@ -30,8 +31,12 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
         feature2 = y[peaks[-1]]/maxVal
     if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
         os.remove(tmpfilepath)
-        
-    return [res], [min(len(peaks)/25.0,1.0), feature2]
+    scores = {"oscill": res, "peak_number": min(len(peaks)/25.0,1.0), "last_peak_scale": feature2}  
+    daccadIndiv.scores = ScoresDict(scores)
+    daccadIndiv.weights = (1.0),
+    daccadIndiv.fitness.values = scores["oscill"]
+    daccadIndiv.features.values = [scores[x] for x in ["peak_number","last_peak_scale"]]
+    return [res], daccadIndiv.features
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
