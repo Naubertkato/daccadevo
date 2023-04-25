@@ -23,20 +23,28 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
     peaks, properties = signal.find_peaks(y/maxVal, prominence=0.01)
     res = 0
     feature2 = 0.0
+    period = 0.0
+    std = 0.0
     
     if len(peaks) > npeaks:
         res = 1- np.diff(y[peaks]).mean()/maxVal
         res *= min(len(peaks) / 10, 1)
         res *= properties["prominences"].mean()
         feature2 = y[peaks[-1]]/maxVal
+        peak_dist = [peaks[i+1]-peaks[i] for i in range(len(peaks)-1)]
+        period = np.average(peak_dist)/len(y) # problem that it cannot reach 1
+        if len(peak_dist) > 1:
+            std = np.std(peak_dist)
+        
     if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
         os.remove(tmpfilepath)
-    scores = {"oscill": res, "peak_number": min(len(peaks)/25.0,1.0), "last_peak_scale": feature2}  
+    scores = {"oscillations": res, "peaksNumber": min(len(peaks)/25.0,1.0), "peaksLastValue": feature2,
+              "averagePeriod": period, "stdPediod": std, "valueStd": np.std(y)}  
     daccadIndiv.scores = ScoresDict(scores)
-    daccadIndiv.weights = (1.0),
-    daccadIndiv.fitness.values = scores["oscill"]
-    daccadIndiv.features.values = [scores[x] for x in ["peak_number","last_peak_scale"]]
-    return [res], daccadIndiv.features
+    daccadIndiv.fitness.weights = (1.0,) 
+    daccadIndiv.fitness.values = [scores[config['fitness_type']]]
+    daccadIndiv.features.values = [scores[x] for x in config["features_list"]]
+    return daccadIndiv
 
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
@@ -44,6 +52,7 @@ class DACCADExperiment(QDExperiment):
         if 'eval' in self.config:
             factory = Factory()
             self._eval_fn = factory[self.config["eval"]]
+            
         else:
             self._eval_fn = oscill_eval_fn
         

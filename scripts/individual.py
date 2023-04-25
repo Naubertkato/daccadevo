@@ -15,7 +15,6 @@ class DaccadIndividual(Individual):
         self.activations = np.zeros((self.nb_nodes, self.nb_nodes))
         self.inhibitions = np.zeros((self.nb_nodes, self.nb_nodes, self.nb_nodes))
         self.name = str(id(self))
-        self.scores = None
         self.specie = 0
 
     def is_valid(self):

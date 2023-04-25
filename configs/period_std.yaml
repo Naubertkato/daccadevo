@@ -1,14 +1,17 @@
 # The random seed
-seed: 42
+#seed: 42
 
 keepTemporaryFiles: False
 
-features_list: ['peaksNumber','peaksLastValue']
+features_list: ['averagePeriod','valueStd']
 fitness_type: "oscillations"
 
 peaksNumberDomain: [0.0, 1.0]
 peaksLastValueDomain: [0.0, 1.0]
 oscillationsDomain: [0.0, 1.0]
+averagePeriodDomain: [0.0, 1.0]
+valueStdDomain: [0.0, .inf]
+
 
 # The name of the main algorithm (see below the description of 'algoTotal')
 main_algorithm_name: algoDACCAD
@@ -20,13 +23,25 @@ daccad:
 
 # The list of all container.
 containers:
+    parentContainer:
+        type: Container
+        name: parentContainer
+        storage_type: orderedSet
+        fitness_domain:
+        features_domain:
+        
     cont0:
-        type: Grid                               # The type of the container (e.g. Grid, CVTGrid, Container, NoveltyArchive, ...)
+        type: AutoScalingGrid                               # The type of the container (e.g. Grid, CVTGrid, Container, NoveltyArchive, ...)
         name: cont0                              # The name of the container. Optional. Default to the parent key (here also 'cont0')
+        parents: [parentContainer]
+        scaling_container: [parentContainer]
+        fitness_scaling: False
+        features_scaling: True
+        rescaling_period: 1000
         shape: [25, 25]                          # The number of bins for each feature
         max_items_per_bin: 1                     # The number of items in each bin of the grid
         fitness_domain: [[0., 1.]]               # The domain of each fitness objective (here we only have one objective)
-        features_domain: [[0., 1.], [0., 1.]]    # The domain of each feature
+        features_domain: [[0., .inf], [0., .inf]]    # The domain of each feature
 
 
 # The list of all algorithms
@@ -40,7 +55,7 @@ algorithms:
     # Then, we use an evolutionary algorithm that perform random search and polynomial mutations. This algorithm makes a trade-off between quality (finding good performing solutions) and diversity (find solutions corresponding to each bin of the grid)
     algoDACCAD:
         type: DaccadBioneatMut
-        budget: 5000       # The total number of allowed evaluations for this algorithm
+        budget: 50000       # The total number of allowed evaluations for this algorithm
         batch_size: 400     # The number of evaluations in each subsequent batch 
         sel_pb: 0.9         # The probability of performing selection+variation instead of initialising a new genome
         init_pb: 0.1        # The probability of initiating a new genome instead of performing selection
