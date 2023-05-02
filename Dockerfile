@@ -1,7 +1,7 @@
 FROM lcazenille/ubuntupython3andjava
 
 # Install python dependencies
-RUN pip3 --no-cache-dir install -U numpy pandas tqdm git+https://gitlab.com/leo.cazenille/qdpy.git
+RUN pip3 --no-cache-dir install -U numpy pandas tqdm git+https://gitlab.com/leo.cazenille/qdpy.git@develop
 
 # Make main folder
 RUN mkdir -p /home/user

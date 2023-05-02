@@ -12,6 +12,6 @@ chown -R $uid /home/user
 echo running as $uid
 
 # Launch illumination
-exec bash -c "cd /home/user/daccadevo; for i in $(seq 1 $nbRuns | tr '\n' ' '); do sleep 1; python3 scripts/DACCADRun.py -c $configName & sleep 1; done;wait;"
+exec bash -c "cd /home/user/daccadevo; python3 scripts/DACCADRun.py -c $configName -r $nbRuns"
 
 
