@@ -75,7 +75,7 @@ def parse_args():
     parser.add_argument('-o', '--resultsBaseDir', type=str, default='results/', help = "Path of results files")
     parser.add_argument('-p', '--parallelismType', type=str, default='concurrent', help = "Type of parallelism to use")
     parser.add_argument('--seed', type=int, default=None, help="Numpy random seed")
-    parser.add_argument('r','--repeats', type=int, default=1, help="Number of repeats for evaluations")
+    parser.add_argument('-r','--repeats', type=int, default=1, help="Number of repeats for evaluations")
     return parser.parse_args()
 
 def create_base_config(args):
