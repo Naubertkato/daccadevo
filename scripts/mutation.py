@@ -201,6 +201,7 @@ def mutation_bioneat_signal_species(ind, trivial=False):
             ind.stabilities[-1] = random_log_scale_1000()
 
 
+# Only applicable if not all templates present
 def mutation_bioneat_inhibition_species(ind, trivial=False):
     activations_coords_set = {(x, y) for x in range(ind.nb_nodes) for y in range(ind.nb_nodes)}
     active_activations_coords = list(zip(*np.where(ind.activations)))

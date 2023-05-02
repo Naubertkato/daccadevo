@@ -35,7 +35,7 @@ if __name__ == "__main__":
     dt = get_data(sys.argv[1])
     indiv_list = get_bests(dt["container"], n=10)
     config = dt["config"]
-    config["keepTemporaryFiles"] = True
+    config["keepTemporaryFiles"] = False
     all_timeseries = []
     for i in indiv_list:
         print(i.fitness)

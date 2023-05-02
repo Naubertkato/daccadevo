@@ -34,12 +34,15 @@ def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, sc
         peak_dist = [peaks[i+1]-peaks[i] for i in range(len(peaks)-1)]
         period = np.average(peak_dist)/len(y) # problem that it cannot reach 1
         if len(peak_dist) > 1:
-            std = np.std(peak_dist)
+            std = np.std(peak_dist)/(0.6*len(y)) # Normalized
         
     if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
         os.remove(tmpfilepath)
     scores = {"oscillations": res, "peaksNumber": min(len(peaks)/25.0,1.0), "peaksLastValue": feature2,
-              "averagePeriod": period, "stdPediod": std, "valueStd": np.std(y)}  
+              "averagePeriod": period, "periodStd": std, "valueStd": np.std(y)/maxVal}
+    if "use_evals" in config and int(config["use_evals"]) > 0:
+    	  for i in range(int(config["use_evals"])):
+    	      scores[f"eval{i}"] = y[i]/maxVal
     daccadIndiv.scores = ScoresDict(scores)
     daccadIndiv.fitness.weights = (1.0,) 
     daccadIndiv.fitness.values = [scores[config['fitness_type']]]
@@ -50,8 +53,8 @@ class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
         super().__init__(config_filename, **kwargs)
         if 'eval' in self.config:
-            factory = Factory()
-            self._eval_fn = factory[self.config["eval"]]
+            
+            self._eval_fn = registry[self.config["eval"]]
             
         else:
             self._eval_fn = oscill_eval_fn
@@ -72,6 +75,7 @@ def parse_args():
     parser.add_argument('-o', '--resultsBaseDir', type=str, default='results/', help = "Path of results files")
     parser.add_argument('-p', '--parallelismType', type=str, default='concurrent', help = "Type of parallelism to use")
     parser.add_argument('--seed', type=int, default=None, help="Numpy random seed")
+    parser.add_argument('r','--repeats', type=int, default=1, help="Number of repeats for evaluations")
     return parser.parse_args()
 
 def create_base_config(args):
@@ -90,9 +94,10 @@ if __name__ == "__main__":
     import traceback
     args = parse_args()
     base_config = create_base_config(args)
-    try:
-        exp = create_experiment(args, base_config)
-        exp.run()
-    except Exception as e:
-        warnings.warn(f"Run failed: {str(e)}")
-        traceback.print_exc()
+    for _ in range(args.repeats):
+        try:
+            exp = create_experiment(args, base_config)
+            exp.run()
+        except Exception as e:
+            warnings.warn(f"Run failed: {str(e)}")
+            traceback.print_exc()

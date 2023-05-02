@@ -24,6 +24,7 @@ class DaccadBioneatMut(Evolution):
             min_ind_found_in_init: int = 1,
             init_pb: float = 0.0,
             sel_pb: float = 1.0,
+            init_ind: Union[str,Callable[[IndividualLike],IndividualLike]] = standard_init_ind,
             prob_parameter_mut: float = 0.4,
             prob_template_add: float = 0.2,
             prob_template_del: float = 0.2,
@@ -43,6 +44,10 @@ class DaccadBioneatMut(Evolution):
         self.min_ind_found_in_init = min_ind_found_in_init
         self.init_pb = init_pb
         self.sel_pb = sel_pb
+        if isinstance(init_ind, str):
+            self._standard_init_ind = registry[init_ind]
+        else:
+            self._standard_init_ind = init_ind
         self.prob_parameter_mut = prob_parameter_mut
         self.prob_template_add = prob_template_add
         self.prob_template_del = prob_template_del
@@ -69,7 +74,7 @@ class DaccadBioneatMut(Evolution):
         if initialise: # Initialisation
             # Create a base individual
             
-            standard_init_ind(base_ind)
+            self._standard_init_ind(base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
             return base_ind, False

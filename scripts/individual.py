@@ -1,4 +1,5 @@
 import numpy as np
+from qdpy.base import registry
 from qdpy.phenotype import Individual
 import submitDACCAD
 from mutation_utils import random_log_scale_1000
@@ -92,16 +93,17 @@ def gen_daccad_individuals(ind_domain):
     while(True):
         yield DaccadIndividual(ind_domain)
 
+@registry.register
 def standard_init_ind(ind):
     """Create a base individual, with 3 nodes and a "2->2" connection"""
     ind.resize(3)
     ind.stabilities = np.array([random_log_scale_1000() for _ in range(3)])
-    ind.stabilities = [10./1000., 10./1000., 100./1000.]
+    #ind.stabilities = [10./1000., 10./1000., 100./1000.]
     ind.activations[2,2] = 0.025 #random_log_scale() #np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
     ind.assemble()
     return ind
 
-
+@registry.register
 def standard_init_ind_grad4(ind):
     """Create a base individual in a setup with 4 gradients, with 5 nodes and a "4->4" connection"""
     ind.resize(5)
@@ -111,10 +113,18 @@ def standard_init_ind_grad4(ind):
     ind.assemble()
     return ind
 
-
+@registry.register
 def standard_init_ind0(ind):
     """Create a base individual, with 1 node and a "0->0" connection"""
     ind.resize(1)
     ind.activations[0,0] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    ind.assemble()
+    return ind
+
+@registry.register    
+def standard_init_act(ind):
+    """Create a base individual, with 2 node and a "0->1" connection"""
+    ind.resize(5)
+    ind.activations[0,1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
     ind.assemble()
     return ind
