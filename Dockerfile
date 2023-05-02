@@ -1,7 +1,11 @@
 FROM lcazenille/ubuntupython3andjava
 
+# First, update Cython
+
+RUN pip3 --no-cache-dir install -U Cython
+
 # Install python dependencies
-RUN pip3 --no-cache-dir install -U Cython numpy pandas tqdm git+https://gitlab.com/leo.cazenille/qdpy.git@develop
+RUN pip3 --no-cache-dir install -U numpy pandas tqdm git+https://gitlab.com/leo.cazenille/qdpy.git@develop
 
 # Make main folder
 RUN mkdir -p /home/user
