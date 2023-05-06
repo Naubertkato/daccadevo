@@ -121,7 +121,7 @@ def reservoir_jacobian_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../d
     eigenvalue = np.mean([np.linalg.norm(val) for val in w])
 
     print("data : {}, {}, {}, {}, {}".format(nNodes, ave_mc, stability, eigenvalue, myarray))
-    return [mc], [nNodes, stability]
+    return [ave_mc], [nNodes, stability]
 
 def reservoir_eval_5_kernel_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
     # only produce size 5 of reservoir
