@@ -34,8 +34,9 @@ def findAllInhibitorsAndConcsLegacy(array,nNodes = 5):
                 if array[index + fromId*nNodes + toId] > 0.0:
                     name = 'I'+str(fromId)+'T'+str(toId)
                     if not name in inhibitingTemplatesConcs:
-                        inhibitingTemplatesConcs[name] = []
-                    inhibitingTemplatesConcs[name].append((str(i),array[index + fromId*nNodes + toId]))
+                        stability =  1 / 100 * math.exp((math.log(array[fromId]) + math.log(array[toId])) / 2)
+                        inhibitingTemplatesConcs[name] = ([],stability)
+                    inhibitingTemplatesConcs[name][0].append((str(i),array[index + fromId*nNodes + toId]))
     return inhibitingTemplatesConcs
 
 #New version, relies on findAllInhibitions (i.e. more modular).
@@ -146,7 +147,7 @@ def submitPENSystem(array, nNodes = 5, executablePath = '../../daccad', launchSc
         f.flush()
     #in case of the default jsonFileName
     if not os.sep in jsonFileName:
-        #we are using the default file name
+        #we are using the default file name, or a simple filename
         jsonFileName = os.path.join(os.getcwd(),jsonFileName)
     exect = os.path.join(executablePath,launchScript)
     #config = os.path.join(executablePath,configFile)
@@ -160,10 +161,9 @@ def submitPENSystem(array, nNodes = 5, executablePath = '../../daccad', launchSc
 
 
 def submitPENJson(json, executablePath = '../../daccad', launchScript = 'cli.sh',
-        launchClass = 'cli.CLIEvaluator', configFile = 'config/configEvaluation.config', baseDir = "."):
-    jsonFileName = 'generatedGraph0_0_0.json'
+        launchClass = 'cli.CLIEvaluator', configFile = 'config/configEvaluation.config', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json'):
+    
     exect = os.path.join(executablePath,launchScript)
-    #config = os.path.join(executablePath,configFile)
     command = [exect, launchClass, configFile , jsonFileName]
     try:
         result = check_output(command, stderr=subprocess.STDOUT)
