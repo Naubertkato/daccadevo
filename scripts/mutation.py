@@ -224,7 +224,13 @@ def mutation_bioneat_inhibition_species(ind, trivial=False):
     list_nodes.remove(added_activation_coord[0])
     if added_activation_coord[1] in list_nodes:
         list_nodes.remove(added_activation_coord[1])
+
+    if len(list_nodes) == 0: # no room left, just mutate the parameters then
+        # Note that most run should limit the maximum number of inhibitions to avoid this,
+        # but it can still happen for very small networks
+        list_nodes = list(range(ind.nb_nodes))
     chosen_inhibition_coord = (random.choice(list_nodes),) + added_activation_coord
+    
     if trivial:
         ind.inhibitions[chosen_inhibition_coord] = 0.0000015
     else:

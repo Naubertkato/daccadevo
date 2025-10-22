@@ -77,6 +77,7 @@ class DaccadBioneatMut(Evolution):
             self._standard_init_ind(base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
+            base_ind.species = base_ind.name # start of its lineage
             return base_ind, False
 
         else: # Selection

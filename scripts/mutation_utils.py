@@ -3,6 +3,11 @@ import qdpy.hdsobol as hdsobol
 import math
 import random
 
+"""
+Convenience functions used for individual generation and mutation.
+Inspired by QDpy
+"""
+
 def generateUniform(dimension, indBounds, nb):
     res = []
     for i in range(nb):

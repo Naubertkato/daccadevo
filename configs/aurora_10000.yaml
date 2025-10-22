@@ -19,7 +19,7 @@ main_algorithm_name: algoDACCAD
 daccad:
     path: "../daccad"
     env_name: "oscillator"
-    config_file: "test.conf"
+    config_file: "daccad_configs/test.conf"
 
 # The list of all containers.
 containers:

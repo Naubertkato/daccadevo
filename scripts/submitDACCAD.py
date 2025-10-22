@@ -1,6 +1,7 @@
 #First we need to turn an array into a JSON
 
 import os
+from pathlib import Path
 import subprocess
 from subprocess import check_output, CalledProcessError
 import warnings
@@ -138,8 +139,7 @@ def generateFullJson(array, nNodes = 5, tab = 0, tabChar = "  "):
     json += "\n}"
     return json
 
-def submitPENSystem(array, nNodes = 5, executablePath = '../../daccad', launchScript = 'cli.sh',
-        launchClass = 'cli.CLIEvaluator', configFile = 'config/configEvaluation.config', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json'):
+def submitPENSystem(array, nNodes = 5, jsonFileName = 'generatedGraph0_0_0.json', **kwargs):
 
     json = generateFullJson(array, nNodes)
     with open(jsonFileName,'w') as f:
@@ -149,21 +149,15 @@ def submitPENSystem(array, nNodes = 5, executablePath = '../../daccad', launchSc
     if not os.sep in jsonFileName:
         #we are using the default file name, or a simple filename
         jsonFileName = os.path.join(os.getcwd(),jsonFileName)
-    exect = os.path.join(executablePath,launchScript)
-    #config = os.path.join(executablePath,configFile)
-    command = [exect, launchClass, configFile , jsonFileName]
-    try:
-        result = check_output(command)
-    except CalledProcessError as e:
-        warnings.warn("ERROR during DACCAD execution with command: %s" % str(command), RuntimeWarning)
-        result = None
+
+    result = submitPENJson(json, jsonFileName = jsonFileName, **kwargs)
     return result
 
 
 def submitPENJson(json, executablePath = '../../daccad', launchScript = 'cli.sh',
-        launchClass = 'cli.CLIEvaluator', configFile = 'config/configEvaluation.config', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json'):
+        launchClass = 'cli.CLIEvaluator', configFile = 'daccad_configs/short.conf', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json'):
     
-    exect = os.path.join(executablePath,launchScript)
+    exect = os.fspath(Path(os.path.join(executablePath,launchScript)).resolve())
     command = [exect, launchClass, configFile , jsonFileName]
     try:
         result = check_output(command, stderr=subprocess.STDOUT)

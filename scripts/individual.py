@@ -16,10 +16,11 @@ class DaccadIndividual(Individual):
         self.activations = np.zeros((self.nb_nodes, self.nb_nodes))
         self.inhibitions = np.zeros((self.nb_nodes, self.nb_nodes, self.nb_nodes))
         self.name = str(id(self))
-        self.specie = 0
+        self.species = 0
 
     def is_valid(self):
-        return submitDACCAD.isValid(self, self.nb_nodes)
+        return len(self.stabilities) == self.nb_nodes and self.activations.shape == (self.nb_nodes,self.nb_nodes) \
+                and self.inhibitions.shape == (self.nb_nodes,self.nb_nodes,self.nb_nodes) and submitDACCAD.isValid(self, self.nb_nodes)
 
     def assemble(self):
         self[:] = list(self.stabilities) + list(self.activations.flatten()) + list(self.inhibitions.flatten())
@@ -29,9 +30,9 @@ class DaccadIndividual(Individual):
         self.activations = np.array(self[self.nb_nodes: self.nb_nodes + self.nb_nodes*self.nb_nodes]).reshape((self.nb_nodes, self.nb_nodes))
         self.inhibitions = np.array(self[self.nb_nodes + self.nb_nodes*self.nb_nodes:]).reshape((self.nb_nodes, self.nb_nodes, self.nb_nodes))
 
-    #Used to implement BioNEAT-like species
+    #Used to keep track of lineage. Can be used to implement BioNEAT-like species.
     def same_species_as(self, other):
-        return self.specie == other.specie
+        return self.species == other.species
 
     def resize(self, nb_nodes):
         if nb_nodes == self.nb_nodes:
@@ -123,8 +124,8 @@ def standard_init_ind0(ind):
 
 @registry.register    
 def standard_init_act(ind):
-    """Create a base individual, with 2 node and a "0->1" connection"""
-    ind.resize(5)
+    """Create a base individual, with 2 nodes and a "0->1" connection"""
+    ind.resize(2)
     ind.activations[0,1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
     ind.assemble()
     return ind
