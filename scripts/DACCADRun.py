@@ -7,17 +7,28 @@ import evolver
 from scipy import signal
 from datetime import datetime
 import os
+from pathlib import Path
 
-## Base oscillator test function
-def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+def evaluate_timeseries(daccadIndiv, config = {'dataDir': '.', 'daccad': {'config_file':'../daccad_configs/short.conf' , 'env_name': 'default', 'path':'../../daccad'}},
+ scales = [1000.0,200.0], default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
-    tmpfilepath = os.path.abspath(os.getcwd())+"/"+config['dataDir']+"/"+config['daccad']['env_name']+datetime.now().isoformat(timespec='microseconds')+".json"
+    enzymes = daccadIndiv.enzymes if hasattr(daccadIndiv, "enzymes") else default_enzymes
+    path = Path(config['dataDir'],config['daccad']['env_name'],datetime.now().isoformat(timespec='microseconds')+".json")
+    tmpfile_path = path.absolute()
+    config_path = Path(config['daccad']['config_file']).absolute()
     jikeiretu = submitDACCAD.submitPENSystem(myarray, nNodes = nNodes, executablePath=config['daccad']['path'],
-                                             configFile = os.path.abspath(os.getcwd())+"/"+config['daccad']['config_file'], jsonFileName=tmpfilepath).decode('ascii')
-    dataResult = [[float(j) for j in i.split(',')[:-1]] for i in jikeiretu.split('\n')[1:-1]]
-    y = np.array(dataResult)[:,0]
+                                             configFile = config_path, jsonFileName=os.fspath(tmpfile_path), enzymes=enzymes).decode('ascii')
+    dataResult = np.array([[float(j) for j in i.split(',')[:-1]] for i in jikeiretu.split('\n')[1:-1]])
+        
+    if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
+        os.remove(tmpfile_path)
+    return dataResult
+
+## Base oscillator test function
+def oscill_eval_fn(daccadIndiv, config = {'daccad': {'path':'../../daccad'}}, scales = [1000.0,200.0], npeaks = 1):
+    y = evaluate_timeseries(daccadIndiv, config=config, scales=scales)[:,0]
     
     maxVal = np.max(y)
     peaks, properties = signal.find_peaks(y/maxVal, prominence=0.01)

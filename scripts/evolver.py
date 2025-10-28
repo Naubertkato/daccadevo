@@ -1,9 +1,11 @@
 import submitDACCAD
 
 import numpy as np
+from datetime import datetime
 import copy
 
 from qdpy.base import *
+from qdpy.phenotype import *
 from qdpy.algorithms import *
 from qdpy.containers import *
 from qdpy import tools
@@ -37,6 +39,7 @@ class DaccadBioneatMut(Evolution):
             f2: float = 2.0,
             mut_pb: float = 0.8,
             init_drift: int = 1, #number of mutations applied on initial individuals
+            keep_all_ancestry: bool = False, #Keep all ancestors. If not, only store the initial ancestor
             **kwargs):
         self.ind_domain = ind_domain
         self.nb_nodes_domain = nb_nodes_domain
@@ -60,6 +63,7 @@ class DaccadBioneatMut(Evolution):
         self.f2 = f2
         self.mut_pb = 0.8
         self.init_drift = init_drift
+        self.keep_all_ancestry = keep_all_ancestry
         
 
         super().__init__(container, budget, select_or_initialise=self._select_or_initialise, vary=self._vary, base_ind_gen=gen_daccad_individuals(self.ind_domain), **kwargs)
@@ -77,7 +81,10 @@ class DaccadBioneatMut(Evolution):
             self._standard_init_ind(base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
-            base_ind.species = base_ind.name # start of its lineage
+            if self.keep_all_ancestry:
+                base_ind.species = [base_ind.name] # start of its lineage
+            else:
+                base_ind.species = base_ind.name 
             return base_ind, False
 
         else: # Selection
@@ -98,7 +105,9 @@ class DaccadBioneatMut(Evolution):
         
         for _ in range(500): # Max number of retries to find a valid individual
             ind = copy.deepcopy(individual)
-            ind.name = str(id(ind))
+            ind.name = str(datetime.now())
+            if self.keep_all_ancestry:
+                ind.species += [ind.name]
 
             active_activations_coords = list(zip(*np.where(ind.activations)))
             nb_active_activations = len(active_activations_coords)

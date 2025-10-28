@@ -120,7 +120,7 @@ def generateAllConnections(array,inhibitions,nNodes = 5, tab = 1, tabChar = "  "
     json += (tabChar*tab)+']'
     return json
 
-def generateLegacyParameters(pol = 10.0, nick = 10.0, exo = 10.0, tab = 1, tabChar = "  "):
+def generateEnzymeParameters(pol = 1.0, nick = 1.0, exo = 1.0, tab = 1, tabChar = "  "):
     json = (tabChar*tab)+'"parameters": {\n'
     json += (tabChar*(tab+1))+'"nick": '+str(nick)+',\n'
     json += (tabChar*(tab+1))+'"pol": '+str(pol)+',\n'
@@ -128,20 +128,20 @@ def generateLegacyParameters(pol = 10.0, nick = 10.0, exo = 10.0, tab = 1, tabCh
     json += (tabChar*tab)+"}"
     return json
 
-def generateFullJson(array, nNodes = 5, tab = 0, tabChar = "  "):
+def generateFullJson(array, enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, nNodes = 5, tab = 0, tabChar = "  ", **kwargs):
     json = "{\n"
     itc = findAllInhibitorsAndConcs(array,nNodes = nNodes)
     json += generateAllNodes(array, itc, nNodes = nNodes, tab = tab + 1, tabChar = tabChar)
     json += ",\n"
     json += generateAllConnections(array,itc,nNodes = nNodes, tab = tab+1, tabChar = tabChar)
     json += ",\n"
-    json += generateLegacyParameters(tab = tab+1, tabChar = tabChar)
+    json += generateEnzymeParameters(**enzymes, tab = tab+1, tabChar = tabChar)
     json += "\n}"
     return json
 
 def submitPENSystem(array, nNodes = 5, jsonFileName = 'generatedGraph0_0_0.json', **kwargs):
 
-    json = generateFullJson(array, nNodes)
+    json = generateFullJson(array, nNodes = nNodes, **kwargs)
     with open(jsonFileName,'w') as f:
         f.write(json)
         f.flush()
@@ -155,7 +155,7 @@ def submitPENSystem(array, nNodes = 5, jsonFileName = 'generatedGraph0_0_0.json'
 
 
 def submitPENJson(json, executablePath = '../../daccad', launchScript = 'cli.sh',
-        launchClass = 'cli.CLIEvaluator', configFile = 'daccad_configs/short.conf', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json'):
+        launchClass = 'cli.CLIEvaluator', configFile = 'daccad_configs/short.conf', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json', **kwargs):
     
     exect = os.fspath(Path(os.path.join(executablePath,launchScript)).resolve())
     command = [exect, launchClass, configFile , jsonFileName]
