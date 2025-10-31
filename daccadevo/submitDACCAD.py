@@ -6,6 +6,7 @@ from datetime import datetime
 import warnings
 import yaml
 import math
+import numpy as np
 
 #Default configurations for a CLI run
 def get_default_config():
@@ -159,13 +160,13 @@ def submitPENSystem(array, nNodes = 5, jsonFileName = None, config = None, **kwa
         jsonFileName = Path(folder,jsonFileName)
     config_path = Path(config['daccad']['config_file']).absolute()
 
-    json = generateFullJson(array, nNodes = nNodes, **config["daccad"], **kwargs)
+    json = generateFullJson(array, nNodes = nNodes, **kwargs)
 
     with open(jsonFileName,'w') as f:
         f.write(json)
         f.flush()
 
-    result = submitPENJson(json, jsonFileName = Path(jsonFileName).absolute(), **kwargs)
+    result = submitPENJson(json, jsonFileName = jsonFileName, **config["daccad"], **kwargs)
 
     if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
         os.remove(jsonFileName)
@@ -181,7 +182,8 @@ def submitPENJson(json, executable_path = '../daccad', script = 'cli.sh',
     jsonFileName = os.fspath(Path(jsonFileName).resolve())
     command = [exect, launch_class, config_file , jsonFileName]
     try:
-        result = check_output(command, stderr=subprocess.STDOUT)
+        raw_result = check_output(command, stderr=subprocess.STDOUT).decode('ascii')
+        result = np.array([[float(j) for j in i.split(',')[:-1]] for i in raw_result.split('\n')[1:-1]])
     except CalledProcessError as e:
         warnings.warn("ERROR during DACCAD execution with command: %s" % str(command), RuntimeWarning)
         result = None

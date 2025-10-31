@@ -14,9 +14,7 @@ def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0], def
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
     enzymes = daccadIndiv.enzymes if hasattr(daccadIndiv, "enzymes") else default_enzymes
-    jikeiretu = sd.submitPENSystem(myarray, nNodes = nNodes, config = config, enzymes=enzymes).decode('ascii')
-    dataResult = np.array([[float(j) for j in i.split(',')[:-1]] for i in jikeiretu.split('\n')[1:-1]]) # TODO should be method agnostic
-
+    dataResult = sd.submitPENSystem(myarray, nNodes = nNodes, config = config, enzymes=enzymes)
     return dataResult
 
 ## Base oscillator test function
