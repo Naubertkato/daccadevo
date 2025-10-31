@@ -1,4 +1,3 @@
-import qdpy
 from qdpy.containers import Grid
 import pickle
 import matplotlib.pyplot as plt
@@ -9,8 +8,7 @@ import os
 import ast
 import warnings
 from datetime import datetime
-import submitDACCAD
-from DACCADRun import evaluate_timeseries
+from .DACCADRun import evaluate_timeseries
 
 def get_data(path):
     res = None

@@ -14,7 +14,7 @@ oscillationsDomain: [0.0, 1.0]
 main_algorithm_name: algoDACCAD
 
 daccad:
-    path: "../daccad"
+    executable_path: "../daccad"
     env_name: "oscillator"
     config_file: "daccad_configs/test.conf"
 

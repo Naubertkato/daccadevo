@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from mutation_utils import *
+from .mutation_utils import *
 
 #### Functions to perform mutation operations on PEN DNA toolbox systems introduced by Aubert-Kato et al. 2017
 

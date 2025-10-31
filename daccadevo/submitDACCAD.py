@@ -1,13 +1,17 @@
-#First we need to turn an array into a JSON
-
 import os
 from pathlib import Path
 import subprocess
 from subprocess import check_output, CalledProcessError
+from datetime import datetime
 import warnings
 import yaml
-from timeit import default_timer as timer
 import math
+
+#Default configurations for a CLI run
+def get_default_config():
+    # dataDir is set automatically by qdpy when running a QDExperiment
+    # can be explicitely set in the config file as well
+    return {'dataDir': '.', 'daccad': {'config_file':'daccad_configs/short.conf' , 'env_name': 'default', 'executable_path':'../daccad'}}
 
 #Format array: [ all stabilities (nNodes), all activations from i to j (nNodes * nNodes), all inhibitions created by i to the template j to k (nNodes * nNodes * nNodes)]
 
@@ -139,26 +143,43 @@ def generateFullJson(array, enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, 
     json += "\n}"
     return json
 
-def submitPENSystem(array, nNodes = 5, jsonFileName = 'generatedGraph0_0_0.json', **kwargs):
+def submitPENSystem(array, nNodes = 5, jsonFileName = None, config = None, **kwargs):
+    if config is None:
+        config = get_default_config()
+    elif "daccad" not in config:
+        config["daccad"] = get_default_config()["daccad"]
 
-    json = generateFullJson(array, nNodes = nNodes, **kwargs)
+    if jsonFileName is None:
+        jsonFileName = str(datetime.now().isoformat(timespec='microseconds'))+".json"
+
+    if len(os.path.split(jsonFileName)[0]) == 0:
+        folder = Path(config['dataDir'],config['daccad']['env_name']).absolute()
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        jsonFileName = Path(folder,jsonFileName)
+    config_path = Path(config['daccad']['config_file']).absolute()
+
+    json = generateFullJson(array, nNodes = nNodes, **config["daccad"], **kwargs)
+
     with open(jsonFileName,'w') as f:
         f.write(json)
         f.flush()
-    #in case of the default jsonFileName
-    if not os.sep in jsonFileName:
-        #we are using the default file name, or a simple filename
-        jsonFileName = os.path.join(os.getcwd(),jsonFileName)
 
-    result = submitPENJson(json, jsonFileName = jsonFileName, **kwargs)
+    result = submitPENJson(json, jsonFileName = Path(jsonFileName).absolute(), **kwargs)
+
+    if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
+        os.remove(jsonFileName)
+
     return result
 
 
-def submitPENJson(json, executablePath = '../../daccad', launchScript = 'cli.sh',
-        launchClass = 'cli.CLIEvaluator', configFile = 'daccad_configs/short.conf', baseDir = ".", jsonFileName = 'generatedGraph0_0_0.json', **kwargs):
+def submitPENJson(json, executable_path = '../daccad', script = 'cli.sh',
+        launch_class = 'cli.CLIEvaluator', config_file = 'daccad_configs/short.conf', jsonFileName = 'generatedGraph0_0_0.json', **kwargs):
     
-    exect = os.fspath(Path(os.path.join(executablePath,launchScript)).resolve())
-    command = [exect, launchClass, configFile , jsonFileName]
+    exect = os.fspath(Path(executable_path,script).resolve())
+    config_file = os.fspath(Path(config_file).resolve())
+    jsonFileName = os.fspath(Path(jsonFileName).resolve())
+    command = [exect, launch_class, config_file , jsonFileName]
     try:
         result = check_output(command, stderr=subprocess.STDOUT)
     except CalledProcessError as e:

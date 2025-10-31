@@ -1,5 +1,3 @@
-import submitDACCAD
-
 import numpy as np
 from datetime import datetime
 import copy
@@ -10,8 +8,8 @@ from qdpy.algorithms import *
 from qdpy.containers import *
 from qdpy import tools
 
-from individual import *
-from mutation import *
+from .individual import *
+from .mutation import *
 
 from typing import Optional, Tuple, List, Iterable, Iterator, Any, TypeVar, Generic, Union, Sequence, MutableSet, MutableSequence, Type, Callable, Generator, Mapping, MutableMapping, overload
 

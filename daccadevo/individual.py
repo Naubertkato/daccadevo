@@ -1,8 +1,8 @@
 import numpy as np
 from qdpy.base import registry
 from qdpy.phenotype import Individual
-import submitDACCAD
-from mutation_utils import random_log_scale_1000
+import daccadevo.submitDACCAD as sd
+from .mutation_utils import random_log_scale_1000
 from datetime import datetime
 
 ########## INDIVIDUALS AND FITNESSES ###########
@@ -18,11 +18,10 @@ class DaccadIndividual(Individual):
         self.inhibitions = np.zeros((self.nb_nodes, self.nb_nodes, self.nb_nodes))
         self.name = str(datetime.now())
         self.species = 0
-        print("Created new individual", self.name)
 
     def is_valid(self):
         return len(self.stabilities) == self.nb_nodes and self.activations.shape == (self.nb_nodes,self.nb_nodes) \
-                and self.inhibitions.shape == (self.nb_nodes,self.nb_nodes,self.nb_nodes) and submitDACCAD.isValid(self, self.nb_nodes)
+                and self.inhibitions.shape == (self.nb_nodes,self.nb_nodes,self.nb_nodes) and sd.isValid(self, self.nb_nodes)
 
     def assemble(self):
         self[:] = list(self.stabilities) + list(self.activations.flatten()) + list(self.inhibitions.flatten())
