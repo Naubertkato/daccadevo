@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "name": "0",
+      "parameter": 48.83746137847698,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "1",
+      "parameter": 106.40107317030336,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "2",
+      "parameter": 5.1000000000000005,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "3",
+      "parameter": 21.92286083661704,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "4",
+      "parameter": 184.53175033156728,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "5",
+      "parameter": 314.52231269181544,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "6",
+      "parameter": 36.55262577740289,
+      "initialConcentration": 1.0,
+      "type": 1,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "I0T4",
+      "parameter": 0.9493188205192543,
+      "initialConcentration": 0.0,
+      "type": 2,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    },
+    {
+      "name": "I0T0",
+      "parameter": 0.4883746137847698,
+      "initialConcentration": 0.0,
+      "type": 2,
+      "protectedSequence": false,
+      "DNAString": "",
+      "reporter": false,
+      "hasPseudoTemplate": false,
+      "pseudoTemplateConcentration": 0.0
+    }
+  ],
+  "connections": [
+    {
+      "innovation": 0,
+      "enabled": true,
+      "parameter": 17.900581036729257,
+      "from": "0",
+      "to": "0"
+    },
+    {
+      "innovation": 1,
+      "enabled": true,
+      "parameter": 1.02,
+      "from": "0",
+      "to": "4"
+    },
+    {
+      "innovation": 2,
+      "enabled": true,
+      "parameter": 200.0,
+      "from": "1",
+      "to": "4"
+    },
+    {
+      "innovation": 3,
+      "enabled": true,
+      "parameter": 130.3311403522331,
+      "from": "2",
+      "to": "2"
+    },
+    {
+      "innovation": 4,
+      "enabled": true,
+      "parameter": 1.02,
+      "from": "5",
+      "to": "6"
+    },
+    {
+      "innovation": 5,
+      "enabled": true,
+      "parameter": 11.796757191024685,
+      "from": "1",
+      "to": "I0T4"
+    },
+    {
+      "innovation": 6,
+      "enabled": true,
+      "parameter": 200.0,
+      "from": "4",
+      "to": "I0T0"
+    }
+  ],
+  "parameters": {
+    "nick": 10.0,
+    "pol": 10.0,
+    "exo": 10.0
+  }
+}

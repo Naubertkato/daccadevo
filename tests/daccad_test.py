@@ -66,8 +66,7 @@ def test_call_cli(array_inhib, tmpdir):
 	testconf = p.join("test.conf")
 	n_points = 10
 	testconf.write_text(f"numberOfPoints = {n_points}", encoding="utf-8")
-	res = submitPENSystem(array_inhib, nNodes = 3, jsonFileName = os.fspath(jsonf), configFile = os.fspath(testconf)).decode('ascii')
-	dataResult = [[float(j) for j in i.split(',')[:-1]] for i in res.split('\n')[1:-1]]
+	dataResult = submitPENSystem(array_inhib, nNodes = 3, jsonFileName = os.fspath(jsonf), configFile = os.fspath(testconf))
 	assert len(dataResult) == n_points
 
 

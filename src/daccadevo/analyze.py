@@ -165,5 +165,5 @@ if __name__ == "__main__":
         dt = [get_data(f) for f in p.glob("*.p")]
     else:
         dt = [get_data(p)]
-    default_analysis(dt, threshold_best = 0.55, verbose=True)
+    default_analysis(dt, n_best=3, verbose=True)
     

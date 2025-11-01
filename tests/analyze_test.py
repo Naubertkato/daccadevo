@@ -32,7 +32,7 @@ def fake_run(fake_evaluation_function):
 	log = default_algorithm_logger
 	log.monitor([evo])
 	log.config={'main_algorithm_name': "test", "algorithms": {"test": {"batch_size": batch_size}}, 
-	    'daccad':{'env_name': "test", 'path':'../../daccad', 'config_file': "../daccad_configs/short.conf"}}
+	    'daccad':{'env_name': "test", 'path':'../daccad', 'config_file': "daccad_configs/short.conf"}}
 	evo.optimise(fake_evaluation_function, batch_mode=True)
 	return log
 

@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "daccadevo"
+authors = [
+  {name="Nathanael Aubert-Kato" }
+]
+dynamic = ["version"]
+description = 'A python package for the simulation, optimization, and analysis of DACCAD systems'
+readme = "README.md"
+license = "LGPL-3.0-or-later	"
+license-files = ["LICENSES/*"]
+dependencies = [
+  "PyYAML",
+  "qdpy",
+  "numpy",
+  "scipy",
+  "matplotlib",
+  "seaborn",
+]
+
+[tool.hatch.version]
+path = "src/daccadevo/__init__.py"
+
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+  "/examples",
+  "/results",
+  "/paper",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/daccadevo"]
+
+[tool.hatch.envs.test]
+dependencies = [
+  "pytest"
+]
