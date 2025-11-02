@@ -12,6 +12,6 @@ chown -R $uid /home/user
 echo running as $uid
 
 # Launch illumination
-exec bash -c "cd /home/user/daccadevo; python3 scripts/DACCADRun.py -c $configName -r $nbRuns"
+exec bash -c "cd /home/user/daccadevo; python3 -m daccadevo.DACCADRun -c $configName -r $nbRuns"
 
 

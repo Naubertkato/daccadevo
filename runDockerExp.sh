@@ -1,6 +1,6 @@
 #!/bin/bash
 
-configFile=${1:-}
+configFile=${1:-"configs/test.yaml"}
 nbRuns=${2:-1}
 imageName=${3:-"daccadevo"}
 
@@ -10,7 +10,7 @@ destpath=/home/user/daccadevo
 finalresultsPath=$(pwd)/results
 finalresultsPathInContainer=/home/user/daccadevo/results
 uid=$(id -u)
-#confPath=$(pwd)/qdpy/examples/bipedal_walker/conf
+
 confPath=$(pwd)/configs
 confPathInContainer=/home/user/daccadevo/configs
 priorityParam="-c 128"

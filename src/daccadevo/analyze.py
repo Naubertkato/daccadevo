@@ -61,12 +61,9 @@ def get_metric_over_time(dt, metric="qd_score", batch_size= None):
         for n in range(n_plots):
             sns.lineplot(data=results, x="total_eval", y=f"{metric}_{n}", ax=axs[n])
     elif isinstance(results[metric].iloc[0],list):
-        print(metric)
-        print(results[results["total_eval"]==1200][f"{metric}_{0}"])
         sns.lineplot(data=results, x="total_eval", y=f"{metric}_{0}", ax=axs)
     else:
         sns.lineplot(data=results, x="total_eval", y=metric, ax=axs)
-    #plt.plot()
     return fig, axs
     
 

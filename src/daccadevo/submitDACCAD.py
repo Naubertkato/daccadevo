@@ -153,6 +153,7 @@ def submitPENSystem(array, nNodes = 5, jsonFileName = None, config = None, **kwa
     if jsonFileName is None:
         jsonFileName = str(datetime.now().isoformat(timespec='microseconds'))+".json"
 
+    jsonFileName = Path(jsonFileName)
     if len(os.path.split(jsonFileName)[0]) == 0:
         folder = Path(config['dataDir'],config['daccad']['env_name']).absolute()
         if not os.path.exists(folder):
@@ -162,6 +163,13 @@ def submitPENSystem(array, nNodes = 5, jsonFileName = None, config = None, **kwa
 
     json = generateFullJson(array, nNodes = nNodes, **kwargs)
 
+    # check if file already exists
+    if jsonFileName.exists():
+        folder, basename = os.path.split(jsonFileName)
+        name, ext = os.path.splitext(basename)
+        jsonFileName = jsonFileName.rename(Path(folder, name+"_2"+ext))
+
+
     with open(jsonFileName,'w') as f:
         f.write(json)
         f.flush()
@@ -169,7 +177,10 @@ def submitPENSystem(array, nNodes = 5, jsonFileName = None, config = None, **kwa
     result = submitPENJson(json, jsonFileName = jsonFileName, **config["daccad"], **kwargs)
 
     if "keepTemporaryFiles" not in config or not config['keepTemporaryFiles']:
-        os.remove(jsonFileName)
+        if jsonFileName.exists():
+            os.remove(jsonFileName)
+        else:
+            warnings.warn("ERROR trying to remove file: %s" % str(jsonFileName), RuntimeWarning)
 
     return result
 
