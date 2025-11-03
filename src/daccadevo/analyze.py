@@ -75,7 +75,10 @@ def evaluate_timeseries_on_bests(container, config, n_best=3, threshold=None, ve
     print(f"Showing the top {n_best} individuals: (index and fitness)")
     indiv_list = get_bests(container, n=n_best, threshold=threshold, key = key)
     for i in indiv_list:
-        index = container.index_grid(i.features)
+        ft = i.features
+        if len(ft) == 0: # container uses dynamic indexing
+            ft = container.get_ind_features(i)
+        index = container.index_grid(ft)
         if verbose:
             print(index,i.fitness[0])
         y = evaluate_timeseries(i, config = config)[:,0]
@@ -101,14 +104,23 @@ def plot_bests(time_series, container, labels = None, configs = None, figname = 
     heat = axs[1].imshow(container.quality_array[...,0].T,origin="lower",interpolation='none', vmin=fit_min, vmax=fit_max,extent=[feat_x[0],feat_x[1],feat_y[0],feat_y[1]])
     axs[1].set_title("Grid of elites")
     if configs is not None and 'features_list' in configs:
-        axs[1].set_xlabel(configs['features_list'][0])
-        axs[1].set_ylabel(configs['features_list'][1])
+        if len(configs['features_list']) > 0:
+            axs[1].set_xlabel(configs['features_list'][0])
+        else:
+            axs[1].set_xlabel("dynamic feature 0")
+        if len(configs['features_list']) > 1:
+            axs[1].set_ylabel(configs['features_list'][1])
+        else:
+            axs[1].set_ylabel("dynamic feature 1")
     if labels is not None:
         lenx, leny = container.shape
-        dx = 1.0/lenx
-        dy = 1.0/leny
+        ft = container.features_domain
+        xmin, xmax = ft[0]
+        ymin, ymax = ft[1]
+        dx = (xmax-xmin)/lenx
+        dy = (ymax-ymin)/leny
         for i, l in enumerate(labels):
-            axs[1].add_patch(plt.Circle([l[0]/lenx+dx/2.0,l[1]/leny +dy/2.0], radius = dx, linewidth=3, edgecolor= lines[i].get_color(), facecolor='none', zorder=len(lines)-i))
+            axs[1].add_patch(plt.Circle([xmin+(l[0]+0.5)*dx,ymin+(l[1]+0.5)*dy], radius = dx, linewidth=3, edgecolor= lines[i].get_color(), facecolor='none', zorder=len(lines)-i))
 
     # Color bar
     fitness_label = "fitness"
@@ -132,7 +144,8 @@ def default_analysis(evo_data_list, n_best=3, threshold_best = None, verbose = F
         iterations.append(evo_data['iterations'])
         container = evo_data["container"]
         if not isinstance(container, Grid):
-            container = container.to_grid((32,) * len(container.features_domain))
+            shape = container.shape if hasattr(container,"shape") else (32,) * len(container.features_domain)
+            container = container.to_grid(shape)
         containers.append(container)
 
     dataframe = pd.concat(iterations)
