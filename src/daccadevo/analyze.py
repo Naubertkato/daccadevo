@@ -37,7 +37,7 @@ def merge_containers(containers):
     if not hasattr(merged_grid,"parents"):
         merged_grid.parents = []
     for i in range(1,len(containers)):
-        for indiv in containers[1]:
+        for indiv in containers[i]:
             merged_grid.add(indiv) # should determine the correct place
     return merged_grid
 
