@@ -71,11 +71,11 @@ def isValid(array, nNodes = 5):
     return not invalidInhibitions(array, nNodes = nNodes)
 
 
-def generateNode(name, stability, activator, tab = 1, tabChar = "  "):
+def generateNode(name, stability, activator, initConc = '1.0', tab = 1, tabChar = "  "):
     json = (tabChar*tab)+"{\n"
     json += (tabChar*(tab+1))+'"name": "'+str(name)+'",\n'
     json += (tabChar*(tab+1))+'"parameter": '+str(stability)+',\n'
-    json += (tabChar*(tab+1))+'"initialConcentration": '+('1.0' if activator else '0.0')+',\n'
+    json += (tabChar*(tab+1))+'"initialConcentration": '+(initConc if activator else '0.0')+',\n'
     json += (tabChar*(tab+1))+'"type": '+('1' if activator else '2')+',\n'
     json += (tabChar*(tab+1))+'"protectedSequence": false,\n'
     json += (tabChar*(tab+1))+'"DNAString": "",\n'
@@ -95,10 +95,13 @@ def generateConnection(innov, concentration, fromNode, toNode, tab = 1, tabChar 
     json += (tabChar*tab)+"}"
     return json
 
-def generateAllNodes(array, inhibitingSequences, nNodes = 5, tab = 1, tabChar = "  "):
+def generateAllNodes(array, inhibitingSequences, nNodes = 5, initConc = '1.0', tab = 1, tabChar = "  "):
+    if initConc is None:
+        initConc = '1.0'
     json = (tabChar*tab)+'"nodes": [\n'
     for i in range(nNodes):
-        json += generateNode(i,array[i], True, tab = tab + 1, tabChar = tabChar)+',\n'
+        ic = initConc if isinstance(initConc, str) else initConc[i]
+        json += generateNode(i,array[i], True, initConc = ic, tab = tab + 1, tabChar = tabChar)+',\n'
     for val in inhibitingSequences:
         _, stab = inhibitingSequences[val]
         json += generateNode(val,stab, False, tab = tab + 1, tabChar = tabChar)+',\n'
@@ -133,10 +136,10 @@ def generateEnzymeParameters(pol = 1.0, nick = 1.0, exo = 1.0, tab = 1, tabChar 
     json += (tabChar*tab)+"}"
     return json
 
-def generateFullJson(array, enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, nNodes = 5, tab = 0, tabChar = "  ", **kwargs):
+def generateFullJson(array, enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, nNodes = 5, initConc = '1.0', tab = 0, tabChar = "  ", **kwargs):
     json = "{\n"
     itc = findAllInhibitorsAndConcs(array,nNodes = nNodes)
-    json += generateAllNodes(array, itc, nNodes = nNodes, tab = tab + 1, tabChar = tabChar)
+    json += generateAllNodes(array, itc, nNodes = nNodes, initConc = initConc, tab = tab + 1, tabChar = tabChar)
     json += ",\n"
     json += generateAllConnections(array,itc,nNodes = nNodes, tab = tab+1, tabChar = tabChar)
     json += ",\n"
