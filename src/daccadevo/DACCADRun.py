@@ -17,6 +17,22 @@ def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0], def
     dataResult = sd.submitPENSystem(myarray, nNodes = nNodes, config = config, enzymes=enzymes, **kwargs)
     return dataResult
 
+def get_standard_metrics(daccadIndiv):
+    def _helper(array, base_name):
+        values = array[np.nonzero(array)]
+        values_dict = {}
+        values_dict[base_name+"_nb"] = len(values)
+        values_dict[base_name+"_avg"] = np.mean(values) if len(values) > 0 else 0
+        values_dict[base_name+"_std"] = np.std(values) if len(values) > 0 else 0
+        return values_dict
+    metrics = {}
+    metrics["dissociation_avg"] = np.mean(daccadIndiv.stabilities)
+    metrics["dissociation_std"] = np.std(daccadIndiv.stabilities)
+    metrics["nb_nodes"] = daccadIndiv.nb_nodes
+    metrics = {**metrics, **_helper(daccadIndiv.activations,"activations")}
+    metrics = {**metrics, **_helper(daccadIndiv.inhibitions,"inhibitions")}
+    return metrics
+
 ## Base oscillator test function
 def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
     y = evaluate_timeseries(daccadIndiv, config = config, **kwargs)[:,0]
@@ -41,11 +57,17 @@ def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
         if len(peak_dist) > 1:
             std = np.std(peak_dist)/(0.6*len(y)) # Normalized
 
-    scores = {"oscillations": res, "peaksNumber": min(len(peaks)/25.0,1.0), "peaksLastValue": feature2,
-              "averagePeriod": period, "periodStd": std, "valueStd": np.std(y)/maxVal}
-    if "use_evals" in config and int(config["use_evals"]) > 0: # TODO not documented
-    	  for i in range(int(config["use_evals"])):
-    	      scores[f"eval{i}"] = y[i]/maxVal
+    scores = {"oscillations": res, "peaksNumber": min(len(peaks)/25.0,1.0), 
+              "peaksLastValue": feature2, "averagePeriod": period, 
+              "periodStd": std, "valueStd": np.std(y)/maxVal, 
+              **get_standard_metrics(daccadIndiv)}
+
+    # add the actual normalized values of the system
+    if "use_timeseries_points" in config and int(config["use_timeseries_points"]) > 0:
+        offset = int(config["timeseries_offset"]) if "timeseries_offset" in config else 0
+        for i in range(int(config["use_evals"])):
+            scores[f"eval{i}"] = y[i]/maxVal
+
     daccadIndiv.scores = ScoresDict(scores)
     daccadIndiv.fitness.weights = (1.0,) 
     daccadIndiv.fitness.values = [scores[config['fitness_type']]]
@@ -55,9 +77,9 @@ def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
 class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
         super().__init__(config_filename, **kwargs)
-        if 'eval' in self.config:
+        if 'eval_fn' in self.config:
             
-            self._eval_fn = registry[self.config["eval"]]
+            self._eval_fn = registry[self.config["eval_fn"]]
             
         else:
             self._eval_fn = oscill_eval_fn
@@ -74,6 +96,7 @@ def parse_args():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--configFilename', type=str, default='configs/test.yaml', help = "Path of configuration file")
+    parser.add_argument('-e', '--evaluation', type=str, default=None, help = "Path to the python file providing the implementation of the evaluation function")
     parser.add_argument('-o', '--resultsBaseDir', type=str, default='results/', help = "Path of results files")
     parser.add_argument('-p', '--parallelismType', type=str, default='concurrent', help = "Type of parallelism to use")
     parser.add_argument('--seed', type=int, default=None, help="Numpy random seed")
@@ -96,6 +119,19 @@ if __name__ == "__main__":
     import traceback
     args = parse_args()
     base_config = create_base_config(args)
+    if args.evaluation is not None:
+        from pathlib import Path
+        import os
+        import importlib.util
+        import sys
+        p = Path(args.evaluation)
+        name = p.stem
+        module_name = ".".join(p.parent.parts)+"."+name
+        spec = importlib.util.spec_from_file_location(module_name, p)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules[module_name] = module
+        spec.loader.exec_module(module)
+
     for _ in range(args.repeats):
         try:
             exp = create_experiment(args, base_config)

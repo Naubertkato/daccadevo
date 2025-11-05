@@ -112,6 +112,7 @@ def plot_bests(time_series, container, labels = None, configs = None, figname = 
             axs[1].set_ylabel(configs['features_list'][1])
         else:
             axs[1].set_ylabel("dynamic feature 1")
+    axs[1].set_box_aspect(1)
     if labels is not None:
         lenx, leny = container.shape
         ft = container.features_domain
@@ -175,5 +176,5 @@ if __name__ == "__main__":
         dt = [get_data(f) for f in p.glob("*.p")]
     else:
         dt = [get_data(p)]
-    default_analysis(dt, n_best=3, verbose=True)
+    default_analysis(dt, n_best=3, merge_data=False, verbose=True)
     

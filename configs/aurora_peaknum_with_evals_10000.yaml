@@ -3,7 +3,9 @@
 
 keepTemporaryFiles: False
 
-use_evals: 100 # Use the first 100 points in the time series as features
+use_timeseries_points: 100 # Use 100 points in the time series as features, from the start or offset if specified
+timeseries_offset: 10 # Offset corresponding to the molecular system warmup
+
 
 features_list: []
 fitness_type: "peaksNumber"

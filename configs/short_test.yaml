@@ -3,30 +3,32 @@ seed: 42
 
 keepTemporaryFiles: False
 
-features_list: ['peaksNumber','peaksLastValue']
-fitness_type: "oscillations"
+features_list: ['nb_nodes','activations_nb']
+fitness_type: 'dissociation_avg'
 
-peaksNumberDomain: [0.0, 1.0]
-peaksLastValueDomain: [0.0, 1.0]
-oscillationsDomain: [0.0, 1.0]
+dissociation_avgDomain: [0.0, 1.0]
+activations_nbDomain: [1, 7]
+nb_nodesDomain: [1, 7]
 
 # The name of the main algorithm (see below the description of 'algoTotal')
 main_algorithm_name: algoDACCAD
 
+eval_fn: "test_eval_fn" # Name of the function to run
+
 daccad:
     executable_path: "../daccad"
-    env_name: "oscillator"
-    config_file: "daccad_configs/test.conf"
+    env_name: "short_test"
+    config_file: "daccad_configs/short_test.conf"
 
 # The list of all container.
 containers:
     cont0:
         type: Grid                               # The type of the container (e.g. Grid, CVTGrid, Container, NoveltyArchive, ...)
         name: cont0                              # The name of the container. Optional. Default to the parent key (here also 'cont0')
-        shape: [25, 25]                          # The number of bins for each feature
+        shape: [7, 7]                          # The number of bins for each feature
         max_items_per_bin: 1                     # The number of items in each bin of the grid
-        fitness_domain: [[0., 1.]]               # The domain of each fitness objective (here we only have one objective)
-        features_domain: [[0., 1.], [0., 1.]]    # The domain of each feature
+        #fitness_domain: [[0., 1.]]               # The domain of each fitness objective (here we only have one objective)
+        #features_domain: [[0., 1.], [0., 1.]]    # The domain of each feature
 
 
 # The list of all algorithms
