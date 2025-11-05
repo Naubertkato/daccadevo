@@ -197,7 +197,9 @@ def submitPENJson(json, executable_path = '../daccad', script = 'cli.sh',
     command = [exect, launch_class, config_file , jsonFileName]
     try:
         raw_result = check_output(command, stderr=subprocess.STDOUT).decode('ascii')
-        result = np.array([[float(j) for j in i.split(',')[:-1]] for i in raw_result.split('\n')[1:-1]])
+        offset = 1 if raw_result.startswith("profiling") else 0
+        # Remove info and the last empty line, parse the rest
+        result = np.array([[float(j) for j in i.split(',')[:-1]] for i in raw_result.split('\n')[offset:-1]]) 
     except CalledProcessError as e:
         warnings.warn("ERROR during DACCAD execution with command: %s" % str(command), RuntimeWarning)
         result = None
