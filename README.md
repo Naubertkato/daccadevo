@@ -32,6 +32,23 @@ or
 $ uv pip install git+https://AubertKato@bitbucket.org/AubertKato/daccadevo.git
 ```
 
+## Installing DACCAD
+
+Most features in DACCADEvo rely on DACCAD. The path to your DACCAD installation should be provided in the configuration file when performing a run. If not specified, DACCAD is assumed to be in the parent directory.
+
+### Download the latest version of DACCAD
+
+```bash
+$ git clone git@bitbucket.org:AubertKato/daccad.git
+```
+
+### Compile the code
+
+```bash
+$ cd daccad
+$ ./gradlew dist
+```
+
 ## Using development features
 
 DACCADevo provides settings to run optimizations relying on development features of QDPY. To use those settings, you need to install `PyTorch` as well as the development branch of QDPY. For instance, with pip:
