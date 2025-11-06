@@ -14,8 +14,12 @@ RUN git clone https://bitbucket.org/AubertKato/daccad.git /home/user/daccad
 # Install DACCAD
 RUN cd /home/user/daccad; ./gradlew dist --no-build-cache
 
+# Install this folder
+COPY . /home/user/daccadevo
+RUN uv pip install --system --no-cache-dir /home/user/daccadevo
+
 # Install python dependencies
-RUN uv pip install --system --no-cache-dir tqdm torch git+https://AubertKato@bitbucket.org/AubertKato/daccadevo.git git+https://gitlab.com/leo.cazenille/qdpy.git@develop
+RUN uv pip install --system --no-cache-dir tqdm torch git+https://gitlab.com/leo.cazenille/qdpy.git@develop
 
 
 ENTRYPOINT ["/bin/bash","/home/user/daccadevo/entrypoint.sh"]

@@ -18,7 +18,7 @@ eval_fn: "test_eval_fn" # Name of the function to run
 daccad:
     executable_path: "../daccad"
     env_name: "short_test"
-    config_file: "daccad_configs/short_test.conf"
+    config_file: "daccad_configs/short.conf"
 
 # The list of all container.
 containers:

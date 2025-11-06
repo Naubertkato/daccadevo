@@ -78,9 +78,7 @@ class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
         super().__init__(config_filename, **kwargs)
         if 'eval_fn' in self.config:
-            
-            self._eval_fn = registry[self.config["eval_fn"]]
-            
+            self._eval_fn = registry[self.config["eval_fn"]]          
         else:
             self._eval_fn = oscill_eval_fn
         

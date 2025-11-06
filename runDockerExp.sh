@@ -2,7 +2,8 @@
 
 configFile=${1:-"configs/test.yaml"}
 nbRuns=${2:-1}
-imageName=${3:-"daccadevo"}
+evalFile=${3:-""}
+imageName=${4:-"daccadevo"}
 
 memoryLimit=48G
 currentPath=$(pwd)
@@ -33,5 +34,5 @@ else
     confVolParam=""
 fi
 
-exec $dockerCMD run -i --mount type=bind,source=$currentPath,target=$destpath $imageName  "$uid" "$nbRuns" "$configFile"
+exec $dockerCMD run -i --mount type=bind,source=$currentPath,target=$destpath $imageName  "$uid" "$nbRuns" "$configFile" "$evalFile"
 
