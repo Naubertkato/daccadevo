@@ -1,7 +1,8 @@
 import pytest
+import numpy as np
 from daccadevo.evolver import DaccadBioneatMut
-from qdpy.containers import *
-from daccadevo.individual import *
+from qdpy.containers import Grid
+from daccadevo.individual import standard_init_ind, standard_init_ind0, gen_daccad_individuals
 
 
 @pytest.fixture
@@ -64,7 +65,7 @@ def test_selection_fail(evo, request):
     evo = request.getfixturevalue(evo)
     evo.min_init_budget = 0
     evo.min_ind_found_in_init = 0
-    with pytest.raises(Exception) as e_info:
+    with pytest.raises(Exception):
         evo.ask()
 
 @pytest.mark.parametrize('evo,ind',
@@ -122,7 +123,6 @@ def test_invalid_vary(evolver, base_indiv0):
     assert not err.is_valid()
 
 def test_species(evolver_full):
-    import time
     evolver_full.min_init_budget = 100
     evolver_full.min_ind_found_in_init = 100
     ind_a = evolver_full.ask() # should be new

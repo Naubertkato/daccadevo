@@ -1,6 +1,9 @@
 import numpy as np
 import random
-from .mutation_utils import *
+import math
+import copy
+from .mutation_utils import random_log_scale, random_log_scale_1000
+from qdpy import tools
 
 #### Functions to perform mutation operations on PEN DNA toolbox systems introduced by Aubert-Kato et al. 2017
 
@@ -219,7 +222,8 @@ def mutation_bioneat_inhibition_species(ind, trivial=False):
         ind.activations[added_activation_coord] = 0.0000015
     else:
         ind.activations[added_activation_coord] = random_log_scale() #np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-    active_inhibitions_coords = list(zip(*np.where(ind.inhibitions)))
+
+    # Determine the origin of the inhibition
     list_nodes = list(range(ind.nb_nodes))
     list_nodes.remove(added_activation_coord[0])
     if added_activation_coord[1] in list_nodes:
@@ -243,8 +247,6 @@ def disable_template(ind, mut_pb=0.8, disabling_pb=0.1):
     active_activations_coords = list(zip(*np.where(ind.activations)))
     for coord in active_activations_coords:
         if random.random() < mut_pb:
-            #if random.random() < min(1., max(0., disabling_pb - math.log(ind.activations[coord]))):
-            #print("DEBUGDISABLE1: ", coord, ind.activations[coord])
             if random.random() < min(1., max(0., disabling_pb - math.log10(ind.activations[coord] / 10.))):
                 ind.activations[coord] = 0.
                 for i in range(ind.nb_nodes): # Remove invalid inhibitions
@@ -252,8 +254,6 @@ def disable_template(ind, mut_pb=0.8, disabling_pb=0.1):
     active_inhibitions_coords = list(zip(*np.where(ind.inhibitions)))
     for coord in active_inhibitions_coords:
         if random.random() < mut_pb:
-            #print("DEBUGDISABLE2: ", coord, ind.inhibitions[coord])
-            #if random.random() < min(1., max(0., disabling_pb - math.log(ind.inhibitions[coord]))):
             if random.random() < min(1., max(0., disabling_pb - math.log10(ind.inhibitions[coord] / 10.))):
                 ind.inhibitions[coord] = 0.
 
@@ -282,27 +282,10 @@ def mutation_param_bioneat(ind, f1=0.2, f2=2.0, mut_pb=0.8):
             ind.inhibitions[coord] = mutate_one_param_bioneat(ind.inhibitions[coord], ind.ind_domain, f1, f2, 200.)
 
 
-
-# Add node de base avec 2 nodes speciaux 
-# --> gradients : virer les connections to.
-    # Partie 1 : proba < 1.0 / (nombre d'activations + 1)
-        # Version 1a:
-            # Rajoute une nouvelle node
-            # Stabilities : random log scale
-            # Connections : autocatalyst (random log scale) + template activation vers une node existante (random log scale)
-        # Version 1b:
-            # Il faut deja avoir une inhibition
-            # Si yen a un, cree une nouvelle node (autocatalyse) avec template (random log scale) inhibition vers l'inhibiteur
-    # Partie 2 (split ?) : si au moins un template
-        # Selectionne au pif un template d'activation
-            # GetCorrectionConnection: revient le plus possible dans les connections precedentes
-            # vire cette connection
-            # nouvelle node ajoute (random log scale)
-            # rajoute une activation de la node d'orgine vers nouvelle node (random log scale si inhibition, ancienne valeurs si activation)
-            # rajoute une activation de la nouvelle node vers la zone target (ancienne valeurs)
+# Mutation for Reaction-Diffusion systems where gradients nodes are inputs from the environment (thus cannot be changed)
 def add_node_with_gradients(ind, gradients=[0,1]):
     active_activations_coords = list(zip(*np.where(ind.activations)))
-    active_inhibitions_coords = list(zip(*np.where(ind.inhibitions)))
+    # active_inhibitions_coords = list(zip(*np.where(ind.inhibitions))) # TODO: Handle inhibitions?
     if random.random() < 1. / (len(active_activations_coords) + 1.) or len(active_activations_coords) == 0:
         if np.random.choice(2) or len(active_activations_coords) == 0:
             ind.resize(ind.nb_nodes+1)
@@ -316,13 +299,11 @@ def add_node_with_gradients(ind, gradients=[0,1]):
             ind.stabilities[-1] = random_log_scale_1000()
             ind.activations[-1, -1] = random_log_scale()
             ind.inhibitions[-1, selected_activation[0],selected_activation[1]] = random_log_scale()
-    else: # XXX Handle inhibitions ?
+    else: # TODO: Handle inhibitions?
         selected_activation = random.choice(active_activations_coords)
         def get_back_template(templace_coord):
-            #active_out_coords = list(np.where(ind.activations[templace_coord[0],:])[0])
             active_out_coords = [(templace_coord[0], x) for x in np.where(ind.activations[templace_coord[0],:])[0]]
             count_out = len(active_out_coords)
-            #active_in_coords = list(np.where(ind.activations[:,templace_coord[0]])[0])
             active_in_coords = [(x, templace_coord[0]) for x in np.where(ind.activations[:,templace_coord[0]])[0]]
             if templace_coord in active_in_coords:
                 active_in_coords.remove(templace_coord)
@@ -332,7 +313,7 @@ def add_node_with_gradients(ind, gradients=[0,1]):
             coord = templace_coord
             while(True):
                 next_coord = get_back_template(coord)
-                if next_coord == None or next_coord == templace_coord:
+                if next_coord is None or next_coord == templace_coord:
                     break
                 coord = next_coord
             return coord
@@ -343,7 +324,7 @@ def add_node_with_gradients(ind, gradients=[0,1]):
             ind.inhibitions[(i,) + activation] = 0.
         ind.resize(ind.nb_nodes+1)
         ind.stabilities[-1] = random_log_scale_1000()
-        ind.activations[activation[0], -1] = old_activation_val # random_log_scale() # XXX Handle inhibitions
+        ind.activations[activation[0], -1] = old_activation_val # random_log_scale() # TODO Handle inhibitions
         ind.activations[-1, activation[1]] = old_activation_val
 
 
@@ -351,8 +332,8 @@ class NotApplicableError(Exception):
     pass
 
 
-# Only applicable si toutes les activations n'existent pas deja
-# Ajoute une connection qui n'existe pas encore (attention aux gradients qui n'ont pas de connections to) et l'ajoute (random log scale)
+# Only applicable if all activations are not already set
+# Add a new connection to a non-input species
 def add_activation_with_gradients(ind, gradients=[0,1]):
     activations_coords_set = {(x, y) for x in range(ind.nb_nodes) for y in range(ind.nb_nodes)}
     activations_coords_set -= {(x, y) for x in range(ind.nb_nodes) for y in gradients}
@@ -366,9 +347,8 @@ def add_activation_with_gradients(ind, gradients=[0,1]):
 
 # Only applicable if all inhibitions are not already set
 # 50% chance flip
-# Prend un inhibition qui n'existe pas au pif (destination ne peut pas etre gradient), et la rajoute
-# Si toutes les activations auto-catalytique sur la node "To" de l'inhibition
-# Rajoute une inhibitions sur une activation qui existe deja (mais pas vers gradient).
+# Add an inhibition, potentially turning an activation into a double inhibition
+# Input ("gradient") species cannot be targeted.
 def add_inhibition_with_gradients(ind, gradients=[0,1]):
     def add_inhibition(node_from, node_to):
         possibles_templates_from = np.where(ind.activations[:, node_to])[0]
@@ -385,7 +365,6 @@ def add_inhibition_with_gradients(ind, gradients=[0,1]):
         node_from = np.random.choice(ind.nb_nodes)
         node_to = np.random.choice(list(set(range(ind.nb_nodes)) - set(gradients)))
         add_inhibition(node_from, node_to)
-        #print("DEBUG: added simple inhibition")
     else: # Replace an activation with a double inhibition
         selected_activation = random.choice(active_activations_coords)
         # Remove selected activation
@@ -399,7 +378,6 @@ def add_inhibition_with_gradients(ind, gradients=[0,1]):
         ind.stabilities[new_node] = random_log_scale_1000()
         add_inhibition(selected_activation[0], new_node)
         add_inhibition(new_node, selected_activation[1])
-        #print("DEBUG: double inhibition")
 
 
 def clone_activation(ind, base_activation):
@@ -467,9 +445,7 @@ def crossover_uniform(ind1, ind2, prob):
 def crossover_uniform2(ind1, ind2, prob):
     min_nb_nodes = min(ind1.nb_nodes, ind2.nb_nodes)
     ind1_active_activations_coords = list(zip(*np.where(ind1.activations)))
-    ind1_active_inhibitions_coords = list(zip(*np.where(ind1.inhibitions)))
     ind2_active_activations_coords = list(zip(*np.where(ind2.activations)))
-    ind2_active_inhibitions_coords = list(zip(*np.where(ind2.inhibitions)))
     new_ind1 = copy.deepcopy(ind1)
     new_ind2 = copy.deepcopy(ind2)
 

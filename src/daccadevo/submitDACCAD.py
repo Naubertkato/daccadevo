@@ -4,7 +4,6 @@ import subprocess
 from subprocess import check_output, CalledProcessError
 from datetime import datetime
 import warnings
-import yaml
 import math
 import numpy as np
 
@@ -24,7 +23,7 @@ def findAllInhibitions(array, nNodes = 5):
         for fromId in range(nNodes):
             for toId in range(nNodes):
                 if array[index + fromId*nNodes + toId] > 0.0:
-                    if not (fromId,toId) in inhibitions:
+                    if (fromId,toId) not in inhibitions:
                         inhibitions[(fromId,toId)] = []
                     inhibitions[(fromId,toId)].append(i)
     return inhibitions
@@ -39,7 +38,7 @@ def findAllInhibitorsAndConcsLegacy(array,nNodes = 5):
             for toId in range(nNodes):
                 if array[index + fromId*nNodes + toId] > 0.0:
                     name = 'I'+str(fromId)+'T'+str(toId)
-                    if not name in inhibitingTemplatesConcs:
+                    if name not in inhibitingTemplatesConcs:
                         stability =  1 / 100 * math.exp((math.log(array[fromId]) + math.log(array[toId])) / 2)
                         inhibitingTemplatesConcs[name] = ([],stability)
                     inhibitingTemplatesConcs[name][0].append((str(i),array[index + fromId*nNodes + toId]))
@@ -162,7 +161,6 @@ def submitPENSystem(array, nNodes = 5, jsonFileName = None, config = None, **kwa
         if not os.path.exists(folder):
             os.makedirs(folder)
         jsonFileName = Path(folder,jsonFileName)
-    config_path = Path(config['daccad']['config_file']).absolute()
 
     json = generateFullJson(array, nNodes = nNodes, **kwargs)
 
@@ -200,7 +198,7 @@ def submitPENJson(json, executable_path = '../daccad', script = 'cli.sh',
         offset = 1 if raw_result.startswith("profiling") else 0
         # Remove info and the last empty line, parse the rest
         result = np.array([[float(j) for j in i.split(',')[:-1]] for i in raw_result.split('\n')[offset:-1]]) 
-    except CalledProcessError as e:
+    except CalledProcessError:
         warnings.warn("ERROR during DACCAD execution with command: %s" % str(command), RuntimeWarning)
         result = None
     return result

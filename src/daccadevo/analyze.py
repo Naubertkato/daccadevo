@@ -4,10 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import pandas as pd
-import os
 import ast
 import warnings
-from datetime import datetime
 from .DACCADRun import evaluate_timeseries
 
 def get_data(path):
@@ -68,7 +66,8 @@ def get_metric_over_time(dt, metric="qd_score", batch_size= None):
     
 
 
-def evaluate_timeseries_on_bests(container, config, n_best=3, threshold=None, verbose=False, key = lambda indiv: indiv.fitness[0]):
+def evaluate_timeseries_on_bests(container, config, n_best=3, threshold=None, 
+                                 verbose=False, key = lambda indiv: indiv.fitness[0]):
     config["keepTemporaryFiles"] = False
     all_timeseries = []
     labels = []
@@ -101,7 +100,8 @@ def plot_bests(time_series, container, labels = None, configs = None, figname = 
     # Grid of elites
     feat_x, feat_y = container.features_domain
     fit_min, fit_max = container.fitness_domain[0]
-    heat = axs[1].imshow(container.quality_array[...,0].T,origin="lower",interpolation='none', vmin=fit_min, vmax=fit_max,extent=[feat_x[0],feat_x[1],feat_y[0],feat_y[1]])
+    heat = axs[1].imshow(container.quality_array[...,0].T,origin="lower",interpolation='none', 
+        vmin=fit_min, vmax=fit_max,extent=[feat_x[0],feat_x[1],feat_y[0],feat_y[1]])
     axs[1].set_title("Grid of elites")
     if configs is not None and 'features_list' in configs:
         if len(configs['features_list']) > 0:
@@ -120,8 +120,9 @@ def plot_bests(time_series, container, labels = None, configs = None, figname = 
         ymin, ymax = ft[1]
         dx = (xmax-xmin)/lenx
         dy = (ymax-ymin)/leny
-        for i, l in enumerate(labels):
-            axs[1].add_patch(plt.Circle([xmin+(l[0]+0.5)*dx,ymin+(l[1]+0.5)*dy], radius = dx, linewidth=3, edgecolor= lines[i].get_color(), facecolor='none', zorder=len(lines)-i))
+        for i, pos in enumerate(labels):
+            axs[1].add_patch(plt.Circle([xmin+(pos[0]+0.5)*dx,ymin+(pos[1]+0.5)*dy], radius = dx, 
+                linewidth=3, edgecolor= lines[i].get_color(), facecolor='none', zorder=len(lines)-i))
 
     # Color bar
     fitness_label = "fitness"
@@ -183,7 +184,6 @@ def setup_config(configFilename, path):
     return config
     
 if __name__ == "__main__":
-    import sys
     from pathlib import Path
     import yaml
     parser = parse_args()

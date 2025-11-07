@@ -1,8 +1,6 @@
-import qdpy
 from qdpy.base import registry
 from qdpy.phenotype import ScoresDict
 from qdpy.experiment import QDExperiment
-import daccadevo.evolver
 import daccadevo.submitDACCAD as sd
 
 import numpy as np
@@ -66,7 +64,7 @@ def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
     if "use_timeseries_points" in config and int(config["use_timeseries_points"]) > 0:
         offset = int(config["timeseries_offset"]) if "timeseries_offset" in config else 0
         for i in range(int(config["use_evals"])):
-            scores[f"eval{i}"] = y[i]/maxVal
+            scores[f"eval{i}"] = y[i+offset]/maxVal
 
     daccadIndiv.scores = ScoresDict(scores)
     daccadIndiv.fitness.weights = (1.0,) 
@@ -119,7 +117,6 @@ if __name__ == "__main__":
     base_config = create_base_config(args)
     if args.evaluation is not None:
         from pathlib import Path
-        import os
         import importlib.util
         import sys
         p = Path(args.evaluation)

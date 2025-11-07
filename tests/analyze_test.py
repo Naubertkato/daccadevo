@@ -2,12 +2,10 @@ import pytest
 import numpy as np
 import pandas as pd
 from daccadevo.evolver import DaccadBioneatMut
-from qdpy.containers import *
+from qdpy.containers import Grid
 from qdpy.algorithms.logging import default_algorithm_logger
-from daccadevo.analyze import *
+from daccadevo.analyze import get_bests, get_metric_over_time, default_analysis
 import matplotlib.pyplot as plt
-from matplotlib import get_backend
-import warnings
 
 @pytest.fixture(scope="module")
 def fake_evals():
@@ -52,13 +50,13 @@ def test_metric_over_time(fake_evals, fake_run):
 	for metric in ["max", "qd_score"]:
 		fig1, ax1 = get_metric_over_time(pd.DataFrame(fake_run._iterations_data), batch_size= batch_size, metric=metric)
 		x= ax1.get_lines()[0]._x
-		y= ax1.get_lines()[0]._y
+		#y= ax1.get_lines()[0]._y
 		for i, v in enumerate(x):
 			assert v == i*batch_size
 	fig2, ax2 = get_metric_over_time(pd.DataFrame(fake_run._iterations_data), metric="ft_min")
 	for ax in ax2:
 		x= ax.get_lines()[0]._x
-		y= ax.get_lines()[0]._y
+		#y= ax.get_lines()[0]._y
 		for i, v in enumerate(x):
 			assert v == i*batch_size
 

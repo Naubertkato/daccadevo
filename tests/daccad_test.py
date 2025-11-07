@@ -1,7 +1,7 @@
 import pytest
 import json
 
-from daccadevo.submitDACCAD import *
+from daccadevo.submitDACCAD import generateFullJson, findAllInhibitions, findAllInhibitorsAndConcsLegacy, findAllInhibitorsAndConcs, invalidInhibitions, submitPENSystem
 
 @pytest.fixture
 def base_json():
@@ -59,7 +59,6 @@ def test_call_cli(array_inhib, tmpdir):
 	"""
 	Checks that calls to DACCAD are properly handled
 	"""
-	from pathlib import Path
 	import os
 	p = tmpdir.mkdir("test")
 	jsonf = p.join("test.json")

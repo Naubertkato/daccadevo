@@ -1,6 +1,6 @@
 import jpype
-import jpype.imports
-from jpype.types import *
+#import jpype.imports
+#from jpype.types import *
 
 def startJVM(classpath = None, debug=False):
     if classpath is None:
@@ -16,8 +16,8 @@ def startJVM(classpath = None, debug=False):
         jpype.startJVM(classpath = classpath)
     return rootdir
 
-def startDACCAD(debug=False):
-    rootdir = startJVM(debug=debug)
+#def startDACCAD(debug=False):
+#    rootdir = startJVM(debug=debug)
     # Example usage
     #import model.Constants
     #import model.OligoGraph
@@ -34,5 +34,5 @@ def startDACCAD(debug=False):
     # jpype.JPackage('model.chemicals.SequenceVertex')
     # jpype.JPackage('utils.GraphUtils')
 
-if __name__ == "__main__":
-    startDACCAD(debug=True)
+#if __name__ == "__main__":
+#    startDACCAD(debug=True)
