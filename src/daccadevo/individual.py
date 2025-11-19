@@ -91,6 +91,7 @@ class DaccadIndividual(Individual):
             self[iself] = vals[ivals]
         self.update()
 
+@registry.register
 def gen_daccad_individuals(ind_domain):
     """Yield a new unique individual with an empty network"""
     while(True):
