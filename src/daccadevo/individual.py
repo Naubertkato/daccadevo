@@ -21,7 +21,8 @@ class DaccadIndividual(Individual):
 
     def is_valid(self):
         return len(self.stabilities) == self.nb_nodes and self.activations.shape == (self.nb_nodes,self.nb_nodes) \
-                and self.inhibitions.shape == (self.nb_nodes,self.nb_nodes,self.nb_nodes) and sd.isValid(self, self.nb_nodes)
+                and self.inhibitions.shape == (self.nb_nodes,self.nb_nodes,self.nb_nodes) \
+                and sd.isValid(self, self.nb_nodes)
 
     def assemble(self):
         self[:] = list(self.stabilities) + list(self.activations.flatten()) + list(self.inhibitions.flatten())

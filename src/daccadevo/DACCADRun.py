@@ -2,17 +2,19 @@ from qdpy.base import registry
 from qdpy.phenotype import ScoresDict
 from qdpy.experiment import QDExperiment
 import daccadevo.submitDACCAD as sd
+import daccadevo.evolver # import needed to let the registry read the file
 
 import numpy as np
 from scipy import signal
 import warnings 
 
-def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0], default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, **kwargs):
+def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0], 
+                        default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, wrapper = sd.default_cli_wrapper, **kwargs):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
     enzymes = daccadIndiv.enzymes if hasattr(daccadIndiv, "enzymes") else default_enzymes
-    dataResult = sd.submitPENSystem(myarray, nNodes = nNodes, config = config, enzymes=enzymes, **kwargs)
+    dataResult = wrapper.submitPENSystem(myarray, nNodes = nNodes, config = config, enzymes=enzymes, **kwargs)
     return dataResult
 
 def get_standard_metrics(daccadIndiv):
@@ -76,7 +78,7 @@ class DACCADExperiment(QDExperiment):
     def __init__(self, config_filename, **kwargs):
         super().__init__(config_filename, **kwargs)
         if 'eval_fn' in self.config:
-            self._eval_fn = registry[self.config["eval_fn"]]          
+            self._eval_fn = registry[self.config['eval_fn']]          
         else:
             self._eval_fn = oscill_eval_fn
         

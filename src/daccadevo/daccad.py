@@ -1,20 +1,15 @@
 import jpype
-#import jpype.imports
-#from jpype.types import *
+from pathlib import Path
 
-def startJVM(classpath = None, debug=False):
+def startJVM(classpath = None, rootdir = "../", debug=False):
     if classpath is None:
-        import os
-        dirs = ["daccad/build/dist/lib/*","/daccad/build/libs/daccad-1.5.0.jar","daccad/build/classes/java/main"]
-        rootdir = os.path.dirname(os.path.abspath(__file__))
-        # Go up then 
-        rootdir = os.path.dirname(os.path.dirname(rootdir))
-        classpath = [os.path.join(rootdir,d) for d in dirs]
+        dirs = ["daccad/build/dist/lib/*","/daccad/build/libs/daccad-*.jar","daccad/build/classes/java/main"]
+        classpath = [Path(rootdir,d).resolve() for d in dirs]
     if debug:
         print("Classpath:",classpath)
     if not jpype.isJVMStarted():
         jpype.startJVM(classpath = classpath)
-    return rootdir
+    return classpath
 
 #def startDACCAD(debug=False):
 #    rootdir = startJVM(debug=debug)

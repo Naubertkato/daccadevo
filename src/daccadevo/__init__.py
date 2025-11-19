@@ -15,4 +15,4 @@
 
 __author__ = "Nathanael Aubert-Kato"
 __license__ = "LGPLv3"
-__version__ = "0.5.0"
+__version__ = "0.5.1"

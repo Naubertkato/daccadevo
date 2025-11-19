@@ -23,7 +23,6 @@ def base_indiv_grad4(indiv_dom):
 def base_indiv_act(indiv_dom):
     return standard_init_act(next(gen_daccad_individuals(indiv_dom)))
 
-# 29-31
 
 @pytest.mark.parametrize('ind',["base_indiv", "base_indiv0", "base_indiv_grad4", "base_indiv_act"])
 def test_update(ind, indiv_dom, request):
@@ -42,7 +41,6 @@ def test_update(ind, indiv_dom, request):
 				assert ind.inhibitions[i,j,k] == vals[ind.nb_nodes+ind.nb_nodes*ind.nb_nodes+i*ind.nb_nodes*ind.nb_nodes+j*ind.nb_nodes+k]
 
 
- #41-43
 @pytest.mark.parametrize('size',[1,3,5])
 def test_resize(size, base_indiv):
 	base_indiv.resize(size)
@@ -50,7 +48,6 @@ def test_resize(size, base_indiv):
 	assert base_indiv.is_valid()
 
 
-#  59-66
 def test_active_nodes(base_indiv):
 	res = base_indiv.active_nodes()
 	assert len(res) == 1 and (2 in res)

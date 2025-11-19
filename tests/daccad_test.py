@@ -1,7 +1,8 @@
 import pytest
 import json
 
-from daccadevo.submitDACCAD import generateFullJson, findAllInhibitions, findAllInhibitorsAndConcsLegacy, findAllInhibitorsAndConcs, invalidInhibitions, submitPENSystem
+import daccadevo.submitDACCAD as sd
+from daccadevo.submitDACCAD import default_cli_wrapper, CLI_wrapper
 
 @pytest.fixture
 def base_json():
@@ -39,21 +40,21 @@ def broken_array_inhib(array_inhib):
 @pytest.mark.parametrize('arr,result',
                              [("base_array","base_json"), ("array_inhib","inhib_json")])
 def test_generation(arr, result, request):
-	json_val = json.loads(generateFullJson(request.getfixturevalue(arr),nNodes=3))
+	json_val = json.loads(default_cli_wrapper.generateFullJson(request.getfixturevalue(arr),nNodes=3))
 	assert json_val == request.getfixturevalue(result)
 
 @pytest.mark.parametrize('arr,result',
                              [('base_array',0), ('array_inhib',1), ('broken_array_inhib',2)])
 def test_inhibition(arr, result, request):
 	a = request.getfixturevalue(arr)
-	assert len(findAllInhibitions(a,nNodes=3)) == result # raw number of inhibitors
-	assert findAllInhibitorsAndConcsLegacy(a,nNodes=3) == findAllInhibitorsAndConcs(a,nNodes=3) # only valid inhibitors
+	assert len(sd.findAllInhibitions(a,nNodes=3)) == result # raw number of inhibitors
+	assert sd.findAllInhibitorsAndConcsLegacy(a,nNodes=3) == sd.findAllInhibitorsAndConcs(a,nNodes=3) # only valid inhibitors
 
 @pytest.mark.parametrize('arr,result',
                              [('base_array',0), ('array_inhib',0), ('broken_array_inhib',1)])
 def test_invalid_inhibitions(arr, result, request):
 	a = request.getfixturevalue(arr)
-	assert len(invalidInhibitions(a, nNodes = 3)) == result
+	assert len(sd.invalidInhibitions(a, nNodes = 3)) == result
 
 def test_call_cli(array_inhib, tmpdir):
 	"""
@@ -65,7 +66,9 @@ def test_call_cli(array_inhib, tmpdir):
 	testconf = p.join("test.conf")
 	n_points = 10
 	testconf.write_text(f"numberOfPoints = {n_points}", encoding="utf-8")
-	dataResult = submitPENSystem(array_inhib, nNodes = 3, jsonFileName = os.fspath(jsonf), configFile = os.fspath(testconf))
+	wrapper = CLI_wrapper()
+	dataResult = wrapper.submitPENSystem(array_inhib, nNodes = 3, 
+		daccad_config_file = os.fspath(testconf), jsonFileName = os.fspath(jsonf))
 	assert len(dataResult) == n_points
 
 
