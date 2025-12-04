@@ -2,7 +2,9 @@
 nodes/__init__.py
 """
 
-from nodes.normalnode import NormalNode
-from nodes.activationnode import ActivationNode
-from nodes.predatorpreynode import PredatorNode
-from nodes.pseudonode import PseudoNode
+from daccadevo.visualization.nodes.normalnode import NormalNode
+from daccadevo.visualization.nodes.activationnode import ActivationNode
+from daccadevo.visualization.nodes.predatorpreynode import PredatorNode
+from daccadevo.visualization.nodes.pseudonode import PseudoNode
+
+__all__ = ['NormalNode', 'ActivationNode', 'PredatorNode', 'PseudoNode']

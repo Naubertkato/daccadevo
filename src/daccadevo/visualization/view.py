@@ -1,14 +1,11 @@
 """
 view.py
 """
-from PySide6.QtWidgets import QComboBox, QGraphicsScene, QGraphicsView, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
 from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QPointF, QEasingCurve
 import networkx as nx
-from node import Node
-from nodes import NormalNode, PseudoNode, PredatorNode, ActivationNode
-from edges import ActivationEdge, AutoActivationEdge, InhibitorEdge, PredatorPreyEdge, PseudoEdge
-from edge import Edge  
-from scene_builder import SceneBuilder
+from daccadevo.visualization.nodes import ActivationNode
+from daccadevo.visualization.scene_builder import SceneBuilder
 
 class GraphView(QGraphicsView):
     def __init__(self, graph: nx.DiGraph, parent=None):
@@ -71,7 +68,7 @@ class GraphView(QGraphicsView):
                     x *= self._graph_scale
                     y *= self._graph_scale 
                 if isinstance(item, ActivationNode):
-                    midpoint = item.activaionedge.get_midpoint()
+                    midpoint = item.activationedge.get_midpoint()
                     x = midpoint.x()
                     y = midpoint.y()
 

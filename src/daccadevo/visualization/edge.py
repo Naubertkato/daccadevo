@@ -4,13 +4,11 @@ Define the base Edge class.
 """
 from __future__ import annotations
 
-import networkx as nx
-from PySide6.QtWidgets import QGraphicsItem,QGraphicsObject
+from PySide6.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
 from PySide6.QtCore import QPointF, QLineF, QRectF, Qt, QSizeF
 from PySide6.QtGui import QPainter, QPen, QBrush, QColor, QPolygonF
 import math 
-from node import Node
-from nodes import NormalNode, PseudoNode, PredatorNode, ActivationNode
+from daccadevo.visualization.node import Node
 
 
 class Edge(QGraphicsItem):
@@ -33,7 +31,7 @@ class Edge(QGraphicsItem):
 
     def boundingRect(self) -> QRectF:
         if self.source == self.dest:
-            return self.boundingRect_loop()
+            return self._boundingRect_loop()
         else:
             return self._boundingRect_normal()
     
@@ -135,7 +133,7 @@ class Edge(QGraphicsItem):
         top_left = QPointF(base.x() + offset_x, base.y() + offset_y)
         self._loop_rect = QRectF(top_left, QSizeF(radius_offset*2, radius_offset*2))
 
-    def boundingRect_loop(self, margin=50.0):
+    def _boundingRect_loop(self, margin=50.0):
         if hasattr(self, "_loop_rect"):
             margin = 50.0
             return self._loop_rect.adjusted(-margin, -margin, margin, margin)
@@ -150,10 +148,7 @@ class Edge(QGraphicsItem):
             )
 
     def draw_arc(self, painter: QPainter, rect: QRectF, start_angle: float, radius: float, arrow_size: float, span_angle: float = 270):
-        if not hasattr(self, "_loop_rect") or not hasattr(self, "_loop_angle"):
-            return
-        start_angle = self._loop_angle
-        painter.drawArc(self._loop_rect, int(start_angle * 16), int(span_angle * 16))
+        painter.drawArc(rect, int(start_angle * 16), int(span_angle * 16))
         loop_center = self._loop_rect.center()
         loop_radius = self.source._radius
         tip_pos_angle = (90 - start_angle + 257) % 360

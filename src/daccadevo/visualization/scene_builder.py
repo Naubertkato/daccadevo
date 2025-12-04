@@ -2,18 +2,16 @@
 scene_builder.py
 """
 
-from PySide6.QtWidgets import QGraphicsScene
-from nodes import NormalNode, PseudoNode, PredatorNode, ActivationNode
-from node import Node
-from edges import ActivationEdge, AutoActivationEdge, InhibitorEdge, PseudoEdge, PredatorPreyEdge
-from edge import Edge
+from daccadevo.visualization.nodes import NormalNode, PseudoNode, PredatorNode, ActivationNode
+from daccadevo.visualization.edges import ActivationEdge, AutoActivationEdge, InhibitorEdge, PseudoEdge, PredatorPreyEdge
+from daccadevo.visualization.edge import Edge
 
 class SceneBuilder:
     def __init__(self, graph, scene, nodes_map):
         self.graph = graph
         self.scene = scene
         self.nodes_map = nodes_map
-        self.activation_nodes = {}  # {edge_id: activation_node}
+        self.activation_nodes = {}  # Represents the target of inhibition species
         self.pseudo_nodes = {}
 
     def build_scene(self):
@@ -43,8 +41,8 @@ class SceneBuilder:
 
             if edge_type == "activation":
                 edge = ActivationEdge(source, dest)
-                aid = f'a{source_id}{dest_id}'
-                self.nodes_map[aid].activaionedge = edge
+                aid = f'a{source_id}_{dest_id}'
+                self.nodes_map[aid].activationedge = edge
                 self.nodes_map[aid].source = source
                 self.nodes_map[aid].dest = dest
                 self.activation_nodes[(source_id, dest_id)] = self.nodes_map[aid]
@@ -52,7 +50,7 @@ class SceneBuilder:
 
             elif edge_type == "autoactivation":
                 edge = AutoActivationEdge(source, dest)
-                aid = f'a{source_id}{dest_id}'
+                aid = f'a{source_id}_{dest_id}'
                 self.nodes_map[aid].activaionedge = edge
                 self.nodes_map[aid].source = source
                 self.nodes_map[aid].dest = dest

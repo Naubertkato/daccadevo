@@ -2,21 +2,13 @@
 window.py
 """
 
-# from PySide6.QtWidgets import QMainWindow, QGraphicsScene, QGraphicsView, QWidget
-from PySide6.QtWidgets import QComboBox, QGraphicsScene, QGraphicsView, QVBoxLayout, QWidget, QApplication, QPushButton, QHBoxLayout, QLabel, QSizePolicy
-from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QPointF, QEasingCurve, QSize, Qt
-from PySide6.QtGui import QPixmap, QPainter, QImage
-import networkx as nx
-from node import Node
-from nodes import NormalNode, PseudoNode, PredatorNode, ActivationNode
-from edges import ActivationEdge, AutoActivationEdge, InhibitorEdge, PredatorPreyEdge, PseudoEdge
-from edge import Edge
-from view import GraphView
-from graph_builder import GraphBuilder
-from scene_builder import SceneBuilder
+from PySide6.QtWidgets import QComboBox, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QLabel, QSizePolicy
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from daccadevo.visualization.view import GraphView
+from daccadevo.visualization.graph_builder import GraphBuilder
 import numpy as np
-import sys, os
-array = np.array
+import os
 
 class MainWindow(QWidget):
     def __init__(self, parent=None, dict_network=None, figure_path=None, key=None):
@@ -31,56 +23,10 @@ class MainWindow(QWidget):
             self.dict_network = dict_network
         else:
             self.dict_network = {
-                    'stabilities': array([0.32414728, 0.55184075, 0.02224416, 0.06769786, 0.04517213, 0.02649793]),
-                    'activations': array([[0.        , 0.        , 0.        , 0.        , 0.40467229,
-                                                0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        ,
-                                                0.        ],
-                                            [0.54206948, 0.        , 0.20922323, 0.        , 0.        ,
-                                                0.        ],
-                                            [0.        , 0.06412739, 0.        , 0.07471709, 0.        ,
-                                                0.        ],
-                                            [0.        , 0.        , 0.        , 0.00687618, 0.        ,
-                                                0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.93153457,
-                                                0.        ]]),
-                    'inhibitions': array([[[0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.0627569 , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ]],
-                                        [[0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [1.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ]],
-                                        [[0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.01898459, 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ]],
-                                        [[0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ]],
-                                        [[0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ]],
-                                        [[0.        , 0.        , 0.        , 0.        , 0.47786695, 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.81454706, 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ],
-                                            [0.        , 0.        , 0.        , 0.        , 0.        , 0.        ]]]),
-                    'predator_prey_templates': array([0.51, 0., 0., 0., 0., 0.])
+                    'stabilities': np.array([1.]),
+                    'activations': np.array([[1.]]),
+                    'inhibitions': np.array([[[0.]]]),
+                    'predator_prey_templates': np.array([0.1])
          }
         graph_builder = GraphBuilder()
         self.graph = graph_builder.build_graph(self.dict_network)
@@ -156,14 +102,3 @@ class timeSeriesWindow(QWidget):
             key_str = self.key
         new_path = f"temp/plot_{key_str}.png"
         os.rename(self.figure_path, new_path)
-
-
-    
-if __name__ == "__main__":
-
-    app = QApplication(sys.argv)
-    # Create a networkx graph
-    widget = MainWindow()
-    widget.show()
-    widget.resize(800, 600)
-    sys.exit(app.exec())

@@ -26,7 +26,7 @@ class GraphBuilder:
                     concentration = activations[i, j]
                     if concentration > 0:
                         # activation edge node id
-                        aid = f'a{i}{j}'
+                        aid = f'a{i}_{j}'
                         G.add_node(aid, type='activation_node', concentration=concentration, source = i, dest = j)
                         if i == j:
                             G.add_edge(f'{i}', f'{i}', type='autoactivation')
@@ -43,7 +43,7 @@ class GraphBuilder:
                     for k in range(len(inhibitions[i][j])):
                         concentration = inhibitions[i][j][k]
                         if concentration > 0:
-                            aid = f'a{j}{k}'
+                            aid = f'a{j}_{k}'
                             G.add_edge(f'{i}', aid, type='inhibition_edge', concentration=concentration)      # from source node to aid node
 
         # === Add predator-prey templates ===

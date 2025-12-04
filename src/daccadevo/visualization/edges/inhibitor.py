@@ -4,10 +4,11 @@ inhibitor.py
 from __future__ import annotations
 
 from PySide6.QtWidgets import QGraphicsItem
-from PySide6.QtCore import QPointF, QRectF, QLineF
+from PySide6.QtCore import QPointF, QLineF
 from PySide6.QtGui import QPainter, QPen, QColor
 import math
-from edge import Edge
+from daccadevo.visualization.edge import Edge
+from daccadevo.visualization.node import Node
 
 class InhibitorEdge(Edge):
     def __init__(self, source: Node, dest: Node, parent: QGraphicsItem = None):

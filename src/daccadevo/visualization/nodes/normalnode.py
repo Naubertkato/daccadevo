@@ -3,10 +3,8 @@ from __future__ import annotations
 
 
 from PySide6.QtWidgets import QGraphicsItem
-from PySide6.QtCore import QPointF, QRectF
-from PySide6.QtGui import QPainter, QPen, QColor
-import math
-from node import Node
+from PySide6.QtCore import QRectF
+from daccadevo.visualization.node import Node
 
 class NormalNode(Node):
 
