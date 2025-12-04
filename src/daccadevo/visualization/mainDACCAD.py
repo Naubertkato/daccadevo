@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pickle_file")
     parser.add_argument("--cell", type=int, nargs="*")
-    parser.add_argument("--timeseries", type=bool, nargs="?")
+    parser.add_argument("--timeseries", action='store_true')
     parser.add_argument("--no-inhibitors",action='store_true')
     parser.add_argument("-v", "--verbose",action='store_true')
     args = parser.parse_args()
@@ -40,25 +40,23 @@ def main():
         if not key_cell:
             raise ValueError("The specified cell is empty.")
         network_sequence=key_cell[0]
-        dict_network = {}
-        dict_network['stabilities'] = getattr(network_sequence, 'stabilities', None)
-        dict_network['activations'] = getattr(network_sequence, 'activations', None)
-        dict_network['inhibitions'] = getattr(network_sequence, 'inhibitions', None)
-        dict_network['pseudo_templates'] = getattr(network_sequence, 'pseudo_templates', None)
-        dict_network['predator_prey_templates'] = getattr(network_sequence, 'predator_prey_templates', None)
     else:
         key = "best"
         network_sequence=raw_data["container"].best
-        dict_network=network_sequence.__dict__
-
+    dict_network = {}
+    dict_network['stabilities'] = getattr(network_sequence, 'stabilities', None)
+    dict_network['activations'] = getattr(network_sequence, 'activations', None)
+    dict_network['inhibitions'] = getattr(network_sequence, 'inhibitions', None)
+    dict_network['pseudo_templates'] = getattr(network_sequence, 'pseudo_templates', None)
+    dict_network['predator_prey_templates'] = getattr(network_sequence, 'predator_prey_templates', None)
+    
     if args.verbose:
         print(key, network_sequence)
     
-    # if args.timeseries:
-    #     figure_path = plot_timeseries(network_sequence)
-    # else:
-    #     figure_path = None
-    figure_path = None
+    if args.timeseries:
+        figure_path = plot_timeseries(network_sequence)
+    else:
+        figure_path = None
 
     app = QApplication(sys.argv)
     window = MainWindow(dict_network=dict_network, figure_path=figure_path, key=key, show_inhibitors = not args.no_inhibitors)
@@ -69,14 +67,19 @@ def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset
     daccadIndivarray = np.array(network_sequence)
     wrapper = sd.CLI_wrapper()
 
-    daccadIndivarray = daccadIndivarray[:-2]
     nNodes = network_sequence.nb_nodes
-    scaling = [scales[0]]*nNodes + [scales[1]]* nNodes*nNodes*(nNodes+1) + [scales[2]]*nNodes
+    basearray = daccadIndivarray[:nNodes+nNodes*nNodes+nNodes*nNodes*nNodes]
+    scaling = [scales[0]]*nNodes + [scales[1]]* nNodes*nNodes*(nNodes+1)
+    if len(scales) > 1 and len(daccadIndivarray) > len(basearray):
+        scaling += [scales[2]]*nNodes
     myarray = np.array(scaling)*daccadIndivarray
-    scaling2 = [offset[0] if myarray[i] > 0 else 0.0 for i in range(0,nNodes)]
-    scaling2.extend([offset[1]] * (nNodes*nNodes*(nNodes+1)+nNodes))
-    myarray2 = myarray+ np.array(scaling2)
-    jikeiretu = wrapper.submitPENSystem(myarray2, nNodes = nNodes)
+
+    # TODO: explain offset
+    #scaling2 = [offset[0] if myarray[i] > 0 else 0.0 for i in range(0,nNodes)]
+    #scaling2.extend([offset[1]] * (nNodes*nNodes*(nNodes+1)+nNodes))
+    #myarray2 = myarray+ np.array(scaling2)
+
+    jikeiretu = wrapper.submitPENSystem(myarray, nNodes = nNodes)
     if "profiling" in jikeiretu[0]:
         jikeiretu = jikeiretu[1:]
     dataResult = [[float(j) for j in i[:-1]] for i in jikeiretu]
