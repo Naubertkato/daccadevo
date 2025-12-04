@@ -11,7 +11,7 @@ import numpy as np
 import os
 
 class MainWindow(QWidget):
-    def __init__(self, parent=None, dict_network=None, figure_path=None, key=None):
+    def __init__(self, parent=None, dict_network=None, figure_path=None, key=None, show_inhibitors = True):
         super().__init__(parent)
         self.resize(800, 600)
         self.setGeometry(800, 600, 800, 600)
@@ -29,7 +29,7 @@ class MainWindow(QWidget):
                     'predator_prey_templates': np.array([0.1])
          }
         graph_builder = GraphBuilder()
-        self.graph = graph_builder.build_graph(self.dict_network)
+        self.graph = graph_builder.build_graph(self.dict_network, show_inhibitors = show_inhibitors)
         
         self.setWindowTitle("Main")
         self.view = GraphView(self.graph)
