@@ -1,17 +1,14 @@
 
 from __future__ import annotations
 
-from PySide6.QtWidgets import QGraphicsItem, QGraphicsObject
-from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QPainter, QPen, QColor, QBrush
-import math
-from node import Node
-import networkx as nx
+from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtCore import QRectF
+from daccadevo.visualization.node import Node
 
 class ActivationNode(Node):
     def __init__(self, name: str, parent=None):
         super().__init__(name, parent)
-        self.activaionedge = None
+        self.activationedge = None
         self.source = None
         self.dest = None
 

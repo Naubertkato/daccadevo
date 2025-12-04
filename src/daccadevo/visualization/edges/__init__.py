@@ -2,8 +2,10 @@
 edges/__init__.py
 """
 
-from edges.activation import ActivationEdge
-from edges.autoactivation import AutoActivationEdge
-from edges.inhibitor import InhibitorEdge
-from edges.predatorprey import PredatorPreyEdge
-from edges.pseudo import PseudoEdge
+from daccadevo.visualization.edges.activation import ActivationEdge
+from daccadevo.visualization.edges.autoactivation import AutoActivationEdge
+from daccadevo.visualization.edges.inhibitor import InhibitorEdge
+from daccadevo.visualization.edges.predatorprey import PredatorPreyEdge
+from daccadevo.visualization.edges.pseudo import PseudoEdge
+
+__all__ = ['ActivationEdge', 'AutoActivationEdge', 'InhibitorEdge', 'PredatorPreyEdge', 'PseudoEdge']

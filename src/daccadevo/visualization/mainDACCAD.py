@@ -2,29 +2,19 @@
 mainDACCAD.py
 """
 
-from PySide6.QtCore import (QEasingCurve, QLineF,
-                            QParallelAnimationGroup, QPointF, QSizeF,
-                            QPropertyAnimation, QRectF, Qt)
-from PySide6.QtGui import QBrush, QColor, QPainter, QPen, QPolygonF, QPainterPath
-from PySide6.QtWidgets import (QApplication, QComboBox, QGraphicsItem,
-                               QGraphicsObject, QGraphicsScene, QGraphicsView,
-                               QStyleOptionGraphicsItem, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import QApplication
 
-import networkx as nx
 
-from nodes import NormalNode, ActivationNode, PseudoNode, PredatorNode
-from edges import ActivationEdge, AutoActivationEdge, InhibitorEdge, PredatorPreyEdge, PseudoEdge
-from window import MainWindow 
+from daccadevo.visualization.window import MainWindow 
 
-import pickle, os, sys
+import pickle
+import os
+import sys
 
 import numpy as np
 import matplotlib.pyplot as plt
+import daccadevo.submitDACCAD as sd
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.join(current_dir, "..") 
-sys.path.append(project_root)
-import individual, submitDACCAD
 
 
 def main():
@@ -59,8 +49,7 @@ def main():
         network_sequence=raw_data["container"].best
         dict_network=network_sequence.__dict__
 
-    print(key)
-
+    print(key, network_sequence)
     
     # if args.timeseries:
     #     figure_path = plot_timeseries(network_sequence)
@@ -75,15 +64,7 @@ def main():
 
 def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset = [10.0, 0.0, 0.0], npeaks = 1):
     daccadIndivarray = np.array(network_sequence)
-    config = {
-        'daccad': {
-            'path':'../../daccad',
-            'sim_length': 1500,
-            'kmPredator': 1760,
-            'exo': daccadIndivarray[-2]*scales[3],
-            'pol': daccadIndivarray[-1]*scales[3] + offset[2]
-        }
-    }
+    wrapper = sd.CLI_wrapper()
 
     daccadIndivarray = daccadIndivarray[:-2]
     nNodes = network_sequence.nb_nodes
@@ -92,8 +73,10 @@ def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset
     scaling2 = [offset[0] if myarray[i] > 0 else 0.0 for i in range(0,nNodes)]
     scaling2.extend([offset[1]] * (nNodes*nNodes*(nNodes+1)+nNodes))
     myarray2 = myarray+ np.array(scaling2)
-    jikeiretu = submitDACCAD_pp.submitPENSystem_pp(myarray2, nNodes = nNodes, config = config["daccad"])
-    dataResult = [[float(j) for j in i[:-1]] for i in jikeiretu[0:]]
+    jikeiretu = wrapper.submitPENSystem(myarray2, nNodes = nNodes)
+    if "profiling" in jikeiretu[0]:
+        jikeiretu = jikeiretu[1:]
+    dataResult = [[float(j) for j in i[:-1]] for i in jikeiretu]
 
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 5))
     ax1.plot(dataResult)

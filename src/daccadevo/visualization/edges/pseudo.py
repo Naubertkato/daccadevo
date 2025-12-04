@@ -5,10 +5,10 @@ pseudo.py
 from __future__ import annotations
 
 from PySide6.QtWidgets import QGraphicsItem
-from PySide6.QtCore import QPointF, QRectF
-from PySide6.QtGui import QPainter, QPen, QColor, QLinearGradient, QPainterPath
-import math
-from edge import Edge
+from PySide6.QtCore import QPointF
+from PySide6.QtGui import QPainter, QPainterPath
+from daccadevo.visualization.edge import Edge
+from daccadevo.visualization.node import Node
 
 
 class PseudoEdge(Edge):
