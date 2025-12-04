@@ -23,6 +23,8 @@ def main():
     parser.add_argument("--pickle_file")
     parser.add_argument("--cell", type=int, nargs="*")
     parser.add_argument("--timeseries", type=bool, nargs="?")
+    parser.add_argument("--no-inhibitors",action='store_true')
+    parser.add_argument("-v", "--verbose",action='store_true')
     args = parser.parse_args()
 
     if not os.path.exists(args.pickle_file):
@@ -49,7 +51,8 @@ def main():
         network_sequence=raw_data["container"].best
         dict_network=network_sequence.__dict__
 
-    print(key, network_sequence)
+    if args.verbose:
+        print(key, network_sequence)
     
     # if args.timeseries:
     #     figure_path = plot_timeseries(network_sequence)
@@ -58,7 +61,7 @@ def main():
     figure_path = None
 
     app = QApplication(sys.argv)
-    window = MainWindow(dict_network=dict_network, figure_path=figure_path, key=key)
+    window = MainWindow(dict_network=dict_network, figure_path=figure_path, key=key, show_inhibitors = not args.no_inhibitors)
     window.show()
     sys.exit(app.exec())
 

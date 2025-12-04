@@ -42,10 +42,12 @@ class SceneBuilder:
             if edge_type == "activation":
                 edge = ActivationEdge(source, dest)
                 aid = f'a{source_id}_{dest_id}'
-                self.nodes_map[aid].activationedge = edge
-                self.nodes_map[aid].source = source
-                self.nodes_map[aid].dest = dest
-                self.activation_nodes[(source_id, dest_id)] = self.nodes_map[aid]
+                if aid in self.nodes_map:
+                    # Template can be inhibited, otherwise not
+                    self.nodes_map[aid].activationedge = edge
+                    self.nodes_map[aid].source = source
+                    self.nodes_map[aid].dest = dest
+                    self.activation_nodes[(source_id, dest_id)] = self.nodes_map[aid]
                 self.scene.addItem(edge)
 
             elif edge_type == "autoactivation":

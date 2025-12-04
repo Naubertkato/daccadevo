@@ -4,10 +4,15 @@ graph_builder.py
 import networkx as nx
 
 class GraphBuilder:
+    """
+    Graph implementation of a PEN system using networkx.
+    Since PEN systems are not proper graphs (inhibitions are edges targeting other edges; predators use multi-edges), 
+    we use hidden nodes (e.g., activation nodes) to represent those behaviors in the final view. 
+    """
     def __init__(self):
         pass 
 
-    def build_graph(self, data: dict) -> nx.DiGraph:
+    def build_graph(self, data: dict, show_inhibitors = True) -> nx.DiGraph:
         G = nx.DiGraph()
 
         # === Add nodes ===
@@ -32,7 +37,6 @@ class GraphBuilder:
                             G.add_edge(f'{i}', f'{i}', type='autoactivation')
                         else:
                             G.add_edge(f'{i}', f'{j}', type='activation')  # from source node to activation node
-                            # G.add_edge(aid, f'n{j}', type='activation')  # from activation node to target
 
 
         # Add inhibition edges
@@ -44,7 +48,12 @@ class GraphBuilder:
                         concentration = inhibitions[i][j][k]
                         if concentration > 0:
                             aid = f'a{j}_{k}'
-                            G.add_edge(f'{i}', aid, type='inhibition_edge', concentration=concentration)      # from source node to aid node
+                            inhibid = f'{i}'
+                            if show_inhibitors:
+                                inhibid = f'I{j}_{k}'
+                                G.add_node(inhibid, stability="calculated", type='normal')
+                                G.add_edge(f'{i}', inhibid, type='activation')
+                            G.add_edge(inhibid, aid, type='inhibition_edge', concentration=concentration)      # from source node to aid node
 
         # === Add predator-prey templates ===
         predator_templates = data.get('predator_prey_templates')
