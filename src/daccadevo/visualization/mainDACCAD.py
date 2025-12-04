@@ -12,6 +12,7 @@ import os
 import sys
 
 import numpy as np
+import yaml
 import matplotlib.pyplot as plt
 import daccadevo.submitDACCAD as sd
 
@@ -23,6 +24,7 @@ def main():
     parser.add_argument("--pickle_file")
     parser.add_argument("--cell", type=int, nargs="*")
     parser.add_argument("--timeseries", action='store_true')
+    parser.add_argument("--config", type=str, default=None, help="Used to restore the simulation settings")
     parser.add_argument("--no-inhibitors",action='store_true')
     parser.add_argument("-v", "--verbose",action='store_true')
     args = parser.parse_args()
@@ -52,9 +54,15 @@ def main():
     
     if args.verbose:
         print(key, network_sequence)
-    
+
+    config = args.config
+    if config is not None:
+        config = yaml.safe_load(open(config))
+        if args.verbose:
+            print("Configuration file:",config)
+
     if args.timeseries:
-        figure_path = plot_timeseries(network_sequence)
+        figure_path = plot_timeseries(network_sequence, config = config)
     else:
         figure_path = None
 
@@ -63,7 +71,7 @@ def main():
     window.show()
     sys.exit(app.exec())
 
-def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset = [10.0, 0.0, 0.0], npeaks = 1):
+def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset = [10.0, 0.0, 0.0], config = None):
     daccadIndivarray = np.array(network_sequence)
     wrapper = sd.CLI_wrapper()
 
@@ -79,7 +87,7 @@ def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset
     #scaling2.extend([offset[1]] * (nNodes*nNodes*(nNodes+1)+nNodes))
     #myarray2 = myarray+ np.array(scaling2)
 
-    jikeiretu = wrapper.submitPENSystem(myarray, nNodes = nNodes)
+    jikeiretu = wrapper.submitPENSystem(myarray, nNodes = nNodes, config = config)
     if "profiling" in jikeiretu[0]:
         jikeiretu = jikeiretu[1:]
     dataResult = [[float(j) for j in i[:-1]] for i in jikeiretu]
