@@ -12,7 +12,7 @@ class ActivationNode(Node):
         self.source = None
         self.dest = None
 
-        self._radius = 1
+        self._radius = 30
         self._rect = QRectF(0, 0, self._radius * 1, self._radius * 1)
         self._color = "#2EE3F0" #light blue
         self.setFlag(QGraphicsItem.ItemIsMovable, False)

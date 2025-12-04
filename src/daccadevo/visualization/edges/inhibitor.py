@@ -28,7 +28,6 @@ class InhibitorEdge(Edge):
     
     def draw_edge(self, painter: QPainter):
         start = self._line.p1()
-        painter.drawLine(self._line) 
         tip = self._arrow_tip
         self.draw_line(painter, start, tip)
         self._draw_inhibition_head(painter, tip)
