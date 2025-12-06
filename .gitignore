@@ -6,6 +6,7 @@ Thumbs.db
 
 # Generated
 .coverage
+.ipynb_checkpoints
 results/
 dist/
 __pycache__
