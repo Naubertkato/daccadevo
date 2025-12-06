@@ -2,7 +2,6 @@ from qdpy.base import registry
 from qdpy.phenotype import ScoresDict
 from qdpy.experiment import QDExperiment
 import daccadevo.submitDACCAD as sd
-import daccadevo.evolver # import needed to let the registry read the file
 
 import numpy as np
 from scipy import signal
