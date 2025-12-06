@@ -5,6 +5,7 @@
 Thumbs.db
 
 # Generated
+.coverage
 results/
 dist/
 __pycache__
