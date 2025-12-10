@@ -1,18 +1,17 @@
-from qdpy.base import registry
 from qdpy.phenotype import ScoresDict
-from qdpy.experiment import QDExperiment
-import daccadevo.submitDACCAD as sd
+
+import daccadevo.wrappers as wr
 
 import numpy as np
 from scipy import signal
-import warnings 
+
 
 def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0], 
-                        default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, wrapper = sd.default_cli_wrapper, **kwargs):
+                        default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, wrapper = wr.default_cli_wrapper, **kwargs):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
-    enzymes = daccadIndiv.enzymes if hasattr(daccadIndiv, "enzymes") else default_enzymes
+    enzymes = getattr(daccadIndiv, "enzymes", default_enzymes)
     dataResult = wrapper.submitPENSystem(myarray, nNodes = nNodes, config = config, enzymes=enzymes, **kwargs)
     return dataResult
 
@@ -72,66 +71,3 @@ def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
     daccadIndiv.fitness.values = [scores[config['fitness_type']]]
     daccadIndiv.features.values = [scores[x] for x in config["features_list"]]
     return daccadIndiv
-
-class DACCADExperiment(QDExperiment):
-    def __init__(self, config_filename, **kwargs):
-        super().__init__(config_filename, **kwargs)
-        if 'eval_fn' in self.config:
-            self._eval_fn = registry[self.config['eval_fn']]          
-        else:
-            self._eval_fn = oscill_eval_fn
-        
-    def reinit(self):
-        super().reinit()
-        self.env_name = self.config['daccad']['env_name']
-        
-    def eval_fn(self, ind):
-        return self._eval_fn(ind, config = self.config)
-
-
-def parse_args():
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--configFilename', type=str, default='configs/test.yaml', help = "Path of configuration file")
-    parser.add_argument('-e', '--evaluation', type=str, default=None, help = "Path to the python file providing the implementation of the evaluation function")
-    parser.add_argument('-o', '--resultsBaseDir', type=str, default='results/', help = "Path of results files")
-    parser.add_argument('-p', '--parallelismType', type=str, default='concurrent', help = "Type of parallelism to use")
-    parser.add_argument('--seed', type=int, default=None, help="Numpy random seed")
-    parser.add_argument('-r','--repeats', type=int, default=1, help="Number of repeats for evaluations")
-    return parser.parse_args()
-
-def create_base_config(args):
-    base_config = {}
-    if len(args.resultsBaseDir) > 0:
-        base_config['resultsBaseDir'] = args.resultsBaseDir
-    return base_config
-
-
-def create_experiment(args, base_config):
-    exp = DACCADExperiment(args.configFilename, parallelism_type =args.parallelismType, seed=args.seed, base_config=base_config)
-    print("INFO: Using configuration file '%s'. Instance name: '%s'" % (args.configFilename, exp.instance_name))
-    return exp
-
-if __name__ == "__main__":
-    import traceback
-    args = parse_args()
-    base_config = create_base_config(args)
-    if args.evaluation is not None:
-        from pathlib import Path
-        import importlib.util
-        import sys
-        p = Path(args.evaluation)
-        name = p.stem
-        module_name = ".".join(p.parent.parts)+"."+name
-        spec = importlib.util.spec_from_file_location(module_name, p)
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
-        spec.loader.exec_module(module)
-
-    for _ in range(args.repeats):
-        try:
-            exp = create_experiment(args, base_config)
-            exp.run()
-        except Exception as e:
-            warnings.warn(f"Run failed: {str(e)}")
-            traceback.print_exc()

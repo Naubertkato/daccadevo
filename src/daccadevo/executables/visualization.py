@@ -1,5 +1,5 @@
 """
-mainDACCAD.py
+visualization.py
 """
 
 from PySide6.QtWidgets import QApplication
@@ -14,17 +14,18 @@ import sys
 import numpy as np
 import yaml
 import matplotlib.pyplot as plt
-import daccadevo.submitDACCAD as sd
+import daccadevo.wrappers as wr
 
 
 
 def main():
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pickle_file")
+    parser.add_argument("pickle_file", type=str, help="Result file where individuals are stored")
     parser.add_argument("--cell", type=int, nargs="*")
-    parser.add_argument("--timeseries", action='store_true')
-    parser.add_argument("--config", type=str, default=None, help="Used to restore the simulation settings")
+    parser.add_argument("--timeseries", action='store_true', help="Simulate the system and show its time series.")
+    parser.add_argument("--config", type=str, default=None, help="Used to restore the simulation settings. \
+        If not provided, defaults to the configuration stored in the pickle file")
     parser.add_argument("--no-inhibitors",action='store_true')
     parser.add_argument("-v", "--verbose",action='store_true')
     args = parser.parse_args()
@@ -53,13 +54,15 @@ def main():
     dict_network['predator_prey_templates'] = getattr(network_sequence, 'predator_prey_templates', None)
     
     if args.verbose:
-        print(key, network_sequence)
+        print(key, f"{len(dict_network['stabilities'])} nodes", network_sequence)
 
     config = args.config
     if config is not None:
         config = yaml.safe_load(open(config))
         if args.verbose:
             print("Configuration file:",config)
+    else:
+        config = raw_data["config"]
 
     if args.timeseries:
         figure_path = plot_timeseries(network_sequence, config = config)
@@ -73,7 +76,7 @@ def main():
 
 def plot_timeseries(network_sequence, scales = [300.0, 200.0, 50.0, 1.6], offset = [10.0, 0.0, 0.0], config = None):
     daccadIndivarray = np.array(network_sequence)
-    wrapper = sd.CLI_wrapper()
+    wrapper = wr.CLI_wrapper()
 
     nNodes = network_sequence.nb_nodes
     basearray = daccadIndivarray[:nNodes+nNodes*nNodes+nNodes*nNodes*nNodes]

@@ -1,8 +1,8 @@
 import pytest
 import numpy as np
-from daccadevo.evolver import DaccadBioneatMut
+from daccadevo.optimization import DaccadBioneatMut
 from qdpy.containers import Grid
-from daccadevo.individual import standard_init_ind, standard_init_ind0, gen_daccad_individuals
+from daccadevo.core import standard_init_ind, standard_init_ind0, gen_daccad_individuals
 
 
 @pytest.fixture

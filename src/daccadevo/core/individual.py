@@ -1,12 +1,14 @@
 import numpy as np
 from qdpy.base import registry
 from qdpy.phenotype import Individual
-import daccadevo.submitDACCAD as sd
+import daccadevo.wrappers as wr
 from .mutation_utils import random_log_scale_1000
 from datetime import datetime
+from daccadevo.utils._decorators import set_module
 
 ########## INDIVIDUALS AND FITNESSES ###########
 
+@set_module("daccadevo")
 class DaccadIndividual(Individual):
     # ind_domain: valid concentration domain for templates. [0,200] for instance
     def __init__(self, ind_domain, **kwargs):
@@ -22,7 +24,7 @@ class DaccadIndividual(Individual):
     def is_valid(self):
         return len(self.stabilities) == self.nb_nodes and self.activations.shape == (self.nb_nodes,self.nb_nodes) \
                 and self.inhibitions.shape == (self.nb_nodes,self.nb_nodes,self.nb_nodes) \
-                and sd.isValid(self, self.nb_nodes)
+                and wr.isValid(self, self.nb_nodes)
 
     def assemble(self):
         self[:] = list(self.stabilities) + list(self.activations.flatten()) + list(self.inhibitions.flatten())

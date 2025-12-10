@@ -53,7 +53,7 @@ class SceneBuilder:
             elif edge_type == "autoactivation":
                 edge = AutoActivationEdge(source, dest)
                 aid = f'a{source_id}_{dest_id}'
-                self.nodes_map[aid].activaionedge = edge
+                self.nodes_map[aid].activationedge = edge
                 self.nodes_map[aid].source = source
                 self.nodes_map[aid].dest = dest
                 self.activation_nodes[(source_id, dest_id)] = self.nodes_map[aid]

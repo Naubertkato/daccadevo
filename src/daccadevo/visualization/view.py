@@ -67,7 +67,7 @@ class GraphView(QGraphicsView):
                     x, y = positions[node]
                     x *= self._graph_scale
                     y *= self._graph_scale 
-                if isinstance(item, ActivationNode):
+                else:
                     midpoint = item.activationedge.get_midpoint()
                     x = midpoint.x()
                     y = midpoint.y()

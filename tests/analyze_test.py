@@ -1,10 +1,10 @@
 import pytest
 import numpy as np
 import pandas as pd
-from daccadevo.evolver import DaccadBioneatMut
+from daccadevo.optimization import DaccadBioneatMut
 from qdpy.containers import Grid
 from qdpy.algorithms.logging import default_algorithm_logger
-from daccadevo.analyze import get_bests, get_metric_over_time, default_analysis
+from daccadevo.optimization import get_bests, get_metric_over_time, default_analysis
 import matplotlib.pyplot as plt
 
 @pytest.fixture(scope="module")

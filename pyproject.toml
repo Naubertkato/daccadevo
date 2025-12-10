@@ -19,6 +19,9 @@ dependencies = [
   "scipy",
   "matplotlib",
   "seaborn",
+  "jpype1",
+  "PySide6",
+  "networkx"
 ]
 
 [tool.hatch.version]

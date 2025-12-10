@@ -9,7 +9,7 @@ from qdpy.algorithms import Evolution
 from qdpy.containers import Container
 from qdpy import tools
 
-from .individual import standard_init_ind, gen_daccad_individuals
+from daccadevo.core.individual import standard_init_ind, gen_daccad_individuals
 from .mutation import mutation_param_bioneat, mutation_add_activation, mutation_del_activation, mutation_bioneat_signal_species, mutation_bioneat_inhibition_species
 
 from typing import Tuple, Any, Union, Sequence, Callable

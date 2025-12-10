@@ -1,5 +1,5 @@
 from qdpy.base import registry
-from daccadevo.DACCADRun import get_standard_metrics
+from daccadevo.core import get_standard_metrics
 from qdpy.phenotype import ScoresDict
 
 @registry.register

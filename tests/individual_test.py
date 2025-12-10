@@ -1,6 +1,8 @@
 import pytest
-from daccadevo.individual import gen_daccad_individuals, standard_init_ind, standard_init_ind0, standard_init_ind_grad4, standard_init_act
-from daccadevo.mutation_utils import generateUniform
+from daccadevo.core import (
+	gen_daccad_individuals, standard_init_ind, 
+	standard_init_ind0, standard_init_ind_grad4, 
+	standard_init_act, generateUniform)
 
 
 @pytest.fixture

@@ -9,4 +9,5 @@ Thumbs.db
 .ipynb_checkpoints
 results/
 dist/
+temp/
 __pycache__

@@ -1,8 +1,8 @@
 import pytest
 import json
 
-import daccadevo.submitDACCAD as sd
-from daccadevo.submitDACCAD import default_cli_wrapper, CLI_wrapper
+import daccadevo.wrappers as wp
+from daccadevo.wrappers import default_cli_wrapper, CLI_wrapper
 
 @pytest.fixture
 def base_json():
@@ -47,14 +47,14 @@ def test_generation(arr, result, request):
                              [('base_array',0), ('array_inhib',1), ('broken_array_inhib',2)])
 def test_inhibition(arr, result, request):
 	a = request.getfixturevalue(arr)
-	assert len(sd.findAllInhibitions(a,nNodes=3)) == result # raw number of inhibitors
-	assert sd.findAllInhibitorsAndConcsLegacy(a,nNodes=3) == sd.findAllInhibitorsAndConcs(a,nNodes=3) # only valid inhibitors
+	assert len(wp.findAllInhibitions(a,nNodes=3)) == result # raw number of inhibitors
+	assert wp.findAllInhibitorsAndConcsLegacy(a,nNodes=3) == wp.findAllInhibitorsAndConcs(a,nNodes=3) # only valid inhibitors
 
 @pytest.mark.parametrize('arr,result',
                              [('base_array',0), ('array_inhib',0), ('broken_array_inhib',1)])
 def test_invalid_inhibitions(arr, result, request):
 	a = request.getfixturevalue(arr)
-	assert len(sd.invalidInhibitions(a, nNodes = 3)) == result
+	assert len(wp.invalidInhibitions(a, nNodes = 3)) == result
 
 def test_call_cli(array_inhib, tmpdir):
 	"""

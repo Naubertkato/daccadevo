@@ -2,7 +2,7 @@ import numpy as np
 import random
 import math
 import copy
-from .mutation_utils import random_log_scale, random_log_scale_1000
+from daccadevo.core.mutation_utils import random_log_scale, random_log_scale_1000
 from qdpy import tools
 
 #### Functions to perform mutation operations on PEN DNA toolbox systems introduced by Aubert-Kato et al. 2017

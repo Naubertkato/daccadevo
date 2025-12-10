@@ -13,25 +13,6 @@
 #    You should have received a copy of the GNU Lesser General Public
 #    License along with qdpy. If not, see <http://www.gnu.org/licenses/>.
 
-__author__ = "Nathanael Aubert-Kato"
-__license__ = "LGPLv3"
-__version__ = "0.6.0"
+from ._decorators import set_module
 
-__submodules__ = {"core", "wrappers", "optimization", "visualization", "utils"}
-
-# Import modules for registration with the QDPY registry and top level access.
-
-from . import core
-from . import wrappers
-from . import optimization
-from . import visualization
-from . import utils
-
-__all__ = list(
-	__submodules__ |
-	set(core.__all__) |
-	set(wrappers.__all__) |
-	set(optimization.__all__) |
-	set(visualization.__all__) |
-	{"__version__"}
-	)
+__all__ = ["set_module"]

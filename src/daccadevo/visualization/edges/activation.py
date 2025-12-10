@@ -10,7 +10,6 @@ from PySide6.QtCore import QPointF, QLineF, QRectF
 from PySide6.QtGui import QPainter, QPainterPath
 from daccadevo.visualization.edge import Edge 
 from daccadevo.visualization.node import Node
-import numpy as np
 
 class ActivationEdge(Edge):
     def __init__(self, source: Node, dest: Node, parent: QGraphicsItem = None):
@@ -84,8 +83,8 @@ class ActivationEdge(Edge):
         painter.drawPath(path)
 
         # solving the intersection between the node and the Bezier curve
-        l = QLineF(s, e)
-        length = l.length()
+        line = QLineF(s, e)
+        length = line.length()
         rad = self.dest._radius
         # approximation of the analytical solution, but close enough
         parameter = 1 - 1/(1+length/(0.83*rad))

@@ -17,6 +17,6 @@ if [ -n "$evalFile" ]; then
 fi
 
 # Launch illumination.
-exec bash -c "cd /home/user/daccadevo; PYTHONPATH=$PYTHONPATH:/home/user/daccadevo python3 -m daccadevo.DACCADRun -c $configName -r $nbRuns $evalFile"
+exec bash -c "cd /home/user/daccadevo; PYTHONPATH=$PYTHONPATH:/home/user/daccadevo python3 -m daccadevo.executables.optimize -c $configName -r $nbRuns $evalFile"
 
 

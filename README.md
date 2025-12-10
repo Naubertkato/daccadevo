@@ -59,20 +59,21 @@ $ pip install torch git+https://gitlab.com/leo.cazenille/qdpy.git@develop
 
 ## Usage
 
-DACCADevo provides two CLI interfaces for fast setup: one for optimization and one for the analysis of optimization results.
+DACCADevo provides three CLI interfaces for fast setup: one for optimization, one for the analysis of optimization results, and one for the direct
+visualization of molecular systems.
 
 As a library, DACCADEvo provides additional functionalities for interfacing with DACCAD and analyzing molecular systems.
 See the examples for more details.
 
 ### Optimization
 
-The DACCADRun module allows you to start an optimization.
+The `optimize` module allows you to start an optimization.
 If no fitness function is specified, the system will default to using the oscillator fitness function.
 
 Direct call:
 
 ```bash
-$ python3 -m daccadevo.DACCADRun [-c config_file] [-e evaluation_file] [-r repeats]
+$ python3 -m daccadevo.executables.optimize[-c config_file] [-e evaluation_file] [-r repeats]
 ```
 
 Using Docker:
@@ -98,10 +99,11 @@ Note that both `config_file` and `evaluation_file` must be present inside the Do
 
 ### Dummy optimization
 
-To perform 5 independent runs described in the `configs/short_test.yaml` file, with an evaluation function defined in `examples/test_eval.py`, run:
+To perform 5 independent runs described in the `configs/short_test.yaml` file, with an evaluation 
+function defined in `examples/test_eval.py`, run:
 
 ```bash
-$ python3 -m daccadevo.DACCADRun -c configs/short_test.yaml -r 5 -e examples/test_eval.py
+$ python3 -m daccadevo.executables.optimize -c configs/short_test.yaml -r 5 -e examples/test_eval.py
 ```
 
 Or through docker:
@@ -114,9 +116,19 @@ Note that the name of the function in the Python file needs to match the `eval_f
 
 ### Results analysis
 
-The analyze CLI allows you to see basic statistics about a run or set of runs.
+The `analyze` CLI allows you to see basic statistics about a run or set of runs.
 
 ```bash
-$ python3 -m daccadevo.analyze results/short_test -c configs/short_test.yaml -n 5 --merge
+$ python3 -m daccadevo.executables.analyze results/short_test -c configs/short_test.yaml -n 5 --merge
+```
+
+### Visualization
+
+The `visualization` CLI allows you to see the network of a given individual from a saved run (.p files).
+You may provide the position of the individual with `--cell` followed by its index (as provided by `analysis`
+for instance). If no position is provided, the best individual will be selected by default.
+
+```bash
+$ python3 -m daccadevo.executables.visualization results/short_test/final.p 
 ```
 
