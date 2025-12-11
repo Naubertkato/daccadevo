@@ -1,9 +1,11 @@
 import jpype
+import jpype.imports
 from daccadevo.wrappers.cli import DACCAD_Wrapper, findAllInhibitorsAndConcs
 
 from qdpy.base import registry
 import daccadevo.wrappers.daccad as daccad
 import numpy as np
+from collections.abc import Iterable
 	
 
 @registry.register
@@ -14,8 +16,9 @@ class Jpype_wrapper(DACCAD_Wrapper):
 
 	def __init__(self, config=None):
 		super().__init__(config=config)
-		daccad.startJVM()
 		self.reset(config)
+		daccad.startJVM(rootdir=self.executable_path, 
+			debug=config.get("debug",False), jvmpath=config.get("jvmpath"))
 
 
 	def reset(self, config):
@@ -26,13 +29,13 @@ class Jpype_wrapper(DACCAD_Wrapper):
 		self.executable_path = dconf.get('executable_path','../daccad')
 		self.daccad_config_file = dconf.get('config_file', 'daccad_configs/short.conf')
 
-	def generateNode(self, name, stability, activator, graph, species_dict):
+	def generateNode(self, name, stability, activator, graph, species_dict, initConc = 1.0):
 		s = graph.getVertexFactory().create()
 		if not(activator):
 			s.setInhib(True)
 		graph.addSpecies(s, stability)
 		species_dict[name] = s
-		s.setInitialConcentration(0.1)
+		s.setInitialConcentration(initConc)
 		return s
 
 	# new
@@ -41,13 +44,16 @@ class Jpype_wrapper(DACCAD_Wrapper):
 		graph.addActivation(edge, species_dict[fromNode], species_dict[toNode], concentration)
 		return edge
 
-	# new
-	def generateAllNodes(self, array, inhibitingSequences, graph, species_dict, nNodes = 5):
+	# TODO interface is not DRY
+	def generateAllNodes(self, array, inhibitingSequences, graph, species_dict, initConc = 1.0, nNodes = 5):
+		if initConc is None:
+			initConc = 1.0
 		for i in range(nNodes):
-			self.generateNode(i,array[i], True, graph, species_dict)
+			ic = initConc[i] if isinstance(initConc,Iterable) else initConc
+			self.generateNode(i,array[i], True, graph, species_dict, initConc = ic)
 		for val in inhibitingSequences:
 			_, stab = inhibitingSequences[val]
-			self.generateNode(val,stab, False, graph, species_dict)
+			self.generateNode(val,stab, False, graph, species_dict, initConc = 0.0)
 		return graph
 
 	# new
@@ -77,20 +83,29 @@ class Jpype_wrapper(DACCAD_Wrapper):
 
 
 	# new
-	def generateFull(self, array, graph, species_dict, nNodes = 5, enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, **kwargs):
+	def generateFull(self, array, graph, species_dict, nNodes = 5, 
+		enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, initConc = 1.0, **kwargs):
 		itc = findAllInhibitorsAndConcs(array,nNodes = nNodes)
-		self.generateAllNodes(array, itc, graph, species_dict, nNodes = nNodes)
-		self.generateAllConnections(array, itc, graph, species_dict, nNodes = nNodes)
-		self.generateEnzymeParameters(graph, **enzymes)
+		graph = self.generateAllNodes(array, itc, graph, species_dict, nNodes = nNodes, initConc=initConc)
+		graph = self.generateAllConnections(array, itc, graph, species_dict, nNodes = nNodes)
+		graph = self.generateEnzymeParameters(graph, **enzymes)
 		return graph
 
 	# new
-	def submitPENSystem(self, array, nNodes = 5, config_file = 'daccad_configs/short.conf', **kwargs):
+	def submitPENSystem(self, array, nNodes = 5, config=None, **kwargs):
 		import model.Constants
 		import model.OligoGraph
 		import model.OligoSystem
 		import model.chemicals.SequenceVertex
 		import utils.GraphUtils
+		if config is not None:
+			self.reset(config)
+		if "enzymes" in self.config:
+			#just in case
+			kwargs["enzymes"] = self.config["enzymes"]
+		elif "enzymes" in self.config['daccad']:
+			kwargs["enzymes"] = self.config['daccad']["enzymes"]
+
 		g = utils.GraphUtils.initGraph()
 		species_dict = {}
 		g = self.generateFull(array, g, species_dict, nNodes, **kwargs)
@@ -98,10 +113,10 @@ class Jpype_wrapper(DACCAD_Wrapper):
 		# os = model.OligoSystem(g, utils.PredatorPreyTemplateFactory(g))
 		oligosystem =  model.OligoSystem(g)
 
-		with open(config_file,"r") as f:
-			for line in f.lines():
+		with open(self.daccad_config_file,"r") as f:
+			for line in f.readlines():
 				if not line.strip().startswith("#"):
-					params = line.split()
+					params = line.split("=")
 					model.Constants.readConfigFromString(jpype.JClass(model.Constants),params[0].strip(), params[1].strip())
 		timeSeries = oligosystem.calculateTimeSeries(None) 
 		timeSeries = np.array(timeSeries).T

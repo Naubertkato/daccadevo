@@ -7,6 +7,7 @@ import warnings
 import math
 import numpy as np
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from qdpy.base import registry
 
 #Default configurations for calling DACCAD
@@ -87,6 +88,8 @@ class DACCAD_Wrapper(ABC):
         self.config = config if config is not None else get_default_config()
         if "daccad" not in self.config:
             self.config["daccad"] = get_default_config()["daccad"]
+
+
 
     @abstractmethod
     def submitPENSystem(self, array, config=None, **kwargs):
@@ -209,6 +212,13 @@ class CLI_wrapper(DACCAD_Wrapper):
         return json
 
     def generateFullJson(self, array, enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, nNodes = 5, initConc = '1.0', tab = 0, tabChar = "  ", **kwargs):
+        # First, check if initConc is a str or not for compatibility reason with other wrappers
+        if not isinstance(initConc,str):
+            if isinstance(initConc,Iterable):
+                initConc = [str(ic) for ic in initConc]
+            else: # single value
+                initConc = str(initConc)
+
         json = "{\n"
         itc = findAllInhibitorsAndConcs(array,nNodes = nNodes)
         json += self.generateAllNodes(array, itc, nNodes = nNodes, initConc = initConc, tab = tab + 1, tabChar = tabChar)
