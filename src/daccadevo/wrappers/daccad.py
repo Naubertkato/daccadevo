@@ -1,5 +1,7 @@
-import jpype
 from pathlib import Path
+
+import jpype
+
 
 def startJVM(classpath = None, rootdir = "../daccad", jvmpath=None, debug=False):
     if classpath is None:

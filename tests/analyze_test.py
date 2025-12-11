@@ -1,11 +1,12 @@
-import pytest
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from daccadevo.optimization import DaccadBioneatMut
-from qdpy.containers import Grid
+import pytest
 from qdpy.algorithms.logging import default_algorithm_logger
-from daccadevo.optimization import get_bests, get_metric_over_time, default_analysis
-import matplotlib.pyplot as plt
+from qdpy.containers import Grid
+
+from daccadevo.optimization import DaccadBioneatMut, default_analysis, get_bests, get_metric_over_time
+
 
 @pytest.fixture(scope="module")
 def fake_evals():
@@ -29,7 +30,7 @@ def fake_run(fake_evaluation_function):
 	evo = DaccadBioneatMut(grid, 1000, [0.0,200.0], optimisation_task="max", batch_size=batch_size)
 	log = default_algorithm_logger
 	log.monitor([evo])
-	log.config={'main_algorithm_name': "test", "algorithms": {"test": {"batch_size": batch_size}}, 
+	log.config={'main_algorithm_name': "test", "algorithms": {"test": {"batch_size": batch_size}},
 	    'daccad':{'env_name': "test", 'path':'../daccad', 'config_file': "daccad_configs/short.conf"}}
 	evo.optimise(fake_evaluation_function, batch_mode=True)
 	return log
@@ -44,7 +45,7 @@ def test_get_bests(fake_evals, fake_run):
 		assert bests[i].fitness[0] == real_bests[i][0]
 		assert bests[i].features[0] == real_bests[i][1]
 		assert bests[i].features[1] == real_bests[i][2]
-	
+
 def test_metric_over_time(fake_evals, fake_run):
 	batch_size = 100
 	for metric in ["max", "qd_score"]:
@@ -67,4 +68,3 @@ def test_default_plots(fake_evals, fake_run, monkeypatch, tmp_path):
 	with plt.ion():
 		# We only need to check that there's no run error
 		default_analysis([fake_run.__get_saved_state__()])
-		

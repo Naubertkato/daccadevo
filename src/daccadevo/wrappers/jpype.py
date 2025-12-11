@@ -1,12 +1,13 @@
+from collections.abc import Iterable
+
 import jpype
 import jpype.imports
+import numpy as np
+from qdpy.base import registry
+
+from daccadevo.wrappers import daccad
 from daccadevo.wrappers.cli import DACCAD_Wrapper, findAllInhibitorsAndConcs
 
-from qdpy.base import registry
-import daccadevo.wrappers.daccad as daccad
-import numpy as np
-from collections.abc import Iterable
-	
 
 @registry.register
 class Jpype_wrapper(DACCAD_Wrapper):
@@ -17,7 +18,7 @@ class Jpype_wrapper(DACCAD_Wrapper):
 	def __init__(self, config=None):
 		super().__init__(config=config)
 		self.reset(config)
-		daccad.startJVM(rootdir=self.executable_path, 
+		daccad.startJVM(rootdir=self.executable_path,
 			debug=config.get("debug",False), jvmpath=config.get("jvmpath"))
 
 
@@ -83,7 +84,7 @@ class Jpype_wrapper(DACCAD_Wrapper):
 
 
 	# new
-	def generateFull(self, array, graph, species_dict, nNodes = 5, 
+	def generateFull(self, array, graph, species_dict, nNodes = 5,
 		enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, initConc = 1.0, **kwargs):
 		itc = findAllInhibitorsAndConcs(array,nNodes = nNodes)
 		graph = self.generateAllNodes(array, itc, graph, species_dict, nNodes = nNodes, initConc=initConc)
@@ -94,12 +95,12 @@ class Jpype_wrapper(DACCAD_Wrapper):
 	# new
 	def submitPENSystem(self, array, nNodes = 5, config=None, **kwargs):
 		# In case we execute in a different thread without JVM
-		daccad.startJVM(rootdir=self.executable_path, 
+		daccad.startJVM(rootdir=self.executable_path,
 			debug=config.get("debug",False), jvmpath=config.get("jvmpath",None))
+		import model.chemicals.SequenceVertex
 		import model.Constants
 		import model.OligoGraph
 		import model.OligoSystem
-		import model.chemicals.SequenceVertex
 		import utils.GraphUtils
 		if config is not None:
 			self.reset(config)
@@ -112,16 +113,16 @@ class Jpype_wrapper(DACCAD_Wrapper):
 		g = utils.GraphUtils.initGraph()
 		species_dict = {}
 		g = self.generateFull(array, g, species_dict, nNodes, **kwargs)
-		# TODO: make 
+		# TODO: make
 		# os = model.OligoSystem(g, utils.PredatorPreyTemplateFactory(g))
 		oligosystem =  model.OligoSystem(g)
 
-		with open(self.daccad_config_file,"r") as f:
+		with open(self.daccad_config_file) as f:
 			for line in f.readlines():
 				if not line.strip().startswith("#"):
 					params = line.split("=")
 					model.Constants.readConfigFromString(jpype.JClass(model.Constants),params[0].strip(), params[1].strip())
-		timeSeries = oligosystem.calculateTimeSeries(None) 
+		timeSeries = oligosystem.calculateTimeSeries(None)
 		timeSeries = np.array(timeSeries).T
 		return timeSeries
 

@@ -3,6 +3,7 @@ graph_builder.py
 """
 import networkx as nx
 
+
 class GraphBuilder:
     """
     Graph implementation of a PEN system using networkx.
@@ -10,7 +11,7 @@ class GraphBuilder:
     we use hidden nodes (e.g., activation nodes) to represent those behaviors in the final view. 
     """
     def __init__(self):
-        pass 
+        pass
 
     def build_graph(self, data: dict, show_inhibitors = True) -> nx.DiGraph:
         G = nx.DiGraph()

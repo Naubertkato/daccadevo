@@ -1,18 +1,25 @@
-import numpy as np
-from datetime import datetime
 import copy
 import traceback
+from datetime import datetime
+from typing import Any, Callable, Sequence, Tuple, Union
 
-from qdpy.base import registry
-from qdpy.phenotype import DomainLike, IndividualLike
-from qdpy.algorithms import Evolution
-from qdpy.containers import Container
+import numpy as np
 from qdpy import tools
+from qdpy.algorithms import Evolution
+from qdpy.base import registry
+from qdpy.containers import Container
+from qdpy.phenotype import DomainLike, IndividualLike
 
-from daccadevo.core.individual import standard_init_ind, gen_daccad_individuals
-from .mutation import mutation_param_bioneat, mutation_add_activation, mutation_del_activation, mutation_bioneat_signal_species, mutation_bioneat_inhibition_species
+from daccadevo.core.individual import gen_daccad_individuals, standard_init_ind
 
-from typing import Tuple, Any, Union, Sequence, Callable
+from .mutation import (
+    mutation_add_activation,
+    mutation_bioneat_inhibition_species,
+    mutation_bioneat_signal_species,
+    mutation_del_activation,
+    mutation_param_bioneat,
+)
+
 
 @registry.register
 class DaccadBioneatMut(Evolution):
@@ -63,7 +70,7 @@ class DaccadBioneatMut(Evolution):
         self.mut_pb = 0.8
         self.init_drift = init_drift
         self.keep_all_ancestry = keep_all_ancestry
-        
+
 
         super().__init__(container, budget, select_or_initialise=self._select_or_initialise, vary=self._vary, base_ind_gen=gen_daccad_individuals(self.ind_domain), **kwargs)
 
@@ -76,14 +83,14 @@ class DaccadBioneatMut(Evolution):
 
         if initialise: # Initialisation
             # Create a base individual
-            
+
             self._standard_init_ind(base_ind)
             for _ in range(self.init_drift):
                 base_ind = self._vary(base_ind)
             if self.keep_all_ancestry:
                 base_ind.species = [base_ind.name] # start of its lineage
             else:
-                base_ind.species = base_ind.name 
+                base_ind.species = base_ind.name
             return base_ind, False
 
         else: # Selection
@@ -96,12 +103,12 @@ class DaccadBioneatMut(Evolution):
             except Exception as e:
                 print(f"EXCEPTION ! {e}")
                 traceback.print_exc()
-            
+
             return res
 
 
     def _vary(self, individual):
-        
+
         for _ in range(500): # Max number of retries to find a valid individual
             ind = copy.deepcopy(individual)
             ind.name = str(datetime.now())

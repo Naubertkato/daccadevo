@@ -6,6 +6,7 @@ Thumbs.db
 
 # Generated
 .coverage
+coverage.xml
 .ipynb_checkpoints
 results/
 dist/

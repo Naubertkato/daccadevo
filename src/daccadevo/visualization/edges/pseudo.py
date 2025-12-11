@@ -4,9 +4,10 @@ pseudo.py
 
 from __future__ import annotations
 
-from PySide6.QtWidgets import QGraphicsItem
 from PySide6.QtCore import QPointF
 from PySide6.QtGui import QPainter, QPainterPath
+from PySide6.QtWidgets import QGraphicsItem
+
 from daccadevo.visualization.edge import Edge
 from daccadevo.visualization.node import Node
 
@@ -27,13 +28,13 @@ class PseudoEdge(Edge):
         self._c1 = QPointF()
         self._c2 = QPointF()
         self._color = "#EB5E34" # orange
-        
+
     def draw_edge(self, painter: QPainter):
         self._path.moveTo(self._start)
         self._path.lineTo(self._start)
         self._path.cubicTo(self._c1, self._c2, self._end)
         painter.drawPath(self._path)
-        
+
     def adjust(self):
         self._path = QPainterPath()
         self._start = self._source.pos() + self._source.boundingRect().center()

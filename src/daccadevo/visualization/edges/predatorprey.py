@@ -4,11 +4,14 @@ predatorprey.py
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPointF, QRectF, QSizeF, QLineF
-from PySide6.QtGui import QPainter
 import math
-from daccadevo.visualization.edge import Edge 
+
+from PySide6.QtCore import QLineF, QPointF, QRectF, QSizeF
+from PySide6.QtGui import QPainter
+
+from daccadevo.visualization.edge import Edge
 from daccadevo.visualization.node import Node
+
 
 class PredatorPreyEdge(Edge):
     def __init__(self, predator_node: Node, prey_node: Node, parent=None):
@@ -20,9 +23,9 @@ class PredatorPreyEdge(Edge):
         self._arrow_size = 15
         self._line_to_loop = QLineF()
         self._loop_angle = 0
-        self._loop_rect = QRectF() 
-        
-        
+        self._loop_rect = QRectF()
+
+
     def draw_edge(self, painter: QPainter):
         self.draw_arc(painter, self._loop_rect, self._loop_angle,
                     radius=self.source._radius, arrow_size=self._arrow_size, span_angle=270)

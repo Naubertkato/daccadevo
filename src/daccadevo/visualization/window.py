@@ -2,13 +2,16 @@
 window.py
 """
 
-from PySide6.QtWidgets import QComboBox, QVBoxLayout, QWidget, QPushButton, QHBoxLayout, QLabel, QSizePolicy
+import os
+
+import numpy as np
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
-from daccadevo.visualization.view import GraphView
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QVBoxLayout, QWidget
+
 from daccadevo.visualization.graph_builder import GraphBuilder
-import numpy as np
-import os
+from daccadevo.visualization.view import GraphView
+
 
 class MainWindow(QWidget):
     def __init__(self, parent=None, dict_network=None, figure_path=None, key=None, show_inhibitors = True):
@@ -18,7 +21,7 @@ class MainWindow(QWidget):
         self.dict_network = dict_network
         self.figure_path = figure_path
         self.key = key
-        
+
         if dict_network is not None:
             self.dict_network = dict_network
         else:
@@ -30,11 +33,11 @@ class MainWindow(QWidget):
          }
         graph_builder = GraphBuilder()
         self.graph = graph_builder.build_graph(self.dict_network, show_inhibitors = show_inhibitors)
-        
+
         self.setWindowTitle("Main")
         self.view = GraphView(self.graph)
         b_layout = QHBoxLayout()
-        
+
         self.choice_combo = QComboBox()
         self.choice_combo.addItems(self.view.get_nx_layouts())
         self.choice_combo.currentTextChanged.connect(self.view.set_nx_layout)
@@ -43,20 +46,20 @@ class MainWindow(QWidget):
         self.saveButton = QPushButton("Save", self)
         self.saveButton.clicked.connect(self.saveButton_clicked)
         b_layout.addWidget(self.saveButton)
-        
+
         if figure_path:
             self.timeSeriesButton = QPushButton("Timeseries", self)
             self.timeSeriesButton.clicked.connect(self.timeSeriesButton_clicked)
             b_layout.addWidget(self.timeSeriesButton)
-        
+
         self.quitButton = QPushButton("Quit", self)
         self.quitButton.clicked.connect(self.quitButton_clicked)
         b_layout.addWidget(self.quitButton)
-        
+
         v_layout = QVBoxLayout(self)
         v_layout.addLayout(b_layout)
-        v_layout.addWidget(self.view)    
-        
+        v_layout.addWidget(self.view)
+
     def quitButton_clicked(self):
         self.close()
 
@@ -94,7 +97,7 @@ class timeSeriesWindow(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.saveButton)
         layout.addWidget(self.image_label)
-    
+
     def saveButton_clicked(self):
         if isinstance(self.key, tuple):
             key_str = "_".join(map(str, self.key))

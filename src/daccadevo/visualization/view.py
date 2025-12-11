@@ -1,11 +1,13 @@
 """
 view.py
 """
-from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
-from PySide6.QtCore import QParallelAnimationGroup, QPropertyAnimation, QPointF, QEasingCurve
 import networkx as nx
+from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPointF, QPropertyAnimation
+from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
+
 from daccadevo.visualization.nodes import ActivationNode
 from daccadevo.visualization.scene_builder import SceneBuilder
+
 
 class GraphView(QGraphicsView):
     def __init__(self, graph: nx.DiGraph, parent=None):
@@ -61,30 +63,30 @@ class GraphView(QGraphicsView):
             # Change position of all nodes using an animation
             self.animations = QParallelAnimationGroup()
 
-            for node, pos in positions.items():   
+            for node, pos in positions.items():
                 item = self.nodes_map[node]
                 if not isinstance(item, ActivationNode):
                     x, y = positions[node]
                     x *= self._graph_scale
-                    y *= self._graph_scale 
+                    y *= self._graph_scale
                 else:
                     midpoint = item.activationedge.get_midpoint()
                     x = midpoint.x()
                     y = midpoint.y()
 
-                item.setPos(x, y)   
+                item.setPos(x, y)
                 if hasattr(item, "_edges"):
                     for edge in item._edges:
-                        edge.adjust()     
-                
-                
+                        edge.adjust()
+
+
                 animation = QPropertyAnimation(item, b"pos")
                 animation.setDuration(1000)
                 animation.setEndValue(QPointF(x, y))
                 animation.setEasingCurve(QEasingCurve.Type.OutExpo)
                 self.animations.addAnimation(animation)
             self.animations.start()
-    
+
     def _load_graph(self):
         """Load graph into QGraphicsScene using SceneBuilder"""
         self.scene().clear()

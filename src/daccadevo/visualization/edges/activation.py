@@ -4,12 +4,13 @@ activation.py
 
 from __future__ import annotations
 
-
-from PySide6.QtWidgets import QGraphicsItem
-from PySide6.QtCore import QPointF, QLineF, QRectF
+from PySide6.QtCore import QLineF, QPointF, QRectF
 from PySide6.QtGui import QPainter, QPainterPath
-from daccadevo.visualization.edge import Edge 
+from PySide6.QtWidgets import QGraphicsItem
+
+from daccadevo.visualization.edge import Edge
 from daccadevo.visualization.node import Node
+
 
 class ActivationEdge(Edge):
     def __init__(self, source: Node, dest: Node, parent: QGraphicsItem = None):
@@ -36,7 +37,7 @@ class ActivationEdge(Edge):
         x = mid.x() - (e.y()-mid.y())
         y = mid.y() + (e.x()-mid.x())
         return QPointF(x, y)
-    
+
 
     def _boundingRect_normal(self) -> QRectF:
         s = self.s_pos
@@ -57,7 +58,7 @@ class ActivationEdge(Edge):
                 self._tickness + self._arrow_size,
             )
         )
-        
+
 
     def calculate_bezier(self, p):
         s = self.s_pos
@@ -71,7 +72,7 @@ class ActivationEdge(Edge):
     def draw_edge(self, painter: QPainter):
         #start = self._line.p1()
         #end = self._arrow_tip
-        #self.draw_line(painter, start, end) 
+        #self.draw_line(painter, start, end)
         s = self.s_pos
         e = self.e_pos
         control = self.control_pos

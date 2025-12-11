@@ -2,20 +2,17 @@
 visualization.py
 """
 
-from PySide6.QtWidgets import QApplication
-
-
-from daccadevo.visualization.window import MainWindow 
-
-import pickle
 import os
+import pickle
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 import yaml
-import matplotlib.pyplot as plt
-import daccadevo.wrappers as wr
+from PySide6.QtWidgets import QApplication
 
+import daccadevo.wrappers as wr
+from daccadevo.visualization.window import MainWindow
 
 
 def main():
@@ -52,7 +49,7 @@ def main():
     dict_network['inhibitions'] = getattr(network_sequence, 'inhibitions', None)
     dict_network['pseudo_templates'] = getattr(network_sequence, 'pseudo_templates', None)
     dict_network['predator_prey_templates'] = getattr(network_sequence, 'predator_prey_templates', None)
-    
+
     if args.verbose:
         print(key, f"{len(dict_network['stabilities'])} nodes", network_sequence)
 

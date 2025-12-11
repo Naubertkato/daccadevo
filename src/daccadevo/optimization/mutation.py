@@ -1,9 +1,11 @@
-import numpy as np
-import random
-import math
 import copy
-from daccadevo.core.mutation_utils import random_log_scale, random_log_scale_1000
+import math
+import random
+
+import numpy as np
 from qdpy import tools
+
+from daccadevo.core.mutation_utils import random_log_scale, random_log_scale_1000
 
 #### Functions to perform mutation operations on PEN DNA toolbox systems introduced by Aubert-Kato et al. 2017
 
@@ -122,16 +124,15 @@ def mutation_add_node(ind, trivial=False):
         elif choice2 == 3 or choice2 == 4:
             ind.inhibitions[random.choice(allowed_inhibitions_coords)] = 0.0000015
             ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = 0.0000015
-    else:
-        if choice2 == 0:
-            ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-        elif choice2 == 1:
-            ind.activations[-1, np.random.choice(ind.nb_nodes-1)] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-        elif choice2 == 2:
-            ind.activations[np.random.choice(ind.nb_nodes-1), -1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-        elif choice2 == 3 or choice2 == 4:
-            ind.inhibitions[random.choice(allowed_inhibitions_coords)] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-            ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 0:
+        ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 1:
+        ind.activations[-1, np.random.choice(ind.nb_nodes-1)] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 2:
+        ind.activations[np.random.choice(ind.nb_nodes-1), -1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 3 or choice2 == 4:
+        ind.inhibitions[random.choice(allowed_inhibitions_coords)] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+        ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
 
 def mutation_add_node_with_gradients(ind, trivial=False, gradients=[0,1]):
     ind.resize(ind.nb_nodes+1)
@@ -154,17 +155,16 @@ def mutation_add_node_with_gradients(ind, trivial=False, gradients=[0,1]):
         elif choice2 == 3 or choice2 == 4:
             ind.inhibitions[random.choice(allowed_inhibitions_coords)] = 0.0051
             ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = 0.0051
-    else:
-        if choice2 == 0:
-            ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-        elif choice2 == 1:
-            to_node = np.random.choice(list(set(range(ind.nb_nodes-1)) - set(gradients)))
-            ind.activations[-1, to_node] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-        elif choice2 == 2:
-            ind.activations[np.random.choice(ind.nb_nodes-1), -1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-        elif choice2 == 3 or choice2 == 4:
-            ind.inhibitions[random.choice(allowed_inhibitions_coords)] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
-            ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 0:
+        ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 1:
+        to_node = np.random.choice(list(set(range(ind.nb_nodes-1)) - set(gradients)))
+        ind.activations[-1, to_node] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 2:
+        ind.activations[np.random.choice(ind.nb_nodes-1), -1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+    elif choice2 == 3 or choice2 == 4:
+        ind.inhibitions[random.choice(allowed_inhibitions_coords)] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
+        ind.activations[ind.nb_nodes-1, ind.nb_nodes-1] = np.random.uniform(ind.ind_domain[0], ind.ind_domain[1])
 
 def mutation_del_node(ind):
     node_to_del = np.random.choice(ind.nb_nodes)
@@ -234,7 +234,7 @@ def mutation_bioneat_inhibition_species(ind, trivial=False):
         # but it can still happen for very small networks
         list_nodes = list(range(ind.nb_nodes))
     chosen_inhibition_coord = (random.choice(list_nodes),) + added_activation_coord
-    
+
     if trivial:
         ind.inhibitions[chosen_inhibition_coord] = 0.0000015
     else:

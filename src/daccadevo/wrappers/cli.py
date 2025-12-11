@@ -1,14 +1,16 @@
-import os
-from pathlib import Path
-import subprocess
-from subprocess import check_output, CalledProcessError
-from datetime import datetime
-import warnings
 import math
-import numpy as np
+import os
+import subprocess
+import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Iterable
+from datetime import datetime
+from pathlib import Path
+from subprocess import CalledProcessError, check_output
+
+import numpy as np
 from qdpy.base import registry
+
 
 #Default configurations for calling DACCAD
 def get_default_config():
@@ -246,7 +248,7 @@ class CLI_wrapper(DACCAD_Wrapper):
             raw_result = check_output(command, stderr=subprocess.STDOUT).decode('ascii')
             offset = 1 if raw_result.startswith("profiling") else 0
             # Remove info and the last empty line, parse the rest
-            result = np.array([[float(j) for j in i.split(',')[:-1]] for i in raw_result.split('\n')[offset:-1]]) 
+            result = np.array([[float(j) for j in i.split(',')[:-1]] for i in raw_result.split('\n')[offset:-1]])
         except CalledProcessError:
             warnings.warn("ERROR during DACCAD execution with command: %s" % str(command), RuntimeWarning)
             result = None

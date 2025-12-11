@@ -23,25 +23,25 @@ wrappers and evaluate the resulsts.
 """
 
 
+from .evaluation import evaluate_timeseries, get_standard_metrics, oscill_eval_fn
 from .individual import (
-	DaccadIndividual, gen_daccad_individuals,
-	standard_init_ind, standard_init_ind_grad4,
-	standard_init_ind0, standard_init_act
-	)
-
-from .evaluation import ( 
-	evaluate_timeseries, get_standard_metrics,
-	oscill_eval_fn
-	)
+    DaccadIndividual,
+    gen_daccad_individuals,
+    standard_init_act,
+    standard_init_ind,
+    standard_init_ind0,
+    standard_init_ind_grad4,
+)
 from .mutation_utils import (
-    generateUniform,
+    generateBinarySobol,
+    generateSobol,
+    generateSobolConnectionsWithUniformValues,
     generateSparseUniform,
     generateSparseUniformDomain,
-    generateSobol,
-    generateBinarySobol,
-    generateSobolConnectionsWithUniformValues,
+    generateUniform,
+    random_log_scale,
     random_log_scale_1000,
-    random_log_scale)
+)
 
 __all__ = ["DaccadIndividual", "gen_daccad_individuals",
 	"standard_init_ind", "standard_init_ind_grad4",

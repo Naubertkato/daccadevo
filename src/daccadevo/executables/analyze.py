@@ -1,6 +1,9 @@
 from pathlib import Path
+
 import yaml
-from daccadevo.optimization import get_data, default_analysis
+
+from daccadevo.optimization import default_analysis, get_data
+
 
 def parse_args():
     import argparse
@@ -15,7 +18,7 @@ def parse_args():
 def setup_config(configFilename, path):
     config = None
     if configFilename is not None:
-        with open(configFilename, "r") as f:
+        with open(configFilename) as f:
             config = yaml.safe_load(f)
         if "dataDir" not in config:
             config["dataDir"] = path if path.is_dir() else path.parent
@@ -33,6 +36,6 @@ def main():
         else:
             dt = [get_data(p)]
         default_analysis(dt, config= config, merge_data=args.merge, n_best=args.nbest, threshold_best=args.threshold, verbose=True)
-    
+
 if __name__ == "__main__":
     main()

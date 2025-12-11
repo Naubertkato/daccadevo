@@ -1,12 +1,11 @@
+import numpy as np
 from qdpy.phenotype import ScoresDict
+from scipy import signal
 
 import daccadevo.wrappers as wr
 
-import numpy as np
-from scipy import signal
 
-
-def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0], 
+def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0],
                         default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, wrapper = wr.default_cli_wrapper, **kwargs):
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
@@ -34,30 +33,30 @@ def get_standard_metrics(daccadIndiv):
 ## Base oscillator test function
 def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
     y = evaluate_timeseries(daccadIndiv, config = config, **kwargs)[:,0]
-    
+
     maxVal = np.max(y)
     peaks, properties = signal.find_peaks(y/maxVal, prominence=0.01)
     res = 0
     feature2 = 0.0
     period = 0.0
     std = 0.0
-    
+
     if len(peaks) > npeaks:
         res = 1- np.diff(y[peaks]).mean()/maxVal
         res *= min(len(peaks) / 10, 1)
         res *= properties["prominences"].mean()
         feature2 = y[peaks[-1]]/maxVal
         peak_dist = [peaks[i+1]-peaks[i] for i in range(len(peaks)-1)]
-        # Food for thoughts: period cannot realistically reach 1 
+        # Food for thoughts: period cannot realistically reach 1
         # (would put a peak at 0 and one at the end). Using period wastes
         # about half the container space
-        period = np.average(peak_dist)/len(y) 
+        period = np.average(peak_dist)/len(y)
         if len(peak_dist) > 1:
             std = np.std(peak_dist)/(0.6*len(y)) # Normalized
 
-    scores = {"oscillations": res, "peaksNumber": min(len(peaks)/25.0,1.0), 
-              "peaksLastValue": feature2, "averagePeriod": period, 
-              "periodStd": std, "valueStd": np.std(y)/maxVal, 
+    scores = {"oscillations": res, "peaksNumber": min(len(peaks)/25.0,1.0),
+              "peaksLastValue": feature2, "averagePeriod": period,
+              "periodStd": std, "valueStd": np.std(y)/maxVal,
               **get_standard_metrics(daccadIndiv)}
 
     # add the actual normalized values of the system
@@ -67,7 +66,7 @@ def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
             scores[f"eval{i}"] = y[i+offset]/maxVal
 
     daccadIndiv.scores = ScoresDict(scores)
-    daccadIndiv.fitness.weights = (1.0,) 
+    daccadIndiv.fitness.weights = (1.0,)
     daccadIndiv.fitness.values = [scores[config['fitness_type']]]
     daccadIndiv.features.values = [scores[x] for x in config["features_list"]]
     return daccadIndiv

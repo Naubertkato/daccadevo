@@ -1,20 +1,22 @@
-import pytest
 import json
 
+import pytest
+
 import daccadevo.wrappers as wp
-from daccadevo.wrappers import default_cli_wrapper, CLI_wrapper
+from daccadevo.wrappers import CLI_wrapper, default_cli_wrapper
+
 
 @pytest.fixture
 def base_json():
 	json_val = None
-	with open("tests/testGraph0_0_0.json","r") as file:
+	with open("tests/testGraph0_0_0.json") as file:
 		json_val = json.loads(file.read())
 	return json_val
 
 @pytest.fixture
 def inhib_json():
 	json_val = None
-	with open("tests/testGraph0_0_1.json","r") as file:
+	with open("tests/testGraph0_0_1.json") as file:
 		json_val = json.loads(file.read())
 	return json_val
 
@@ -67,7 +69,7 @@ def test_call_cli(array_inhib, tmpdir):
 	n_points = 10
 	testconf.write_text(f"numberOfPoints = {n_points}", encoding="utf-8")
 	wrapper = CLI_wrapper()
-	dataResult = wrapper.submitPENSystem(array_inhib, nNodes = 3, 
+	dataResult = wrapper.submitPENSystem(array_inhib, nNodes = 3,
 		daccad_config_file = os.fspath(testconf), jsonFileName = os.fspath(jsonf))
 	assert len(dataResult) == n_points
 

@@ -44,3 +44,10 @@ packages = ["src/daccadevo"]
 dependencies = [
   "pytest"
 ]
+
+[tool.coverage.report]
+omit = [
+    "shibokensupport/*",
+    "pyscript",
+    "signature_bootstrap.py",
+]

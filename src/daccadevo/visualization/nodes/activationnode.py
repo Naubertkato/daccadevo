@@ -1,9 +1,11 @@
 
 from __future__ import annotations
 
-from PySide6.QtWidgets import QGraphicsItem
 from PySide6.QtCore import QRectF
+from PySide6.QtWidgets import QGraphicsItem
+
 from daccadevo.visualization.node import Node
+
 
 class ActivationNode(Node):
     def __init__(self, name: str, parent=None):
@@ -19,4 +21,3 @@ class ActivationNode(Node):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.CacheMode.DeviceCoordinateCache)
         self.setOpacity(0.0)
-        

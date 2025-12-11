@@ -1,7 +1,8 @@
-import numpy as np
-import qdpy.hdsobol as hdsobol
 import math
 import random
+
+import numpy as np
+from qdpy import hdsobol
 
 """
 Convenience functions used for individual generation and mutation.

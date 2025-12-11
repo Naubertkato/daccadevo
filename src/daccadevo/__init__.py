@@ -21,11 +21,7 @@ __submodules__ = {"core", "wrappers", "optimization", "visualization", "utils"}
 
 # Import modules for registration with the QDPY registry and top level access.
 
-from . import core
-from . import wrappers
-from . import optimization
-from . import visualization
-from . import utils
+from . import core, optimization, utils, visualization, wrappers
 
 __all__ = list(
 	__submodules__ |
@@ -33,5 +29,6 @@ __all__ = list(
 	set(wrappers.__all__) |
 	set(optimization.__all__) |
 	set(visualization.__all__) |
+	set(utils.__all__) |
 	{"__version__"}
 	)

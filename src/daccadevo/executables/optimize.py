@@ -1,5 +1,6 @@
-import warnings 
 import argparse
+import warnings
+
 from daccadevo.optimization.experiment import DACCADExperiment
 
 
@@ -30,9 +31,9 @@ def main():
     args = parse_args()
     base_config = create_base_config(args)
     if args.evaluation is not None:
-        from pathlib import Path
         import importlib.util
         import sys
+        from pathlib import Path
         p = Path(args.evaluation)
         name = p.stem
         module_name = ".".join(p.parent.parts)+"."+name
@@ -46,7 +47,7 @@ def main():
             exp = create_experiment(args, base_config)
             exp.run()
         except Exception as e:
-            warnings.warn(f"Run failed: {str(e)}")
+            warnings.warn(f"Run failed: {e!s}")
             traceback.print_exc()
 
 

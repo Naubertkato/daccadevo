@@ -4,10 +4,12 @@ Define the base Edge class.
 """
 from __future__ import annotations
 
+import math
+
+from PySide6.QtCore import QLineF, QPointF, QRectF, QSizeF, Qt
+from PySide6.QtGui import QBrush, QColor, QPainter, QPen, QPolygonF
 from PySide6.QtWidgets import QGraphicsItem, QStyleOptionGraphicsItem
-from PySide6.QtCore import QPointF, QLineF, QRectF, Qt, QSizeF
-from PySide6.QtGui import QPainter, QPen, QBrush, QColor, QPolygonF
-import math 
+
 from daccadevo.visualization.node import Node
 
 
@@ -34,7 +36,7 @@ class Edge(QGraphicsItem):
             return self._boundingRect_loop()
         else:
             return self._boundingRect_normal()
-    
+
     def _boundingRect_normal(self) -> QRectF:
         return (
             QRectF(self._line.p1(), self._line.p2())
@@ -59,7 +61,7 @@ class Edge(QGraphicsItem):
             span_deg = 45
             mid_angle_deg = (start_angle_deg + span_deg)
             theta = math.radians(mid_angle_deg)
-        
+
             centerX = rect.center().x()
             centerY = rect.center().y()
             radius = self.source._radius
@@ -70,7 +72,7 @@ class Edge(QGraphicsItem):
 
     def adjust(self):
         self.prepareGeometryChange()
-        if self.source == self.dest:  
+        if self.source == self.dest:
             self._adjust_loop()
         else:
             self._adjust_normal()
@@ -157,7 +159,7 @@ class Edge(QGraphicsItem):
         tip = QPointF(tip_x, tip_y)
         predator_center = self.source.pos() + self.source.boundingRect().center()
         vec = tip - predator_center
-        tangent = QPointF(-vec.y(), vec.x())  
+        tangent = QPointF(-vec.y(), vec.x())
         arrow_angle = math.atan2(tangent.y(), tangent.x()) + math.pi /4
         size = self._arrow_size
         triangle_angle = math.pi / 6
@@ -168,7 +170,7 @@ class Edge(QGraphicsItem):
         arrow_head = QPolygonF([tip, arrow_p1, arrow_p2])
         painter.setBrush(QBrush(self._color))
         painter.drawPolygon(arrow_head)
-        
+
 
     def arrow_target(self) -> QPointF:
         target = self._line.p1()

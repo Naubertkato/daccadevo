@@ -1,10 +1,11 @@
 
 from __future__ import annotations
 
-
-from PySide6.QtWidgets import QGraphicsItem
 from PySide6.QtCore import QRectF
+from PySide6.QtWidgets import QGraphicsItem
+
 from daccadevo.visualization.node import Node
+
 
 class NormalNode(Node):
 
@@ -19,4 +20,3 @@ class NormalNode(Node):
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemIsMovable, True)
         self.setFlag(QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges)
         self.setCacheMode(QGraphicsItem.CacheMode.DeviceCoordinateCache)
-    

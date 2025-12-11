@@ -1,12 +1,15 @@
-from qdpy.containers import Grid
+import ast
 import pickle
+import warnings
+
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 import pandas as pd
-import ast
-import warnings
+import seaborn as sns
+from qdpy.containers import Grid
+
 from daccadevo.core import evaluate_timeseries
+
 
 def get_data(path):
     res = None
@@ -63,10 +66,10 @@ def get_metric_over_time(dt, metric="qd_score", batch_size= None):
     else:
         sns.lineplot(data=results, x="total_eval", y=metric, ax=axs)
     return fig, axs
-    
 
 
-def evaluate_timeseries_on_bests(container, config, n_best=3, threshold=None, 
+
+def evaluate_timeseries_on_bests(container, config, n_best=3, threshold=None,
                                  verbose=False, key = lambda indiv: indiv.fitness[0]):
     config["keepTemporaryFiles"] = False
     all_timeseries = []
@@ -96,11 +99,11 @@ def plot_bests(time_series, container, labels = None, configs = None, figname = 
     axs[0].set_xlabel("Time [min]")
     axs[0].set_title(f"Top {len(time_series)} individuals")
     axs[0].set_box_aspect(1)
-    
+
     # Grid of elites
     feat_x, feat_y = container.features_domain
     fit_min, fit_max = container.fitness_domain[0]
-    heat = axs[1].imshow(container.quality_array[...,0].T,origin="lower",interpolation='none', 
+    heat = axs[1].imshow(container.quality_array[...,0].T,origin="lower",interpolation='none',
         vmin=fit_min, vmax=fit_max,extent=[feat_x[0],feat_x[1],feat_y[0],feat_y[1]])
     axs[1].set_title("Grid of elites")
     if configs is not None and 'features_list' in configs:
@@ -121,7 +124,7 @@ def plot_bests(time_series, container, labels = None, configs = None, figname = 
         dx = (xmax-xmin)/lenx
         dy = (ymax-ymin)/leny
         for i, pos in enumerate(labels):
-            axs[1].add_patch(plt.Circle([xmin+(pos[0]+0.5)*dx,ymin+(pos[1]+0.5)*dy], radius = dx, 
+            axs[1].add_patch(plt.Circle([xmin+(pos[0]+0.5)*dx,ymin+(pos[1]+0.5)*dy], radius = dx,
                 linewidth=3, edgecolor= lines[i].get_color(), facecolor='none', zorder=len(lines)-i))
 
     # Color bar
@@ -163,4 +166,4 @@ def default_analysis(evo_data_list, n_best=3, config=None, threshold_best = None
             config = evo_data_list[i]["config"]
         all_timeseries, labels = evaluate_timeseries_on_bests(c, config, n_best= n_best, threshold=threshold_best, verbose=verbose)
         plot_bests(all_timeseries, c, labels=labels, configs=config)
-    
+

@@ -3,9 +3,9 @@ node.py
 """
 from __future__ import annotations
 
-from PySide6.QtWidgets import QWidget, QGraphicsItem, QGraphicsObject, QStyleOptionGraphicsItem
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QPainter, QPen, QColor, QBrush
+from PySide6.QtGui import QBrush, QColor, QPainter, QPen
+from PySide6.QtWidgets import QGraphicsItem, QGraphicsObject, QStyleOptionGraphicsItem, QWidget
 
 
 class Node(QGraphicsObject):

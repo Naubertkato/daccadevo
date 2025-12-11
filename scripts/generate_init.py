@@ -6,8 +6,8 @@
 if __name__ == "__main__":
 
 	import re
-	from pathlib import Path
 	import sys
+	from pathlib import Path
 	msg = """    This file is part of daccadevo.
 
 	daccadevo is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ if __name__ == "__main__":
 	for f in file_list:
 		# find all classes and functions in there
 		f_names = []
-		with open(f,"r") as opened:
+		with open(f) as opened:
 			for line in opened.readlines():
 				m = re.search(r'(?<=^def )\w+|(?<=^class )\w+', line)
 				if m is not None:

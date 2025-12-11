@@ -1,10 +1,12 @@
+from datetime import datetime
+
 import numpy as np
 from qdpy.base import registry
 from qdpy.phenotype import Individual
+
 import daccadevo.wrappers as wr
+
 from .mutation_utils import random_log_scale_1000
-from datetime import datetime
-from daccadevo.utils._decorators import set_module
 
 ########## INDIVIDUALS AND FITNESSES ###########
 
@@ -126,7 +128,7 @@ def standard_init_ind0(ind):
     ind.assemble()
     return ind
 
-@registry.register    
+@registry.register
 def standard_init_act(ind):
     """Create a base individual, with 2 nodes and a "0->1" connection"""
     ind.resize(2)

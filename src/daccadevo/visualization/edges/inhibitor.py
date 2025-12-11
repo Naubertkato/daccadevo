@@ -3,12 +3,15 @@ inhibitor.py
 """
 from __future__ import annotations
 
-from PySide6.QtWidgets import QGraphicsItem
-from PySide6.QtCore import QPointF, QLineF
-from PySide6.QtGui import QPainter, QPen, QColor
 import math
+
+from PySide6.QtCore import QLineF, QPointF
+from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtWidgets import QGraphicsItem
+
 from daccadevo.visualization.edge import Edge
 from daccadevo.visualization.node import Node
+
 
 class InhibitorEdge(Edge):
     def __init__(self, source: Node, dest: Node, parent: QGraphicsItem = None):
@@ -20,12 +23,12 @@ class InhibitorEdge(Edge):
         """
         super().__init__(source, dest, parent)
         self._color = "#4C34EB" # blue
-        self._arrow_size = 6 
+        self._arrow_size = 6
 
     def adjust(self):
         super().adjust()
         self._arrow_tip = self.arrow_target()
-    
+
     def draw_edge(self, painter: QPainter):
         start = self._line.p1()
         tip = self._arrow_tip

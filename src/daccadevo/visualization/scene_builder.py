@@ -2,9 +2,16 @@
 scene_builder.py
 """
 
-from daccadevo.visualization.nodes import NormalNode, PseudoNode, PredatorNode, ActivationNode
-from daccadevo.visualization.edges import ActivationEdge, AutoActivationEdge, InhibitorEdge, PseudoEdge, PredatorPreyEdge
 from daccadevo.visualization.edge import Edge
+from daccadevo.visualization.edges import (
+    ActivationEdge,
+    AutoActivationEdge,
+    InhibitorEdge,
+    PredatorPreyEdge,
+    PseudoEdge,
+)
+from daccadevo.visualization.nodes import ActivationNode, NormalNode, PredatorNode, PseudoNode
+
 
 class SceneBuilder:
     def __init__(self, graph, scene, nodes_map):
@@ -33,7 +40,7 @@ class SceneBuilder:
             self.scene.addItem(item)
             self.nodes_map[node_id] = item
 
-        # === Add edges ===        
+        # === Add edges ===
         for source_id, dest_id, attr in self.graph.edges(data=True):
             edge_type = attr.get("type")
             source = self.nodes_map[source_id]

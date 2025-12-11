@@ -1,24 +1,25 @@
-import pytest
 import numpy as np
-from daccadevo.optimization import DaccadBioneatMut
+import pytest
 from qdpy.containers import Grid
-from daccadevo.core import standard_init_ind, standard_init_ind0, gen_daccad_individuals
+
+from daccadevo.core import gen_daccad_individuals, standard_init_ind, standard_init_ind0
+from daccadevo.optimization import DaccadBioneatMut
 
 
 @pytest.fixture
-def evolver(): 
+def evolver():
     grid = Grid(shape=(10,10), max_items_per_bin=1, fitness_domain=((0., 1.),), features_domain=((0., 1.), (0., 1.)))
     return DaccadBioneatMut(grid, 10, [0.0,200.0], optimisation_task="max")
 
 @pytest.fixture
-def evolver_full(evolver): 
+def evolver_full(evolver):
     for i in range(5):
         a = evolver.ask()
         evolver.tell(a,fitness=[0.1],features=[0.0,float(i)/5.0])
     return evolver
 
 @pytest.fixture
-def evolver_custom_gen(): 
+def evolver_custom_gen():
     grid = Grid(shape=(10,10), max_items_per_bin=1, fitness_domain=((0., 1.),), features_domain=((0., 1.), (0., 1.)))
     return DaccadBioneatMut(grid, 10, [0.0,200.0],init_ind="standard_init_ind0", optimisation_task="max")
 
@@ -79,7 +80,7 @@ def test_mutation_rnd(evo, ind, request):
     for _ in range(100):
         indiv_list.append(evo._vary(indiv_list[-1]))
 
-    
+
     assert all(i.nb_nodes > 0 for i in indiv_list)
     assert all(i.is_valid for i in indiv_list)
     def get_vals_helper(ind):
@@ -88,7 +89,7 @@ def test_mutation_rnd(evo, ind, request):
         active_inhibitions_coords = list(zip(*np.where(ind.inhibitions)))
         nb_active_inhibitions = len(active_inhibitions_coords)
         return nb_active_activations, nb_active_inhibitions
-    vals = [get_vals_helper(i) for i in indiv_list]  
+    vals = [get_vals_helper(i) for i in indiv_list]
     assert all(a>= evo.nbConnActivationsDomain[0] and a <= evo.nbConnActivationsDomain[1] and b >= evo.nbConnInhibitionsDomain[0] \
         and b <= evo.nbConnInhibitionsDomain[1] and a + b >= evo.nbConnDomain[0] and a + b <= evo.nbConnDomain[1] for a,b in vals)
 
