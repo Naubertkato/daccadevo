@@ -93,6 +93,9 @@ class Jpype_wrapper(DACCAD_Wrapper):
 
 	# new
 	def submitPENSystem(self, array, nNodes = 5, config=None, **kwargs):
+		# In case we execute in a different thread without JVM
+		daccad.startJVM(rootdir=self.executable_path, 
+			debug=config.get("debug",False), jvmpath=config.get("jvmpath",None))
 		import model.Constants
 		import model.OligoGraph
 		import model.OligoSystem

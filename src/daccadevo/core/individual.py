@@ -8,7 +8,6 @@ from daccadevo.utils._decorators import set_module
 
 ########## INDIVIDUALS AND FITNESSES ###########
 
-@set_module("daccadevo")
 class DaccadIndividual(Individual):
     # ind_domain: valid concentration domain for templates. [0,200] for instance
     def __init__(self, ind_domain, **kwargs):

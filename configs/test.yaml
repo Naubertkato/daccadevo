@@ -3,6 +3,8 @@
 
 keepTemporaryFiles: False
 
+#wrapper: "Jpype_wrapper" # To use a different wrapper
+
 features_list: ['peaksNumber','peaksLastValue']
 fitness_type: "oscillations"
 
