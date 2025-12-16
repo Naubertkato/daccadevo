@@ -43,7 +43,7 @@ def findAllInhibitorsAndConcsLegacy(array,nNodes = 5):
                 if array[index + fromId*nNodes + toId] > 0.0:
                     name = 'I'+str(fromId)+'T'+str(toId)
                     if name not in inhibitingTemplatesConcs:
-                        stability =  1 / 100 * math.exp((math.log(array[fromId]) + math.log(array[toId])) / 2)
+                        stability =  0.001 * math.exp((math.log(array[fromId]) + math.log(array[toId])) / 2)
                         inhibitingTemplatesConcs[name] = ([],stability)
                     inhibitingTemplatesConcs[name][0].append((str(i),array[index + fromId*nNodes + toId]))
     return inhibitingTemplatesConcs
@@ -57,7 +57,7 @@ def findAllInhibitorsAndConcs(array,nNodes = 5):
         name = 'I'+str(fromId)+'T'+str(toId)
         indexes = allInhibitions[(fromId,toId)]
         base = fromId*nNodes + toId + beginInhibitionTemplates
-        stability =  1 / 100 * math.exp((math.log(array[fromId]) + math.log(array[toId])) / 2)
+        stability =  0.001 * math.exp((math.log(array[fromId]) + math.log(array[toId])) / 2)
         inhibitingTemplatesConcs[name] = [(str(i), array[base+i*nNodes*nNodes]) for i in indexes],stability
     return inhibitingTemplatesConcs
 
