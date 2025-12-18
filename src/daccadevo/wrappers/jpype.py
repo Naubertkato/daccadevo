@@ -12,7 +12,7 @@ from daccadevo.wrappers.cli import DACCAD_Wrapper, findAllInhibitorsAndConcs
 @registry.register
 class Jpype_wrapper(DACCAD_Wrapper):
 	"""
-	Wrapper relying on writing down the system as a json file and submitting it to the CLI of DACCAD.
+	Wrapper relying on jpype to directly call Java objects and interface with DACCAD.
 	"""
 
 	def __init__(self, config=None):
