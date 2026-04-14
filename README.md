@@ -1,6 +1,6 @@
 # DACCADevo #
 
-Python wrapper for the DACCAD molecular system simulator and combine it with the Quality-Diversity optimization library QDPY.
+Python wrapper for the DACCAD molecular system simulator, combining it with the Quality-Diversity optimization library QDPY.
 
 For the version of DACCADevo used in the paper Aubert-Kato, Nathanael, and Mika Ito. "Exploration of Reservoir Properties in Molecular Computing Systems." 2024 IEEE Congress on Evolutionary Computation (CEC), check the `reservoir` branch.
 
