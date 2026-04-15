@@ -78,15 +78,22 @@ class DaccadIndividual(Individual):
     Examples
     --------
     Implementation of a simple bistable system: A->A, B->B, A -> Inh(B->B), B -> Inh(A->A)
-    
+
     >>> from daccadevo.core import DaccadIndividual
     >>> indiv = DaccadIndividual([0,1], nb_nodes = 2)
     >>> indiv.activations[0,0] = 10.0
     >>> indiv.activations[1,1] = 10.0
     >>> indiv.inhibitions[0,1,1]=20.0
     >>> indiv.inhibitions[1,0,0]=20.0
+    >>> indiv.assemble()
+    >>> indiv[:]
+    [np.float64(1.0), np.float64(1.0), np.float64(10.0), np.float64(0.0), 
+    np.float64(0.0), np.float64(10.0), np.float64(0.0), np.float64(0.0), 
+    np.float64(0.0), np.float64(20.0), np.float64(20.0), np.float64(0.0), 
+    np.float64(0.0), np.float64(0.0)]
 
-    For other examples, see the :ref: `base_examples.ipynb`
+
+    For other examples, see `examples/base_example.ipynb`
 
     """
     
@@ -96,7 +103,7 @@ class DaccadIndividual(Individual):
         super().__init__(**kwargs)
         self.nb_nodes = nb_nodes
         self.ind_domain = ind_domain
-        self.stabilities = np.zeros(self.nb_nodes)
+        self.stabilities = np.array([ind_domain[1]]*self.nb_nodes) # default gives the maximum value to all species
         self.activations = np.zeros((self.nb_nodes, self.nb_nodes))
         self.inhibitions = np.zeros((self.nb_nodes, self.nb_nodes, self.nb_nodes))
         self.name = kwargs.get("name", str(datetime.now()))
