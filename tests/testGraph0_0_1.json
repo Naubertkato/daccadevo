@@ -35,7 +35,7 @@
     },
     {
       "name": "I0T0",
-      "parameter": 0.01,
+      "parameter": 0.001,
       "initialConcentration": 0.0,
       "type": 2,
       "protectedSequence": false,
