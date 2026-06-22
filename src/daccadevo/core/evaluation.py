@@ -7,6 +7,36 @@ import daccadevo.wrappers as wr
 
 def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0],
                         default_enzymes = {"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}, wrapper = wr.default_cli_wrapper, **kwargs):
+    """
+    Setup the evaluation of a `DaccadIndividual` by the wrapper and return the resulting concentration timeseries.
+
+    Arguments
+    ---------
+    daccadIndiv: DaccadIndividual
+        The individual to evaluate
+    config: dict
+        A dictionary of configuration parameters, typically from a QDExperiment.
+        Forwarded to DACCAD through the wrapper.
+    scales: list of floats
+        Scaling factors used to go from normalized values in daccadIndiv to actual
+        stabilities (first term) and concentrations (second term). Implementations
+        of DaccadIndividuals with more types of parameters may have additional terms.
+        Defaults to `[1000.0,200.0]`.
+    default_enzymes: dict
+        Concentration of the three main enzymes used by PEN systems: polymerase (pol),
+        nickase (nick), and exonuclease (exo). If not specified in daccadIndiv, those
+        values will be used. Defaults to `{"pol" : 1.0, "nick" : 1.0, "exo" : 1.0}`.
+    wrapper: DACCAD_Wrapper
+        The wrapper used to call the simulator. Defaults to `daccadevo.wrappers.default_cli_wrapper`
+    kwargs: dict
+        Additional parameters forwarded to the wrapper, as necessary.
+
+    Returns
+    -------
+    dataResult: array
+        A NumPy array of shape (N,M), where N is the number of simulated minutes (time) 
+        and M the number of recorded species concentrations.
+    """
     nNodes = daccadIndiv.nb_nodes
     scaling = [scales[0]]*nNodes+[scales[1]]*(nNodes*nNodes*(nNodes+1))
     myarray = np.array(scaling)*np.array(daccadIndiv)
