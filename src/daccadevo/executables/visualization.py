@@ -13,6 +13,7 @@ from PySide6.QtWidgets import QApplication
 
 import daccadevo.wrappers as wr
 from daccadevo.visualization.window import MainWindow
+from qdpy.containers import Grid
 
 
 def main():
@@ -32,17 +33,22 @@ def main():
     with open(args.pickle_file, "rb") as f:
         raw_data = pickle.load(f)
 
+    container = raw_data["container"]
+    if not isinstance(container, Grid):
+            shape = container.shape if hasattr(container,"shape") else (32,) * len(container.features_domain)
+            container = container.to_grid(shape)
+
     if args.cell is not None:
         key = tuple(args.cell)
-        if key not in raw_data["container"].solutions:
+        if key not in container.solutions:
             raise KeyError(f"{key} does not exist in container")
-        key_cell = raw_data["container"].solutions[key]
+        key_cell = container.solutions[key]
         if not key_cell:
             raise ValueError("The specified cell is empty.")
         network_sequence=key_cell[0]
     else:
         key = "best"
-        network_sequence=raw_data["container"].best
+        network_sequence=container.best
     dict_network = {}
     dict_network['stabilities'] = getattr(network_sequence, 'stabilities', None)
     dict_network['activations'] = getattr(network_sequence, 'activations', None)
