@@ -10,8 +10,8 @@ def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0],
     """
     Setup the evaluation of a `DaccadIndividual` by the wrapper and return the resulting concentration timeseries.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     daccadIndiv: DaccadIndividual
         The individual to evaluate
     config: dict
@@ -45,6 +45,22 @@ def evaluate_timeseries(daccadIndiv, config = None, scales = [1000.0,200.0],
     return dataResult
 
 def get_standard_metrics(daccadIndiv):
+    """
+    Provide general metrics evaluated on a `DaccadIndividual`: number of signal species, average and standard
+    deviation of sequence dissociation rates; number of activation templates, average and standard deviation
+    of their concentrations; number of inhibition templates, average and standard deviation of their
+    concentrations.
+
+    Parameters
+    ----------
+    daccadIndiv: DaccadIndividual
+        The individual to evaluate
+
+    Returns
+    -------
+    metrics: dict
+        A dictionary of the standard metrics. 
+    """
     def _helper(array, base_name):
         values = array[np.nonzero(array)]
         values_dict = {}
@@ -60,8 +76,28 @@ def get_standard_metrics(daccadIndiv):
     metrics = {**metrics, **_helper(daccadIndiv.inhibitions,"inhibitions")}
     return metrics
 
-## Base oscillator test function
 def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
+    """
+    Default evaluation function, simulating a `DaccadIndividual` and evaluating
+    how close its dynamic behavior is to an oscillator. Sets the score and
+    features in the individual in a way compatible with the QDPy framework.
+    Parameters
+    ----------
+    daccadIndiv: DaccadIndividual
+        The individual to evaluate
+    config: dict
+        A dictionary of configuration parameters, typically from a QDExperiment.
+        Forwarded to DACCAD through the wrapper.
+    npeaks: int
+        Minimum number of detected peaks required to have a non-zero score.
+    kwargs: dict
+        Additional parameters forwarded to the wrapper, as necessary.
+
+    Returns
+    -------
+    daccadIndiv: DaccadIndividual
+        The initial individual, with its scores, fitness, and features set.
+    """
     y = evaluate_timeseries(daccadIndiv, config = config, **kwargs)[:,0]
 
     maxVal = np.max(y)
@@ -96,7 +132,9 @@ def oscill_eval_fn(daccadIndiv, config = None, npeaks = 1, **kwargs):
             scores[f"eval{i}"] = y[i+offset]/maxVal
 
     daccadIndiv.scores = ScoresDict(scores)
-    daccadIndiv.fitness.weights = (1.0,)
+    if len(daccadIndiv.fitness.weights) < 1:
+        #In case it was not set
+        daccadIndiv.fitness.weights = (1.0,) 
     daccadIndiv.fitness.values = [scores[config['fitness_type']]]
     daccadIndiv.features.values = [scores[x] for x in config["features_list"]]
     return daccadIndiv
