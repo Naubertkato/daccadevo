@@ -1,6 +1,3 @@
-"""
-graph_builder.py
-"""
 import networkx as nx
 
 

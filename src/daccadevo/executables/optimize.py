@@ -1,3 +1,8 @@
+"""
+Main executable to run an optimization based on parameters defined in a configuration file
+and an optional Python file defining a QDPy evaluation function.
+"""
+
 import argparse
 import warnings
 

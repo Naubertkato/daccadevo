@@ -19,8 +19,8 @@ Classes
    * - :py:obj:`MainWindow <daccadevo.visualization.window.MainWindow>`
      - .. autodoc2-docstring:: daccadevo.visualization.window.MainWindow
           :summary:
-   * - :py:obj:`timeSeriesWindow <daccadevo.visualization.window.timeSeriesWindow>`
-     - .. autodoc2-docstring:: daccadevo.visualization.window.timeSeriesWindow
+   * - :py:obj:`TimeSeriesWindow <daccadevo.visualization.window.TimeSeriesWindow>`
+     - .. autodoc2-docstring:: daccadevo.visualization.window.TimeSeriesWindow
           :summary:
 
 API
@@ -52,18 +52,18 @@ API
 
       .. autodoc2-docstring:: daccadevo.visualization.window.MainWindow.saveButton_clicked
 
-.. py:class:: timeSeriesWindow(parent=None, figure_path=None, key=None)
-   :canonical: daccadevo.visualization.window.timeSeriesWindow
+.. py:class:: TimeSeriesWindow(parent=None, figure_path=None, key=None)
+   :canonical: daccadevo.visualization.window.TimeSeriesWindow
 
    Bases: :py:obj:`PySide6.QtWidgets.QWidget`
 
-   .. autodoc2-docstring:: daccadevo.visualization.window.timeSeriesWindow
+   .. autodoc2-docstring:: daccadevo.visualization.window.TimeSeriesWindow
 
    .. rubric:: Initialization
 
-   .. autodoc2-docstring:: daccadevo.visualization.window.timeSeriesWindow.__init__
+   .. autodoc2-docstring:: daccadevo.visualization.window.TimeSeriesWindow.__init__
 
    .. py:method:: saveButton_clicked()
-      :canonical: daccadevo.visualization.window.timeSeriesWindow.saveButton_clicked
+      :canonical: daccadevo.visualization.window.TimeSeriesWindow.saveButton_clicked
 
-      .. autodoc2-docstring:: daccadevo.visualization.window.timeSeriesWindow.saveButton_clicked
+      .. autodoc2-docstring:: daccadevo.visualization.window.TimeSeriesWindow.saveButton_clicked

@@ -1,5 +1,5 @@
 """
-visualization.py
+Main executable to visualize a specific PEN graph from a DACCADEvo optimization, optionally plotting its behavior.
 """
 
 import os

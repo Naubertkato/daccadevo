@@ -1,3 +1,8 @@
+"""
+Executable to automatically run standard analysis on a batch of DACCADEvo optimization results.
+See README for usage.
+"""
+
 from pathlib import Path
 
 import yaml

@@ -1,7 +1,3 @@
-"""
-scene_builder.py
-"""
-
 from daccadevo.visualization.edge import Edge
 from daccadevo.visualization.edges import (
     ActivationEdge,
@@ -14,6 +10,24 @@ from daccadevo.visualization.nodes import ActivationNode, NormalNode, PredatorNo
 
 
 class SceneBuilder:
+    """
+    Class connecting a graph representation of a PEN system with its QT visualization.
+    Handles different node types:
+
+    - activation nodes, the default type of signal species
+    - pseudo nodes, extended signal species modified by a pseudo-templated
+    - predators, from the predator-prey design
+
+    as well as the current set of edges available:
+
+    - activation, a standard template
+    - autoactivation, a standard template where the input and output are the same, requiring some calculation for their visual representation and that of inhibition targetting it.
+    - predator-prey interactions, which is technically a multi-edge but is handled as a graph edge
+    - inhibition edges, which target another edge rather than a node and thus requires special handling
+    - pseudo-template edges, which need to be visually distinct from activations.
+
+    Note that the actual implementation is handled by their specific node or edge class.
+    """
     def __init__(self, graph, scene, nodes_map):
         self.graph = graph
         self.scene = scene

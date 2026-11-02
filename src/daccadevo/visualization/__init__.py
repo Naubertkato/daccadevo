@@ -19,14 +19,14 @@ from .graph_builder import GraphBuilder
 from .node import Node
 from .scene_builder import SceneBuilder
 from .view import GraphView
-from .window import MainWindow, timeSeriesWindow
+from .window import MainWindow, TimeSeriesWindow
 
 __all__ = [
     "edges",
     "nodes",
     "Edge",
     "MainWindow",
-    "timeSeriesWindow",
+    "TimeSeriesWindow",
     "SceneBuilder",
     "GraphView",
     "Node",

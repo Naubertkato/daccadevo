@@ -1,3 +1,7 @@
+"""
+Module implementing various mutations aware of the characteristics of the array representation of PEN systems.
+"""
+
 import copy
 import math
 import random

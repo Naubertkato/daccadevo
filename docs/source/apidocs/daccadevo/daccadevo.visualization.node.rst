@@ -23,7 +23,7 @@ Classes
 API
 ~~~
 
-.. py:class:: Node(name: str, parent=None)
+.. py:class:: Node(name: str)
    :canonical: daccadevo.visualization.node.Node
 
    Bases: :py:obj:`PySide6.QtWidgets.QGraphicsObject`

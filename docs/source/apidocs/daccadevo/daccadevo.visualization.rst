@@ -49,6 +49,6 @@ API
 
 .. py:data:: __all__
    :canonical: daccadevo.visualization.__all__
-   :value: ['edges', 'nodes', 'Edge', 'MainWindow', 'timeSeriesWindow', 'SceneBuilder', 'GraphView', 'Node', 'G...
+   :value: ['edges', 'nodes', 'Edge', 'MainWindow', 'TimeSeriesWindow', 'SceneBuilder', 'GraphView', 'Node', 'G...
 
    .. autodoc2-docstring:: daccadevo.visualization.__all__

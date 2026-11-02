@@ -1,5 +1,6 @@
 """
-window.py
+Provide classes for the two main types of windows: ``MainWindow`` displays a PEN graph,
+while ``TimeSeriesWindow`` displays the results of a simulation of said graph.
 """
 
 import os
@@ -14,6 +15,37 @@ from daccadevo.visualization.view import GraphView
 
 
 class MainWindow(QWidget):
+    """
+        Class for the main visualization window, showing the PEN system as a graph with editable positions and
+        providing an interface to plot its time series.
+
+        Parameters
+        ----------
+        parent: Qwidget, optional
+            The parent of the widget. If no parent is specified, this widget will become a window (the intended
+            behavior). Allows developpers to incorporate the PEN visualization into other tools.
+
+        dict_network: dictionary, optional
+            Dictionary built by a ``SceneBuilder`` representing the different types of nodes and edges in the graph.
+        
+        figure_path: String, optional
+            Path where to save the figure of the time series of the system.
+
+        key: Any, optional
+            Key used to select the DACCADIndividual from the result of a DACCADEvo optimization. Used for display.
+
+        show_inhibitors: boolean, defaults True
+            Display inhibitors as independent nodes. False means that an inhibition edge will be drawn from
+            the activation nodes that produced the inhibitor instead.
+
+        Attributes
+        ----------
+        graph: networkx DiGraph
+            A networkx representation of the PEN system as defined by a ``GraphBuilder``.
+
+        view: GraphView
+            A QT widget displaying the graph.
+        """
     def __init__(self, parent=None, dict_network=None, figure_path=None, key=None, show_inhibitors = True):
         super().__init__(parent)
         self.resize(800, 600)
@@ -64,7 +96,7 @@ class MainWindow(QWidget):
         self.close()
 
     def timeSeriesButton_clicked(self):
-        self.w = timeSeriesWindow(figure_path=self.figure_path, key=self.key)
+        self.w = TimeSeriesWindow(figure_path=self.figure_path, key=self.key)
         self.w.show()
 
     def saveButton_clicked(self):
@@ -77,7 +109,23 @@ class MainWindow(QWidget):
         scaled_pixmap = pixmap.scaled(800, 600, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         scaled_pixmap.save(f"temp/network_{key_str}.png", "PNG")
 
-class timeSeriesWindow(QWidget):
+class TimeSeriesWindow(QWidget):
+    """
+        Class for the time series window, showing a plot of concentrations over time 
+        from the simulation of the PEN system.
+
+        Parameters
+        ----------
+        parent: Qwidget, optional
+            The parent of the widget. If no parent is specified, this widget will become a window (the intended
+            behavior). Allows developpers to incorporate the PEN visualization into other tools.
+
+        figure_path: String, optional
+            Path where to save the figure of the time series of the system.
+
+        key: Any, optional
+            Key used to select the DACCADIndividual from the result of a DACCADEvo optimization. Used for display.
+        """
     def __init__(self, parent=None, figure_path=None, key=None):
         super().__init__(parent)
         self.setWindowTitle('Timeseries')

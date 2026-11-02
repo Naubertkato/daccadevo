@@ -1,6 +1,3 @@
-"""
-view.py
-"""
 import networkx as nx
 from PySide6.QtCore import QEasingCurve, QParallelAnimationGroup, QPointF, QPropertyAnimation
 from PySide6.QtWidgets import QGraphicsScene, QGraphicsView
@@ -13,10 +10,13 @@ class GraphView(QGraphicsView):
     def __init__(self, graph: nx.DiGraph, parent=None):
         """GraphView constructor
 
-        This widget can display a directed graph
+        Create a QT view displaying a directed graph. Actual node and edge details are handled
+        by the ```SceneBuilder``` and individual node and edge classes.
 
-        Args:
-            graph (nx.DiGraph): a networkx directed graph
+        Args
+        ----
+            graph: nx.DiGraph)
+                a networkx directed graph
         """
         super().__init__()
         self._graph = graph

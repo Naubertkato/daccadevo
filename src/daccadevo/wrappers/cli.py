@@ -12,14 +12,35 @@ import numpy as np
 from qdpy.base import registry
 
 
-#Default configurations for calling DACCAD
 def get_default_config():
+    """
+    Return the default configurations for calling DACCAD.
+    """
     # dataDir is set automatically by qdpy when running a QDExperiment
     # can be explicitely set in the config file as well
     return {'dataDir': '.', 'daccad': {'config_file':'daccad_configs/short.conf' , 'env_name': 'default', 'executable_path':'../daccad'}}
 
 
 def findAllInhibitions(array, nNodes = 5):
+    """
+    Extract the inhibition from a 1D array representing a PEN system following the
+    pattern from ``DACCADIndividual``.
+
+    Args
+    ----
+    array: numpy array
+    The array to analyze. Inhibitions are expected to start from position N*(N+1)
+    where N is the number of activation nodes in the system.
+
+    nNodes: int, defaults to 5
+    The number of activation nodes in the system.
+
+    Returns
+    -------
+    inhibitions: dict
+    A dictionary where keys are templates represented as a tuple ``(from, to)``
+    and the value is a list of activation nodes triggering that inhibition.
+    """
     beginInhibitionTemplates = nNodes * (nNodes+1)
     inhibitions = {}
     for i in range(nNodes): #For each possible activator
@@ -34,6 +55,25 @@ def findAllInhibitions(array, nNodes = 5):
 
 #Kept for testing purpose; correct behavior
 def findAllInhibitorsAndConcsLegacy(array,nNodes = 5):
+    """
+    Deprecated. Kept for testing purpose as a check against the ```findAllInhibitorsAndConcs``` function.
+
+    Args
+    ----
+    array: numpy array
+    The array to analyze. Inhibitions are expected to start from position N*(N+1)
+    where N is the number of activation nodes in the system.
+
+    nNodes: int, defaults to 5
+    The number of activation nodes in the system.
+
+    Returns
+    -------
+    iinhibitingTemplatesConcs: dict
+    A dictionary where keys are inhibitor names
+    and the value is a tupple of the list of concentrations of templates triggering that inhibition and
+    of the stability of the inhibitor species.
+    """
     beginInhibitionTemplates = nNodes * (nNodes+1)
     inhibitingTemplatesConcs = {}
     for i in range(nNodes): #For each possible activator
@@ -50,6 +90,26 @@ def findAllInhibitorsAndConcsLegacy(array,nNodes = 5):
 
 #New version, relies on findAllInhibitions (i.e. more modular).
 def findAllInhibitorsAndConcs(array,nNodes = 5):
+    """
+    Returns the inhibitors actually present in the system, associated with the concentration
+    of templates producing them and their sequence stability as calculated from their target.
+
+    Args
+    ----
+    array: numpy array
+    The array to analyze. Inhibitions are expected to start from position N*(N+1)
+    where N is the number of activation nodes in the system.
+
+    nNodes: int, defaults to 5
+    The number of activation nodes in the system.
+
+    Returns
+    -------
+    iinhibitingTemplatesConcs: dict
+    A dictionary where keys are inhibitor names
+    and the value is a tupple of the list of concentrations of templates triggering that inhibition and
+    of the stability of the inhibitor species.
+    """
     allInhibitions = findAllInhibitions(array,nNodes = nNodes)
     beginInhibitionTemplates = nNodes * (nNodes+1)
     inhibitingTemplatesConcs = {}
@@ -62,6 +122,21 @@ def findAllInhibitorsAndConcs(array,nNodes = 5):
     return inhibitingTemplatesConcs
 
 def invalidInhibitions(array, nNodes = 5):
+    """
+    Checks that all templates producing an actual inhibitor are registered
+    with a positive concentration. Return ``True`` if that is the case, ``False``
+    if there is an issue.
+
+    Args
+    ----
+    array: numpy array
+    The array to analyze. Inhibitions are expected to start from position N*(N+1)
+    where N is the number of activation nodes in the system.
+
+    nNodes: int, defaults to 5
+    The number of activation nodes in the system.
+    """
+
     inhibTemps = findAllInhibitions(array,nNodes = nNodes)
     beginTemplates = nNodes
     res = []
@@ -71,6 +146,19 @@ def invalidInhibitions(array, nNodes = 5):
     return res
 
 def isValid(array, nNodes = 5):
+    """
+    Checks that an array represents a valid PEN system for the
+    specified number of nodes. Current standard behavior is simply
+    to check that all inhibitions are valid.
+
+    Args
+    ----
+    array: numpy array
+    The array to analyze.
+
+    nNodes: int, defaults to 5
+    The number of activation nodes in the system.
+    """
     return not invalidInhibitions(array, nNodes = nNodes)
 
 class DACCAD_Wrapper(ABC):

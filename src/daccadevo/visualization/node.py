@@ -1,6 +1,4 @@
-"""
-node.py
-"""
+
 from __future__ import annotations
 
 from PySide6.QtCore import QPointF, QRectF, Qt
@@ -12,13 +10,14 @@ class Node(QGraphicsObject):
 
     """A QGraphicsItem representing node in a graph"""
 
-    def __init__(self, name: str, parent=None):
+    def __init__(self, name: str):
         """Node constructor
 
         Args:
-            name (str): Node label
+            name: String
+            Node label
         """
-        super().__init__(parent)
+        super().__init__(None)
         self._name = name
         self._edges = []
         self._radius = 30
