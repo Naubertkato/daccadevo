@@ -19,7 +19,7 @@ class Jpype_wrapper(DACCAD_Wrapper):
 		super().__init__(config=config)
 		self.reset(config)
 		daccad.startJVM(rootdir=self.executable_path,
-			debug=config.get("debug",False), jvmpath=config.get("jvmpath"))
+			verbose=config.get("debug",False), jvmpath=config.get("jvmpath"))
 
 
 	def reset(self, config):
@@ -106,7 +106,7 @@ class Jpype_wrapper(DACCAD_Wrapper):
 	def submitPENSystem(self, array, nNodes = 5, config=None, **kwargs):
 		# In case we execute in a different thread without JVM
 		daccad.startJVM(rootdir=self.executable_path,
-			debug=config.get("debug",False), jvmpath=config.get("jvmpath",None))
+			verbose=config.get("debug",False), jvmpath=config.get("jvmpath",None))
 		import model.OligoSystem
 		import model.Constants
 		if config is not None:

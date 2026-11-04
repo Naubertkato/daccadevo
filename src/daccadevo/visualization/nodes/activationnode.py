@@ -8,8 +8,8 @@ from daccadevo.visualization.node import Node
 
 
 class ActivationNode(Node):
-    def __init__(self, name: str, parent=None):
-        super().__init__(name, parent)
+    def __init__(self, name: str):
+        super().__init__(name)
         self.activationedge = None
         self.source = None
         self.dest = None

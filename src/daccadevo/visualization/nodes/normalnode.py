@@ -9,8 +9,8 @@ from daccadevo.visualization.node import Node
 
 class NormalNode(Node):
 
-    def __init__(self, name: str, parent=None):
-        super().__init__(name, parent)
+    def __init__(self, name: str):
+        super().__init__(name)
         self.setZValue(1)
         self._color = "#5AD469"
         self._radius = 30

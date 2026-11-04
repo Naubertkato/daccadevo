@@ -49,6 +49,19 @@ $ cd daccad
 $ ./gradlew dist
 ```
 
+## Building documentation
+
+Documentation is built with Sphinx and requires DACCADevo to be importable.
+Then, simply go to the docs folder and use `make`. Two targets are available: `html` and `latex`.
+
+To build `html` files:
+```bash
+$ cd docs
+$ make html
+```
+
+The documentation is then accessible from `docs/build/html/index.html`
+
 ## Using development features
 
 DACCADevo provides settings to run optimizations relying on development features of QDPY. To use those settings, you need to install `PyTorch` as well as the development branch of QDPY. For instance, with pip:
@@ -97,7 +110,15 @@ Note that both `config_file` and `evaluation_file` must be present inside the Do
 
 ## Examples
 
-### Dummy optimization
+### Base functionality examples
+
+The Jupyter notebook `examples/base_example.ipynb` contains sample code to:
+
+- Make PEN systems, submit them to a simulator, and plot their time series.
+- Call the optimizer on a custom evaluation function (here, creating a bistable system as defined by Padirac *et al*, PNAS, 2012).
+- Use the visualization tools to check results.
+
+### Dummy command line optimization
 
 To perform 5 independent runs described in the `configs/short_test.yaml` file, with an evaluation 
 function defined in `examples/test_eval.py`, run:

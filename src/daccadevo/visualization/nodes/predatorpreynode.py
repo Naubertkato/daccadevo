@@ -9,8 +9,8 @@ from daccadevo.visualization.node import Node
 
 class PredatorNode(Node):
 
-    def __init__(self, name: str, parent=None):
-        super().__init__(name, parent)
+    def __init__(self, name: str):
+        super().__init__(name)
         self._radius = 30
         self._rect = QRectF(0, 0, self._radius * 2, self._radius * 2)
         self._color = "#F294CE" # pink
